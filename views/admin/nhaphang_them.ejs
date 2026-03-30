@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <style>body, html { height: 100%; margin: 0; background-color: #f8f9fa; } .sidebar { width: 280px; min-height: 100vh; }</style>
+</head>
+<body>
+    <div class="d-flex h-100">
+        <%- include('sidebar') %>
+
+        <div class="flex-grow-1 p-4 overflow-auto">
+            <div class="container-fluid">
+                
+                <div class="card shadow-sm border-0 rounded-4">
+                    <div class="card-header bg-primary text-white py-3 rounded-top-4">
+                        <h5 class="mb-0"><i class="bi bi-file-earmark-plus"></i> Tạo Phiếu Nhập Hàng Mới</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <form action="/admin/nhaphang/them" method="POST">
+                            
+                            <div class="mb-4 col-md-4">
+                                <label class="form-label fw-bold">Chọn Nhà Cung Cấp</label>
+                                <select class="form-select border-primary" name="NhaCungCap" required>
+                                    <option value="">-- Chọn NCC --</option>
+                                    <% nhacungcap.forEach(ncc => { %>
+                                        <option value="<%= ncc._id %>"><%= ncc.TenNCC %></option>
+                                    <% }); %>
+                                </select>
+                            </div>
+
+                            <h6 class="text-primary fw-bold border-bottom pb-2">Danh sách Sản phẩm nhập</h6>
+                            
+                            <table class="table table-bordered" id="bangNhapHang">
+                                <thead class="table-light text-center">
+                                    <tr>
+                                        <th>Sản phẩm Tivi</th>
+                                        <th width="15%">Số lượng</th>
+                                        <th width="20%">Đơn giá nhập (VNĐ)</th>
+                                        <th width="5%">Xóa</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <select class="form-select" name="SanPhamId[]" required>
+                                                <option value="">-- Chọn Tivi --</option>
+                                                <% sanpham.forEach(sp => { %>
+                                                    <option value="<%= sp._id %>"><%= sp.TenSP %> (Tồn: <%= sp.SoLuongTon %>)</option>
+                                                <% }); %>
+                                            </select>
+                                        </td>
+                                        <td><input type="number" class="form-control text-center" name="SoLuong[]" min="1" value="1" required></td>
+                                        <td><input type="number" class="form-control text-end" name="DonGiaNhap[]" min="0" value="0" required></td>
+                                        <td class="text-center"><button type="button" class="btn btn-sm btn-danger btn-xoa-dong"><i class="bi bi-x"></i></button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <button type="button" class="btn btn-outline-success btn-sm mb-4" id="btnThemDong">
+                                <i class="bi bi-plus-circle"></i> Thêm dòng mới
+                            </button>
+
+                            <div class="text-end border-top pt-3">
+                                <a href="/admin/nhaphang" class="btn btn-secondary"><i class="bi bi-x-circle"></i> Hủy</a>
+                                <button type="submit" class="btn btn-primary"><i class="bi bi-floppy"></i> Lưu Phiếu & Nhập Kho</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('btnThemDong').addEventListener('click', function() {
+            var tbody = document.querySelector('#bangNhapHang tbody');
+            var firstRow = tbody.querySelector('tr');
+            var newRow = firstRow.cloneNode(true);
+            
+            // Xóa giá trị cũ khi copy dòng mới
+            newRow.querySelector('input[name="SoLuong[]"]').value = 1;
+            newRow.querySelector('input[name="DonGiaNhap[]"]').value = 0;
+            
+            tbody.appendChild(newRow);
+        });
+
+        // Dùng event delegation để xóa dòng
+        document.querySelector('#bangNhapHang').addEventListener('click', function(e) {
+            if (e.target.closest('.btn-xoa-dong')) {
+                var tbody = document.querySelector('#bangNhapHang tbody');
+                if(tbody.querySelectorAll('tr').length > 1) {
+                    e.target.closest('tr').remove();
+                } else {
+                    alert('Phải nhập ít nhất 1 sản phẩm!');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

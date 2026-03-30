@@ -1,0 +1,44 @@
+[
+  {
+    "HoVaTen": "Thái Vĩnh Nghi",
+    "TenDangNhap": "Bo",
+    "MatKhau": "123",
+    "QuyenHan": "admin",
+    "TrangThai": 1
+  },
+  {
+    "HoVaTen": "Phó Bảo Phong",
+    "TenDangNhap": "Vu",
+    "MatKhau": "123",
+    "QuyenHan": "nhanvien",
+    "TrangThai": 1
+  },
+  {
+    "HoVaTen": "Huỳnh Minh Thuận",
+    "TenDangNhap": "Thuan",
+    "MatKhau": "123",
+    "QuyenHan": "nhanvien",
+    "TrangThai": 1
+  },
+  {
+    "HoVaTen": "Lê Tấn Phát",
+    "TenDangNhap": "phatle",
+    "MatKhau": "123",
+    "QuyenHan": "nhanvien",
+    "TrangThai": 1
+  },
+  {
+    "HoVaTen": "Đặng Phương Nam",
+    "TenDangNhap": "namdang",
+    "MatKhau": "123",
+    "QuyenHan": "nhanvien",
+    "TrangThai": 1
+  },
+  {
+    "HoVaTen": "Lý Nhã Kỳ",
+    "TenDangNhap": "kyly",
+    "MatKhau": "123",
+    "QuyenHan": "admin",
+    "TrangThai": 1
+  }
+]

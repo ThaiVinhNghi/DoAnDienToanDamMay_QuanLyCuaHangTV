@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <style>body, html { height: 100%; margin: 0; background-color: #f8f9fa; } .sidebar { width: 280px; min-height: 100vh; }</style>
+</head>
+<body>
+    <div class="d-flex h-100">
+        <%- include('sidebar') %>
+
+        <div class="flex-grow-1 p-4 overflow-auto">
+            <div class="container-fluid">
+                <div class="card shadow-sm col-md-8 mx-auto border-0 rounded-4 mt-3">
+                    <div class="card-header bg-warning py-3 rounded-top-4">
+                        <h5 class="mb-0"><i class="bi bi-pencil-square"></i> Cập nhật thông tin Nhân viên</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <form action="/admin/nhanvien/sua/<%= nvEdit._id %>" method="POST">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Họ và tên</label>
+                                <input type="text" class="form-control" name="HoVaTen" value="<%= nvEdit.HoVaTen %>" required>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Tên đăng nhập</label>
+                                    <input type="text" class="form-control" name="TenDangNhap" value="<%= nvEdit.TenDangNhap %>" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Mật khẩu mới</label>
+                                    <input type="password" class="form-control" name="MatKhau" placeholder="Bỏ trống nếu giữ nguyên">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Quyền hạn</label>
+                                    <select class="form-select" name="QuyenHan">
+                                        <option value="nhanvien" <%= nvEdit.QuyenHan === 'nhanvien' ? 'selected' : '' %>>Nhân viên bán hàng</option>
+                                        <option value="admin" <%= nvEdit.QuyenHan === 'admin' ? 'selected' : '' %>>Quản trị viên (Admin)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Trạng thái tài khoản</label>
+                                    <select class="form-select" name="TrangThai">
+                                        <option value="1" <%= nvEdit.TrangThai === 1 ? 'selected' : '' %>>Hoạt động</option>
+                                        <option value="0" <%= nvEdit.TrangThai === 0 ? 'selected' : '' %>>Khóa tài khoản</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex gap-2 justify-content-end">
+                                <a href="/admin/nhanvien" class="btn btn-secondary"><i class="bi bi-x-circle"></i> Hủy</a>
+                                <button type="submit" class="btn btn-warning"><i class="bi bi-arrow-clockwise"></i> Cập nhật</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

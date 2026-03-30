@@ -1,0 +1,32 @@
+[
+  {
+    "ID": 1, "KhachHangID": 41, "NhanVienID": null, "HoaDonID": null, "NgayDangKy": "2026-03-23 09:00:00", 
+    "SoTienTraTruoc": 3000000, "SoThangTraGop": 6, "LaiSuat": 1.50, "TongTien": 12900000, "TienGopMoiThang": 1650000, 
+    "GhiChu": "Khách đăng ký trả góp Samsung QLED 55 inch", "TrangThai": "Chờ duyệt",
+    "SoTienConLai": 9900000, "TongPhaiTra": 10791000, "SoTienDaTra": 0, "SoLanNhacNho": 0, "TinhTrangTra": "Chờ duyệt"
+  },
+  {
+    "ID": 2, "KhachHangID": 41, "NhanVienID": null, "HoaDonID": null, "NgayDangKy": "2026-03-23 09:15:00", 
+    "SoTienTraTruoc": 2000000, "SoThangTraGop": 9, "LaiSuat": 1.20, "TongTien": 8500000, "TienGopMoiThang": 800000, 
+    "GhiChu": "Khách đăng ký trả góp Samsung Crystal UHD 43 inch", "TrangThai": "Chờ duyệt",
+    "SoTienConLai": 6500000, "TongPhaiTra": 7202000, "SoTienDaTra": 0, "SoLanNhacNho": 0, "TinhTrangTra": "Chờ duyệt"
+  },
+  {
+    "ID": 3, "KhachHangID": 41, "NhanVienID": 1, "HoaDonID": null, "NgayDangKy": "2026-03-23 09:30:00", 
+    "SoTienTraTruoc": 5000000, "SoThangTraGop": 12, "LaiSuat": 1.00, "TongTien": 13500000, "TienGopMoiThang": 750000, 
+    "GhiChu": "Khách mua trả góp Samsung Crystal 65 inch", "TrangThai": "Đã duyệt",
+    "SoTienConLai": 8500000, "TongPhaiTra": 9520000, "SoTienDaTra": 1500000, "SoLanNhacNho": 0, "TinhTrangTra": "Đang góp"
+  },
+  {
+    "ID": 4, "KhachHangID": 41, "NhanVienID": null, "HoaDonID": null, "NgayDangKy": "2026-03-23 09:45:00", 
+    "SoTienTraTruoc": 10000000, "SoThangTraGop": 12, "LaiSuat": 1.10, "TongTien": 42990000, "TienGopMoiThang": 2900000, 
+    "GhiChu": "Khách mua trả góp Sony OLED 65 inch", "TrangThai": "Chờ duyệt",
+    "SoTienConLai": 32990000, "TongPhaiTra": 37344680, "SoTienDaTra": 0, "SoLanNhacNho": 0, "TinhTrangTra": "Chờ duyệt"
+  },
+  {
+    "ID": 5, "KhachHangID": 41, "NhanVienID": null, "HoaDonID": null, "NgayDangKy": "2026-03-23 10:00:00", 
+    "SoTienTraTruoc": 4000000, "SoThangTraGop": 8, "LaiSuat": 1.30, "TongTien": 23900000, "TienGopMoiThang": 2600000, 
+    "GhiChu": "Khách mua trả góp 2 sản phẩm", "TrangThai": "Chờ duyệt",
+    "SoTienConLai": 19900000, "TongPhaiTra": 21969600, "SoTienDaTra": 0, "SoLanNhacNho": 0, "TinhTrangTra": "Chờ duyệt"
+  }
+]

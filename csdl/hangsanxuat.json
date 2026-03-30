@@ -1,0 +1,11 @@
+[
+  { "TenHang": "Sony", "QuocGia": "Nhật Bản" },
+  { "TenHang": "Samsung", "QuocGia": "Hàn Quốc" },
+  { "TenHang": "LG", "QuocGia": "Hàn Quốc" },
+  { "TenHang": "TCL", "QuocGia": "Trung Quốc" },
+  { "TenHang": "Casper", "QuocGia": "Thái Lan" },
+  { "TenHang": "Xiaomi", "QuocGia": "Trung Quốc" },
+  { "TenHang": "Sharp", "QuocGia": "Nhật Bản" },
+  { "TenHang": "Toshiba", "QuocGia": "Nhật Bản" },
+  { "TenHang": "Coocaa", "QuocGia": "Trung Quốc" }
+]

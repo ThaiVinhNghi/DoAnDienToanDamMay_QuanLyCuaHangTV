@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <style>body, html { height: 100%; margin: 0; background-color: #f8f9fa; } .sidebar { width: 280px; min-height: 100vh; }</style>
+</head>
+<body>
+    <div class="d-flex h-100">
+        <%- include('sidebar') %>
+
+        <div class="flex-grow-1 p-4 overflow-auto">
+            <div class="container-fluid bg-white p-4 rounded-4 shadow-sm">
+                
+                <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                    <h3 class="fw-bold mb-0"><i class="bi bi-truck"></i> Danh sách Nhà cung cấp</h3>
+                    <a href="/admin/nhacungcap/them" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Thêm NCC mới</a>
+                </div>
+
+                <table class="table table-bordered table-hover mt-3 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="5%" class="text-center">#</th>
+                            <th>Tên Nhà cung cấp</th>
+                            <th>Số điện thoại</th>
+                            <th>Email</th>
+                            <th>Địa chỉ</th>
+                            <th width="10%" class="text-center">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% var stt = 1; %>
+                        <% nhacungcap.forEach(ncc => { %>
+                            <tr>
+                                <th class="text-center"><%= stt++ %></th>
+                                <td class="fw-bold text-primary"><%= ncc.TenNCC %></td>
+                                <td><%= ncc.SoDienThoai %></td>
+                                <td><%= ncc.Email %></td>
+                                <td><%= ncc.DiaChi %></td>
+                                <td class="text-center">
+                                    <a href="/admin/nhacungcap/sua/<%= ncc._id %>" class="btn btn-sm btn-warning"><i class="bi bi-pencil-square"></i></a>
+                                    <a href="/admin/nhacungcap/xoa/<%= ncc._id %>" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa Nhà cung cấp này?');"><i class="bi bi-trash"></i></a>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

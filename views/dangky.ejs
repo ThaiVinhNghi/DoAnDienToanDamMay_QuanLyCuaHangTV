@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+</head>
+<body class="bg-light">
+
+    <%- include('navbar') %>
+
+    <div class="container mt-5 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm border-0 rounded-4">
+                    <div class="card-header bg-success text-white text-center py-3 rounded-top-4">
+                        <h4 class="mb-0"><i class="bi bi-person-plus"></i> Đăng ký Tài khoản Mua hàng</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <% if (error) { %>
+                            <div class="alert alert-danger text-center"><%= error %></div>
+                        <% } %>
+
+                        <form action="/dangky" method="POST">
+                            <h5 class="text-primary border-bottom pb-2 mb-3">Thông tin cá nhân (Để giao hàng)</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Họ và tên</label>
+                                    <input type="text" class="form-control" name="HoVaTen" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Số điện thoại</label>
+                                    <input type="text" class="form-control" name="SoDienThoai" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Địa chỉ giao hàng</label>
+                                <input type="text" class="form-control" name="DiaChi" required>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Email (Tùy chọn)</label>
+                                <input type="email" class="form-control" name="Email">
+                            </div>
+
+                            <h5 class="text-primary border-bottom pb-2 mb-3">Thông tin Đăng nhập</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Tên đăng nhập</label>
+                                    <input type="text" class="form-control" name="TenDangNhap" required>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Mật khẩu</label>
+                                    <input type="password" class="form-control" name="MatKhau" required>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-success w-100 py-2 fw-bold fs-5 rounded-pill">Đăng Ký Ngay</button>
+                            <div class="mt-3 text-center">
+                                <span>Đã có tài khoản? </span><a href="/dangnhap" class="text-decoration-none fw-bold">Đăng nhập tại đây</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('footer') %>
+</body>
+</html>

@@ -1,0 +1,92 @@
+[
+  {
+    "TenNCC": "Công ty TNHH Điện tử Samsung Vina",
+    "SoDienThoai": "02831234567",
+    "Email": "contact@samsung.com.vn",
+    "DiaChi": "Số 2 Hải Triều, Q1, TP. HCM"
+  },
+  {
+    "TenNCC": "Sony Electronics Việt Nam",
+    "SoDienThoai": "1800588885",
+    "Email": "info@sony.com.vn",
+    "DiaChi": "Lầu 6, President Place, TP. HCM"
+  },
+  {
+    "TenNCC": "LG Electronics Việt Nam",
+    "SoDienThoai": "18001503",
+    "Email": "support.lg@lge.com",
+    "DiaChi": "KCN Tràng Duệ, An Dương, Hải Phòng"
+  },
+  {
+    "TenNCC": "TCL Việt Nam",
+    "SoDienThoai": "1800588880",
+    "Email": "cskh@tcl.com",
+    "DiaChi": "Phú Cường, Thủ Dầu Một, Bình Dương"
+  },
+  {
+    "TenNCC": "Panasonic Việt Nam",
+    "SoDienThoai": "18001593",
+    "Email": "customer@panasonic.com.vn",
+    "DiaChi": "KCN Thăng Long, Đông Anh, Hà Nội"
+  },
+  {
+    "TenNCC": "Toshiba Việt Nam",
+    "SoDienThoai": "18001529",
+    "Email": "contact@toshiba.com.vn",
+    "DiaChi": "Lầu 10, Tòa nhà Bitexco, Q1, TP. HCM"
+  },
+  {
+    "TenNCC": "Casper Việt Nam",
+    "SoDienThoai": "18006644",
+    "Email": "cskh@casper-electric.com",
+    "DiaChi": "Tòa nhà Capital Place, Ba Đình, Hà Nội"
+  },
+  {
+    "TenNCC": "Xiaomi Việt Nam",
+    "SoDienThoai": "19005656",
+    "Email": "service.vn@xiaomi.com",
+    "DiaChi": "KĐT Sala, Thủ Thiêm, TP. Thủ Đức"
+  },
+  {
+    "TenNCC": "Sharp Việt Nam",
+    "SoDienThoai": "18001599",
+    "Email": "info@sharp.vn",
+    "DiaChi": "Tòa nhà Etown, Tân Bình, TP. HCM"
+  },
+  {
+    "TenNCC": "Hisense Việt Nam",
+    "SoDienThoai": "18008888",
+    "Email": "support@hisense.vn",
+    "DiaChi": "Đường Nguyễn Thị Minh Khai, Q3, TP. HCM"
+  },
+  {
+    "TenNCC": "Tập đoàn Asanzo",
+    "SoDienThoai": "19006369",
+    "Email": "cskh@asanzo.vn",
+    "DiaChi": "KCN Vĩnh Lộc, Bình Tân, TP. HCM"
+  },
+  {
+    "TenNCC": "Skyworth Việt Nam",
+    "SoDienThoai": "18001180",
+    "Email": "contact@skyworth.vn",
+    "DiaChi": "KCN Sóng Thần, Dĩ An, Bình Dương"
+  },
+  {
+    "TenNCC": "Aqua Việt Nam",
+    "SoDienThoai": "1800585832",
+    "Email": "cskh@aquavietnam.vn",
+    "DiaChi": "KCN Biên Hòa 2, Đồng Nai"
+  },
+  {
+    "TenNCC": "FFalcon Việt Nam",
+    "SoDienThoai": "19001234",
+    "Email": "info@ffalcon.com.vn",
+    "DiaChi": "Tòa nhà Centre Point, Phú Nhuận, TP. HCM"
+  },
+  {
+    "TenNCC": "Coocaa Việt Nam",
+    "SoDienThoai": "18001190",
+    "Email": "support@coocaa.vn",
+    "DiaChi": "Quận 7, TP. HCM"
+  }
+]

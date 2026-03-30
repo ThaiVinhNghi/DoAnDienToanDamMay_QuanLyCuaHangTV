@@ -1,0 +1,20 @@
+[
+  { "ID": 1, "NhanVienID": 1, "KhachHangID": 1, "NgayLap": "2023-11-01 10:30:00", "GhiChuHoaDon": "Khách mua làm quà tặng, xuất hóa đơn VAT" },
+  { "ID": 2, "NhanVienID": 2, "KhachHangID": 2, "NgayLap": "2023-11-02 14:15:00", "GhiChuHoaDon": null },
+  { "ID": 3, "NhanVienID": 3, "KhachHangID": 3, "NgayLap": "2023-11-05 09:00:00", "GhiChuHoaDon": "Giao hàng sau 18h vì khách đi làm" },
+  { "ID": 4, "NhanVienID": 4, "KhachHangID": 4, "NgayLap": "2023-11-06 16:45:00", "GhiChuHoaDon": "Thanh toán qua thẻ tín dụng Visa" },
+  { "ID": 5, "NhanVienID": 1, "KhachHangID": 5, "NgayLap": "2023-11-10 11:20:00", "GhiChuHoaDon": "Khách VIP, tặng kèm giá treo đa năng" },
+  { "ID": 6, "NhanVienID": 2, "KhachHangID": 6, "NgayLap": "2023-11-11 13:10:00", "GhiChuHoaDon": null },
+  { "ID": 7, "NhanVienID": 3, "KhachHangID": 7, "NgayLap": "2023-11-15 15:30:00", "GhiChuHoaDon": "Gọi điện trước 30 phút khi giao hàng" },
+  { "ID": 8, "NhanVienID": 4, "KhachHangID": 8, "NgayLap": "2023-11-18 10:05:00", "GhiChuHoaDon": "Lắp đặt tại chung cư, cần thẻ thang máy" },
+  { "ID": 9, "NhanVienID": 1, "KhachHangID": 9, "NgayLap": "2023-11-20 08:30:00", "GhiChuHoaDon": null },
+  { "ID": 10, "NhanVienID": 2, "KhachHangID": 10, "NgayLap": "2023-11-22 17:00:00", "GhiChuHoaDon": "Chuyển khoản trước 50% tiền cọc" },
+  { "ID": 11, "NhanVienID": 3, "KhachHangID": 11, "NgayLap": "2023-11-25 14:40:00", "GhiChuHoaDon": "Nhờ kỹ thuật viên cài đặt sẵn các app xem phim" },
+  { "ID": 12, "NhanVienID": 4, "KhachHangID": 12, "NgayLap": "2023-11-28 09:15:00", "GhiChuHoaDon": null },
+  { "ID": 13, "NhanVienID": 1, "KhachHangID": 13, "NgayLap": "2023-12-01 11:50:00", "GhiChuHoaDon": "Khách mua trả góp qua HD Saison" },
+  { "ID": 14, "NhanVienID": 2, "KhachHangID": 14, "NgayLap": "2023-12-05 16:20:00", "GhiChuHoaDon": "Giao nhầm mã, đã thu hồi và đổi lại mã mới" },
+  { "ID": 15, "NhanVienID": 3, "KhachHangID": 15, "NgayLap": "2023-12-10 10:10:00", "GhiChuHoaDon": "Đã thanh toán 100% bằng tiền mặt" },
+  { "ID": 16, "NhanVienID": 1, "KhachHangID": 41, "NgayLap": "2026-03-21 17:51:55", "GhiChuHoaDon": "Giao vào T2" },
+  { "ID": 17, "NhanVienID": 1, "KhachHangID": 41, "NgayLap": "2026-03-22 07:43:39", "GhiChuHoaDon": "" },
+  { "ID": 18, "NhanVienID": 1, "KhachHangID": 41, "NgayLap": "2026-03-22 07:44:22", "GhiChuHoaDon": "" }
+]

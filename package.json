@@ -1,0 +1,35 @@
+{
+  "name": "qltivistore",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThaiVinhNghi/DoAnDienToanDamMay_QuanLyCuaHangTV.git"
+  },
+  "author": "Thái Vĩnh Nghi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ThaiVinhNghi/DoAnDienToanDamMay_QuanLyCuaHangTV/issues"
+  },
+  "homepage": "https://github.com/ThaiVinhNghi/DoAnDienToanDamMay_QuanLyCuaHangTV#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "ejs": "^5.0.1",
+    "express": "^5.2.1",
+    "express-ejs-layouts": "^2.5.1",
+    "express-session": "^1.19.0",
+    "method-override": "^3.0.0",
+    "mongoose": "^9.3.3",
+    "multer": "^2.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

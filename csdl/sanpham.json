@@ -1,0 +1,182 @@
+[
+  {
+    "TenSP": "Google Tivi Sony 4K 55 inch KD-55X80L",
+    "GiaBan": 16400000,
+    "SoLuongTon": 20,
+    "HinhAnh": "sony_55x80l.jpg",
+    "MoTa": "Bộ xử lý X1 4K HDR, Âm thanh vòm Dolby Atmos.",
+    "LoaiSanPham": { "$oid": "69c817546fd6a8d3da64921c" },
+    "HangSanXuat": { "$oid": "69c817466fd6a8d3da64920f" }
+  },
+  {
+    "TenSP": "Google Tivi OLED Sony 65 inch XR-65A80L",
+    "GiaBan": 42990000,
+    "SoLuongTon": 10,
+    "HinhAnh": "sony_oled_65.jpg",
+    "MoTa": "Màn hình OLED đen sâu thẳm, XR OLED Contrast Pro.",
+    "LoaiSanPham": { "$oid": "69c817546fd6a8d3da64921d" },
+    "HangSanXuat": { "$oid": "69c817466fd6a8d3da64920f" }
+  },
+  {
+    "TenSP": "Smart Tivi QLED Samsung 4K 55 inch QA55Q60B",
+    "GiaBan": 12900000,
+    "SoLuongTon": 35,
+    "HinhAnh": "samsung_qled_55.jpg",
+    "MoTa": "Công nghệ Quantum Dot, Đèn nền Dual LED.",
+    "LoaiSanPham": { "$oid": "69c817546fd6a8d3da64921e" },
+    "HangSanXuat": { "$oid": "69c817466fd6a8d3da649210" }
+  },
+  {
+    "TenSP": "Smart Tivi Neo QLED 8K Samsung 75 inch",
+    "GiaBan": 85000000,
+    "SoLuongTon": 4,
+    "HinhAnh": "samsung_8k_75.jpg",
+    "MoTa": "Độ phân giải 8K siêu nét, Quantum Matrix Pro.",
+    "LoaiSanPham": { "$oid": "69c817546fd6a8d3da649220" },
+    "HangSanXuat": { "$oid": "69c817466fd6a8d3da649210" }
+  },
+  {
+    "TenSP": "Smart Tivi Samsung 4K Crystal UHD 43 inch",
+    "GiaBan": 8500000,
+    "SoLuongTon": 49,
+    "HinhAnh": "samsung_43_uhd.jpg",
+    "MoTa": "Bộ xử lý Crystal 4K, Motion Xcelerator.",
+    "LoaiSanPham": { "$oid": "69c817546fd6a8d3da64921a" },
+    "HangSanXuat": { "$oid": "69c817466fd6a8d3da649210" }
+  },
+  {
+    "TenSP": "Smart Tivi OLED LG 4K 55 inch 55A3PSA",
+    "GiaBan": 23900000,
+    "SoLuongTon": 15,
+    "HinhAnh": "lg_oled_55.jpg",
+    "MoTa": "Điểm ảnh tự phát sáng, Bộ xử lý AI α7 Gen6.",
+    "LoaiSanPham": { "$oid": "69c817546fd6a8d3da64921d" },
+    "HangSanXuat": { "$oid": "69c817466fd6a8d3da649211" }
+  },
+  {
+    "TenSP": "Smart Tivi LG 4K 50 inch 50UQ7550",
+    "GiaBan": 9200000,
+    "SoLuongTon": 40,
+    "HinhAnh": "lg_4k_50.jpg",
+    "MoTa": "Màn hình 4K UHD sắc nét, Filmmaker Mode.",
+    "LoaiSanPham": { "$oid": "69c817546fd6a8d3da64921a" },
+    "HangSanXuat": { "$oid": "69c817466fd6a8d3da649211" }
+  },
+  {
+    "TenSP": "Google Tivi TCL 4K 55 inch 55P737",
+    "GiaBan": 7990000,
+    "SoLuongTon": 60,
+    "HinhAnh": "tcl_55p737.jpg",
+    "MoTa": "Điều khiển giọng nói rảnh tay, Viền siêu mỏng.",
+    "LoaiSanPham": { "$oid": "69c817546fd6a8d3da64921c" },
+    "HangSanXuat": { "$oid": "69c817466fd6a8d3da649212" }
+  },
+  {
+    "TenSP": "Android Tivi Xiaomi A Pro 43 inch 4K",
+    "GiaBan": 6490000,
+    "SoLuongTon": 45,
+    "HinhAnh": "xiaomi_apro_43.jpg",
+    "MoTa": "Thiết kế kim loại, Dolby Audio, DTS-X.",
+    "LoaiSanPham": { "$oid": "69c817546fd6a8d3da64921b" },
+    "HangSanXuat": { "$oid": "69c817466fd6a8d3da649214" }
+  },
+  {
+    "TenSP": "Android Tivi Xiaomi P1 55 inch",
+    "GiaBan": 7990000,
+    "SoLuongTon": 30,
+    "HinhAnh": "xiaomi_p1_55.jpg",
+    "MoTa": "Góc nhìn rộng 178 độ, Google Assistant.",
+    "LoaiSanPham": { "$oid": "69c817546fd6a8d3da64921b" },
+    "HangSanXuat": { "$oid": "69c817466fd6a8d3da649214" }
+  },
+  {
+    "TenSP": "Smart Tivi LG NanoCell 4K 65 inch",
+    "GiaBan": 15900000,
+    "SoLuongTon": 20,
+    "HinhAnh": "lg_nanocell_65.jpg",
+    "MoTa": "Màu sắc thuần khiết, bộ xử lý α5 Gen5 4K.",
+    "LoaiSanPham": { "$oid": "69c817546fd6a8d3da64921a" },
+    "HangSanXuat": { "$oid": "69c817466fd6a8d3da649211" }
+  },
+  {
+    "TenSP": "Smart Tivi Khung Tranh The Frame Samsung",
+    "GiaBan": 25500000,
+    "SoLuongTon": 10,
+    "HinhAnh": "samsung_theframe_55.jpg",
+    "MoTa": "Thiết kế khung tranh nghệ thuật, chống chói.",
+    "LoaiSanPham": { "$oid": "69c817546fd6a8d3da649222" },
+    "HangSanXuat": { "$oid": "69c817466fd6a8d3da649210" }
+  },
+  {
+    "TenSP": "Google Tivi Sony Bravia 4K 85 inch",
+    "GiaBan": 65900000,
+    "SoLuongTon": 5,
+    "HinhAnh": "sony_bravia_85.jpg",
+    "MoTa": "Màn hình khổng lồ, công nghệ Triluminos Pro.",
+    "LoaiSanPham": { "$oid": "69c817546fd6a8d3da64921a" },
+    "HangSanXuat": { "$oid": "69c817466fd6a8d3da64920f" }
+  },
+  {
+    "TenSP": "Smart Tivi TCL Mini LED 65 inch",
+    "GiaBan": 28900000,
+    "SoLuongTon": 15,
+    "HinhAnh": "tcl_miniled_65.jpg",
+    "MoTa": "Độ sáng cực cao, tần số quét 144Hz chơi game.",
+    "LoaiSanPham": { "$oid": "69c817546fd6a8d3da64921f" },
+    "HangSanXuat": { "$oid": "69c817466fd6a8d3da649212" }
+  },
+  {
+    "TenSP": "Android Tivi Casper QLED 55 inch",
+    "GiaBan": 10500000,
+    "SoLuongTon": 25,
+    "HinhAnh": "casper_qled_55.jpg",
+    "MoTa": "Chấm lượng tử QLED, thiết kế tràn viền.",
+    "LoaiSanPham": { "$oid": "69c817546fd6a8d3da64921e" },
+    "HangSanXuat": { "$oid": "69c817466fd6a8d3da649213" }
+  },
+  {
+    "TenSP": "Android Tivi Sharp 42 inch",
+    "GiaBan": 5200000,
+    "SoLuongTon": 40,
+    "HinhAnh": "sharp_42_fhd.jpg",
+    "MoTa": "Âm thanh Dolby Audio, công nghệ Nhật Bản.",
+    "LoaiSanPham": { "$oid": "69c817546fd6a8d3da64921b" },
+    "HangSanXuat": { "$oid": "69c817466fd6a8d3da649215" }
+  },
+  {
+    "TenSP": "Smart Tivi Toshiba 4K 50 inch",
+    "GiaBan": 8500000,
+    "SoLuongTon": 30,
+    "HinhAnh": "toshiba_4k_50.jpg",
+    "MoTa": "Bộ xử lý Regza Engine 4K, công nghệ bù trừ chuyển động.",
+    "LoaiSanPham": { "$oid": "69c817546fd6a8d3da64921a" },
+    "HangSanXuat": { "$oid": "69c817466fd6a8d3da649216" }
+  },
+  {
+    "TenSP": "Smart Tivi Coocaa 4K 55 inch",
+    "GiaBan": 7200000,
+    "SoLuongTon": 35,
+    "HinhAnh": "coocaa_4k_55.jpg",
+    "MoTa": "Màn hình bảo vệ mắt, viền siêu mỏng vô cực.",
+    "LoaiSanPham": { "$oid": "69c817546fd6a8d3da64921a" },
+    "HangSanXuat": { "$oid": "69c817466fd6a8d3da649217" }
+  },
+  {
+    "TenSP": "Smart Tivi OLED Evo LG 77 inch",
+    "GiaBan": 85000000,
+    "SoLuongTon": 6,
+    "HinhAnh": "lg_oledevo_77.jpg",
+    "MoTa": "Độ sáng tăng cường 20%, thiết kế mỏng như giấy.",
+    "LoaiSanPham": { "$oid": "69c817546fd6a8d3da64921d" },
+    "HangSanXuat": { "$oid": "69c817466fd6a8d3da649211" }
+  },
+  {
+    "TenSP": "Smart Tivi Samsung Crystal 4K 65 inch",
+    "GiaBan": 13500000,
+    "SoLuongTon": 39,
+    "HinhAnh": "samsung_crystal_65.jpg",
+    "MoTa": "Màu sắc sống động, thiết kế AirSlim tinh tế.",
+    "LoaiSanPham": { "$oid": "69c817546fd6a8d3da64921a" },
+    "HangSanXuat": { "$oid": "69c817466fd6a8d3da649210" }
+  }
+]

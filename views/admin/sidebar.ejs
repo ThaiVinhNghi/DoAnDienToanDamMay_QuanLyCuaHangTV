@@ -1,0 +1,106 @@
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    /* CẤU TRÚC CHUNG CHO TẤT CẢ CÁC TRANG ADMIN */
+    body { font-family: 'Inter', sans-serif; background-color: #f3f6f9; color: #3f4254; }
+    
+    /* GIAO DIỆN SIDEBAR TỐI MÀU SANG TRỌNG */
+    .sidebar { 
+        width: 280px; 
+        min-height: 100vh; 
+        background-color: #1e1e2d; 
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        z-index: 1000;
+    }
+    .sidebar-logo {
+        background-color: #1a1a27;
+        padding: 22px;
+        text-align: center;
+        border-bottom: 1px solid #2b2b40;
+    }
+    .sidebar .nav-link { 
+        color: #a2a3b7; 
+        padding: 12px 20px;
+        border-radius: 8px; 
+        margin: 4px 15px; 
+        font-weight: 500;
+        transition: all 0.3s ease; 
+    }
+    .sidebar .nav-link i { margin-right: 12px; font-size: 1.2rem; color: #494b74; transition: all 0.3s ease; }
+    
+    .sidebar .nav-link:hover, .sidebar .nav-link.active { 
+        background-color: #1b1b29; 
+        color: #ffffff; 
+    }
+    .sidebar .nav-link:hover i, .sidebar .nav-link.active i { 
+        color: #3699ff;
+    }
+
+    /* CARD VÀ BẢNG CHUNG TỰ ĐỘNG LÀM ĐẸP CHO TOÀN BỘ TRANG KHÁC */
+    .card, .container-fluid.bg-white {
+        border: none !important;
+        border-radius: 16px !important;
+        box-shadow: 0 0 20px 0 rgba(76, 87, 125, 0.05) !important;
+        background-color: #ffffff;
+    }
+    .table { vertical-align: middle; }
+    .table thead th { 
+        background-color: #f3f6f9; 
+        color: #464e5f; 
+        font-weight: 600; 
+        text-transform: uppercase; 
+        font-size: 0.85rem; 
+        letter-spacing: 0.5px;
+        border-bottom: none;
+        padding: 15px;
+    }
+    .table tbody td { padding: 15px; color: #3f4254; font-weight: 500; border-bottom: 1px dashed #ebedf3; }
+    
+    /* Khu vực Profile Nhân viên dưới cùng */
+    .user-profile {
+        background-color: #1a1a27;
+        padding: 15px;
+        margin: 15px;
+        border-radius: 12px;
+        border: 1px solid #2b2b40;
+    }
+</style>
+
+<div class="sidebar d-flex flex-column position-relative">
+    <div class="sidebar-logo mb-3">
+        <a href="/" class="text-decoration-none" target="_blank" title="Xem trang khách hàng">
+            <h4 class="text-white fw-bolder mb-0"><i class="bi bi-tv text-primary me-2"></i>TVN ADMIN</h4>
+        </a>
+    </div>
+    
+    <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item"><a href="/admin" class="nav-link"><i class="bi bi-grid-1x2-fill"></i> Bảng điều khiển</a></li>
+        <li class="nav-item"><a href="/admin/hoadon" class="nav-link"><i class="bi bi-receipt-cutoff"></i> Quản lý Hóa đơn</a></li>
+        <li class="nav-item"><a href="/admin/tragop" class="nav-link"><i class="bi bi-bank2"></i> Sổ Trả góp</a></li>
+        <li class="nav-item"><a href="/admin/sanpham" class="nav-link"><i class="bi bi-box-fill"></i> Sản phẩm (Tivi)</a></li>
+        <li class="nav-item"><a href="/admin/khachhang" class="nav-link"><i class="bi bi-people-fill"></i> Khách hàng</a></li>
+
+        <% if (nhanvien && nhanvien.QuyenHan === 'admin') { %>
+            <li class="nav-item mt-3 mb-2 px-4 text-uppercase fw-bold" style="font-size: 0.75rem; color: #494b74;">Quản trị Cấp cao</li>
+            <li class="nav-item"><a href="/admin/loaisanpham" class="nav-link"><i class="bi bi-tags-fill"></i> Loại sản phẩm</a></li>
+            <li class="nav-item"><a href="/admin/hangsanxuat" class="nav-link"><i class="bi bi-award-fill"></i> Hãng sản xuất</a></li>
+            <li class="nav-item"><a href="/admin/nhaphang" class="nav-link"><i class="bi bi-box-seam-fill"></i> Nhập hàng</a></li>
+            <li class="nav-item"><a href="/admin/nhacungcap" class="nav-link"><i class="bi bi-truck"></i> Nhà cung cấp</a></li>
+            <li class="nav-item"><a href="/admin/nhanvien" class="nav-link"><i class="bi bi-person-badge-fill"></i> Quản lý Nhân viên</a></li>
+        <% } %>
+    </ul>
+    
+    <div class="user-profile mt-auto">
+        <div class="d-flex align-items-center mb-3">
+            <div class="bg-primary rounded-3 d-flex justify-content-center align-items-center text-white fw-bold me-3 shadow-sm" style="width: 45px; height: 45px; font-size: 1.2rem;">
+                <%= nhanvien ? nhanvien.HoVaTen.charAt(0).toUpperCase() : 'A' %>
+            </div>
+            <div>
+                <h6 class="text-white mb-0 fw-bold text-truncate" style="max-width: 150px;"><%= nhanvien ? nhanvien.HoVaTen : 'Admin' %></h6>
+                <small style="color: #a2a3b7;">
+                    <%= (nhanvien && nhanvien.QuyenHan === 'admin') ? 'Quản trị viên' : 'Nhân viên bán hàng' %>
+                </small>
+            </div>
+        </div>
+        <a href="/admin/dangxuat" class="btn btn-danger w-100 fw-bold border-0" style="background-color: #f64e60;"><i class="bi bi-box-arrow-right"></i> Đăng xuất</a>
+    </div>
+</div>

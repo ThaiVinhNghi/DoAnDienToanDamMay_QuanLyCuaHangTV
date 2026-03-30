@@ -1,0 +1,56 @@
+<nav class="navbar navbar-expand-lg bg-primary shadow-sm" data-bs-theme="dark">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/"><i class="bi bi-tv"></i> TVN Store</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuKhachHang">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="menuKhachHang">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/"><i class="bi bi-house-door"></i> Trang chủ</a>
+                </li>
+                <li class="nav-item ms-lg-3">
+                    <a class="nav-link fw-bold text-warning" href="/giohang"><i class="bi bi-cart3"></i> Giỏ hàng</a>
+                </li>
+
+
+            </ul>
+
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                <% if (khachhang) { %>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle fw-bold text-white" href="#" role="button"
+                            data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle text-warning"></i> Chào, <%= khachhang.HoVaTen %>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow">
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-card-list"></i> Đơn hàng của tôi</a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item text-danger" href="/dangxuat"><i
+                                        class="bi bi-box-arrow-right"></i> Đăng xuất</a></li>
+                        </ul>
+                    </li>
+                    <% } else { %>
+                        <li class="nav-item me-2">
+                            <a class="nav-link text-white" href="/dangnhap"><i class="bi bi-box-arrow-in-right"></i>
+                                Đăng nhập</a>
+                        </li>
+                        <li class="nav-item me-3">
+                            <a class="nav-link text-white" href="/dangky"><i class="bi bi-person-plus"></i> Đăng ký</a>
+                        </li>
+                        <% } %>
+
+                            <li class="nav-item border-start ps-3 ms-2 border-secondary d-none d-lg-block">
+                                <a class="btn btn-warning btn-sm fw-bold rounded-pill px-3" href="/admin">
+                                    <i class="bi bi-shield-lock"></i> Tab Admin
+                                </a>
+                            </li>
+            </ul>
+        </div>
+    </div>
+</nav>
