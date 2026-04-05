@@ -6,6 +6,7 @@ var KhachHang = require('../models/khachhang');
 var SanPham = require('../models/sanpham');
 var HoaDon = require('../models/hoadon');
 var TraGop = require('../models/tragop');
+var DoiTra = require('../models/doitra');
 
 // 1. MIDDLEWARE: Bức tường bảo vệ tab Admin
 const checkLogin = (req, res, next) => {
@@ -95,14 +96,31 @@ router.get('/', checkLogin, async (req, res) => {
 
 // ======================== QUẢN LÝ TRẢ GÓP & HÓA ĐƠN ========================
 
-// 1. Tự động tạo hồ sơ Trả góp khi Duyệt Hóa đơn
+// 1. Tự động trừ kho & tạo hồ sơ Trả góp khi Duyệt Hóa đơn
 router.get('/hoadon/duyet/:id', checkLogin, async (req, res) => {
     try {
         const hd = await HoaDon.findById(req.params.id);
+        
+        // Chặn lỗi click duyệt 2 lần làm trừ kho 2 lần
+        if (!hd || hd.TrangThai !== 'Chờ duyệt') {
+            return res.redirect('/admin/hoadon');
+        }
+
         hd.TrangThai = 'Đã duyệt';
         hd.NhanVienDuyet = req.session.NhanVien._id;
         await hd.save();
 
+        // THÊM MỚI: CHẠY VÒNG LẶP TRỪ KHO SẢN PHẨM
+        for (let item of hd.ChiTietHoaDon) {
+            let sp = await SanPham.findById(item.SanPham);
+            if (sp) {
+                sp.SoLuongTon -= item.SoLuong; // Trừ đi số lượng khách đã mua
+                if (sp.SoLuongTon < 0) sp.SoLuongTon = 0; // Đảm bảo kho không bị âm
+                await sp.save();
+            }
+        }
+
+        // Tự động tạo sổ nợ (Giữ nguyên logic cũ)
         if (hd.HinhThucThanhToan === 'Trả góp') {
             const checkTonTai = await TraGop.findOne({ HoaDon: hd._id });
             if(!checkTonTai) {
@@ -132,7 +150,6 @@ router.get('/hoadon/duyet/:id', checkLogin, async (req, res) => {
         res.send("Lỗi hệ thống: " + error.message);
     }
 });
-
 // 2. Hiển thị danh sách & Cảnh báo Nợ xấu tự động
 router.get('/tragop', checkLogin, async (req, res) => {
     try {
@@ -234,6 +251,69 @@ router.post('/tragop/tattoan/:id', checkLogin, async (req, res) => {
         console.log(error); 
         res.send("Lỗi tất toán: " + error.message); 
     }
+});
+
+// 1. Hiển thị danh sách Yêu cầu
+router.get('/doitra', checkLogin, async (req, res) => {
+    try {
+        const danhSach = await DoiTra.find()
+            .populate('KhachHang')
+            .populate({ path: 'HoaDon', populate: { path: 'ChiTietHoaDon.SanPham' } })
+            .populate('SanPhamMoi.SanPham')
+            .sort({ NgayYeuCau: -1 });
+
+        res.render('admin/doitra', { title: 'Quản lý Đổi/Trả', dsDoiTra: danhSach, nhanvien: req.session.NhanVien });
+    } catch (error) { console.log(error); }
+});
+
+// 2. Xử lý Duyệt Yêu Cầu Đổi/Trả
+router.post('/doitra/duyet/:id', checkLogin, async (req, res) => {
+    try {
+        let dt = await DoiTra.findById(req.params.id)
+            .populate({ path: 'HoaDon', populate: { path: 'ChiTietHoaDon.SanPham' } })
+            .populate('SanPhamMoi.SanPham');
+
+        if (!dt || dt.TrangThai !== 'Chờ xử lý') return res.redirect('/admin/doitra');
+
+        let hd = dt.HoaDon;
+
+        if (dt.LoaiYeuCau === 'Trả hàng') {
+            // TRẢ HÀNG: Cộng lại kho, Hủy hóa đơn
+            for (let item of hd.ChiTietHoaDon) {
+                let sp = await SanPham.findById(item.SanPham._id);
+                sp.SoLuongTon += item.SoLuong;
+                await sp.save();
+            }
+            hd.TrangThai = 'Đã hoàn trả'; // Không nên xóa cứng DB, đổi trạng thái để giữ lịch sử
+            await hd.save();
+
+        } else if (dt.LoaiYeuCau === 'Đổi hàng') {
+            // ĐỔI HÀNG: Cộng kho SP cũ, Trừ kho SP mới, cập nhật lại Hóa Đơn
+            // Cộng lại kho cũ
+            for (let item of hd.ChiTietHoaDon) {
+                let spCu = await SanPham.findById(item.SanPham._id);
+                spCu.SoLuongTon += item.SoLuong;
+                await spCu.save();
+            }
+            
+            // Trừ kho SP mới
+            let spMoi = dt.SanPhamMoi[0].SanPham;
+            let spDb = await SanPham.findById(spMoi._id);
+            spDb.SoLuongTon -= 1;
+            await spDb.save();
+
+            // Cập nhật lại Hóa đơn thành SP mới
+            hd.ChiTietHoaDon = [{ SanPham: spMoi._id, SoLuong: 1, DonGiaBan: spMoi.GiaBan }];
+            hd.TongTien = spMoi.GiaBan;
+            hd.TrangThai = 'Đã đổi hàng';
+            await hd.save();
+        }
+
+        dt.TrangThai = 'Đã duyệt';
+        await dt.save();
+
+        res.redirect('/admin/doitra');
+    } catch (error) { console.log(error); }
 });
 
 // ======================== TÍNH NĂNG KHÁC ========================

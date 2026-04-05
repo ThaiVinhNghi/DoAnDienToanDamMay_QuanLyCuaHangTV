@@ -1,12 +1,14 @@
 var express = require('express');
 var router = express.Router();
 var bcrypt = require('bcryptjs');
-var mongoose = require('mongoose'); // Gọi sẵn mongoose trên cùng để dùng cho toàn file
+var mongoose = require('mongoose');
 
 var SanPham = require('../models/sanpham');
 var KhachHang = require('../models/khachhang');
 var HoaDon = require('../models/hoadon');
 var HangSanXuat = require('../models/hangsanxuat');
+var DoiTra = require('../models/doitra');
+var TraGop = require('../models/tragop');
 
 // ======================== TRANG CHỦ & TÌM KIẾM ========================
 router.get('/', async (req, res) => {
@@ -103,7 +105,6 @@ router.post('/dangky', async (req, res) => {
 // 2. Đăng nhập Khách Hàng
 router.get('/dangnhap', (req, res) => {
     if (req.session.KhachHang) return res.redirect('/');
-    // Trỏ CHÍNH XÁC về file dangnhap_khach.ejs
     res.render('dangnhap_khach', { title: 'Đăng nhập Khách hàng', error: null, khachhang: null });
 });
 
@@ -111,13 +112,11 @@ router.post('/dangnhap', async (req, res) => {
     try {
         const kh = await KhachHang.findOne({ TenDangNhap: req.body.TenDangNhap });
         if (!kh) {
-            // Lỗi cũng phải trỏ về dangnhap_khach
             return res.render('dangnhap_khach', { title: 'Đăng nhập', error: 'Tài khoản không tồn tại!', khachhang: null });
         }
 
         const isMatch = bcrypt.compareSync(req.body.MatKhau, kh.MatKhau);
         if (!isMatch) {
-            // Lỗi cũng phải trỏ về dangnhap_khach
             return res.render('dangnhap_khach', { title: 'Đăng nhập', error: 'Mật khẩu không chính xác!', khachhang: null });
         }
 
@@ -125,14 +124,57 @@ router.post('/dangnhap', async (req, res) => {
         res.redirect('/');
     } catch (error) { console.log(error); }
 });
-// 3. Đăng xuất Khách Hàng (Duy nhất 1 cái ở đây)
+
+// 3. Đăng xuất Khách Hàng
 router.get('/dangxuat', (req, res) => {
     req.session.destroy((err) => {
         if (err) console.log("Lỗi đăng xuất:", err);
-        res.redirect('/'); // Về trang chủ
+        res.redirect('/'); 
     });
 });
 
+// 4. Lịch sử mua hàng và Đổi Trả
+router.get('/lichsu', async (req, res) => {
+    if (!req.session.KhachHang) return res.redirect('/dangnhap');
+
+    try {
+        const hoadon = await HoaDon.find({ 
+            KhachHang: req.session.KhachHang._id,
+            HinhThucThanhToan: 'Trả hết',
+            TrangThai: { $ne: 'Chờ duyệt' } 
+        }).populate('ChiTietHoaDon.SanPham');
+
+        const tatCaSanPham = await SanPham.find({ SoLuongTon: { $gt: 0 } }); 
+
+        res.render('lichsu', { 
+            title: 'Lịch sử mua hàng', 
+            khachhang: req.session.KhachHang, 
+            hoadon: hoadon,
+            sanpham: tatCaSanPham 
+        });
+    } catch (error) { console.log(error); }
+});
+
+router.post('/yeucau-doitra', async (req, res) => {
+    if (!req.session.KhachHang) return res.redirect('/dangnhap');
+    try {
+        const { HoaDonId, LoaiYeuCau, LyDo, SanPhamMoiId } = req.body;
+
+        let yeuCau = {
+            KhachHang: req.session.KhachHang._id,
+            HoaDon: HoaDonId,
+            LoaiYeuCau: LoaiYeuCau,
+            LyDo: LyDo
+        };
+
+        if (LoaiYeuCau === 'Đổi hàng' && SanPhamMoiId) {
+            yeuCau.SanPhamMoi = [{ SanPham: SanPhamMoiId, SoLuong: 1 }];
+        }
+
+        await DoiTra.create(yeuCau);
+        res.send(`<script>alert("Gửi yêu cầu ${LoaiYeuCau} thành công! Đang chờ cửa hàng duyệt."); window.location.href="/lichsu";</script>`);
+    } catch (error) { console.log(error); }
+});
 
 // ======================== GIỎ HÀNG & THANH TOÁN ========================
 
@@ -168,16 +210,31 @@ router.get('/themvaogio/:id', async (req, res) => {
     } catch (error) { console.log(error); }
 });
 
-// 2. Hiển thị Giỏ hàng
-router.get('/giohang', (req, res) => {
+// 2. Hiển thị Giỏ hàng (Đã bổ sung biến isNoXau)
+router.get('/giohang', async (req, res) => {
     let giohang = req.session.GioHang || [];
     let tongTien = giohang.reduce((sum, item) => sum + item.ThanhTien, 0);
+
+    // KHOẢN MỚI: Check Nợ xấu để gửi ra View làm mờ nút
+    let isNoXau = false;
+    if (req.session.KhachHang) {
+        try {
+            const check = await TraGop.findOne({ 
+                KhachHang: req.session.KhachHang._id, 
+                TrangThai: 'Nợ xấu' 
+            });
+            if (check) isNoXau = true;
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     res.render('giohang', {
         title: 'Giỏ hàng của bạn',
         khachhang: req.session.KhachHang,
         giohang: giohang,
-        tongTien: tongTien
+        tongTien: tongTien,
+        isNoXau: isNoXau // <-- Truyền ra Frontend
     });
 });
 
@@ -189,7 +246,7 @@ router.get('/xoagiohang/:id', (req, res) => {
     res.redirect('/giohang');
 });
 
-// 4. Thanh toán & Tạo Hóa đơn
+// 4. Thanh toán & Tạo Hóa đơn (Đã được quy hoạch lại gọn gàng)
 router.post('/thanhtoan', async (req, res) => {
     if (!req.session.KhachHang) return res.redirect('/dangnhap');
 
@@ -204,6 +261,23 @@ router.post('/thanhtoan', async (req, res) => {
         let chiTiet = giohang.map(item => {
             return { SanPham: item.SanPhamId, SoLuong: item.SoLuong, DonGiaBan: item.GiaBan }
         });
+
+        // Backend chặn đứng khách Nợ xấu nếu họ cố lách luật chọn Trả góp
+        if (req.body.HinhThucThanhToan === 'Trả góp') {
+            const checkNoXau = await TraGop.findOne({ 
+                KhachHang: req.session.KhachHang._id, 
+                TrangThai: 'Nợ xấu' 
+            });
+
+            if (checkNoXau) {
+                return res.send(`
+                    <script>
+                        alert("Giao dịch từ chối! Tài khoản của bạn đang có lịch sử NỢ XẤU nên không thể mua trả góp lúc này. Vui lòng thanh toán hết nợ cũ hoặc chọn mua Trả thẳng."); 
+                        window.history.back();
+                    </script>
+                `);
+            }
+        }
 
         await HoaDon.create({
             KhachHang: req.session.KhachHang._id,

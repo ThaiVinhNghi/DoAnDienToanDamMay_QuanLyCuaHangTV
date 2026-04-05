@@ -6,11 +6,20 @@
     /* GIAO DIỆN SIDEBAR TỐI MÀU SANG TRỌNG */
     .sidebar { 
         width: 280px; 
-        min-height: 100vh; 
+        height: 100vh; /* Cố định chiều cao bằng đúng 1 màn hình */
+        position: sticky; /* Bí quyết giúp sidebar luôn bám dính khi cuộn trang */
+        top: 0;
+        overflow-y: auto; /* Thêm thanh cuộn dọc cho riêng menu */
         background-color: #1e1e2d; 
         box-shadow: 2px 0 10px rgba(0,0,0,0.1);
         z-index: 1000;
     }
+    
+    /* Làm mượt thanh cuộn của sidebar */
+    .sidebar::-webkit-scrollbar { width: 6px; }
+    .sidebar::-webkit-scrollbar-thumb { background: #2b2b40; border-radius: 10px; }
+    .sidebar::-webkit-scrollbar-thumb:hover { background: #3f4254; }
+
     .sidebar-logo {
         background-color: #1a1a27;
         padding: 22px;
@@ -65,10 +74,10 @@
     }
 </style>
 
-<div class="sidebar d-flex flex-column position-relative">
+<div class="sidebar d-flex flex-column">
     <div class="sidebar-logo mb-3">
         <a href="/" class="text-decoration-none" target="_blank" title="Xem trang khách hàng">
-            <h4 class="text-white fw-bolder mb-0"><i class="bi bi-tv text-primary me-2"></i>TVN ADMIN</h4>
+            <h4 class="text-white fw-bolder mb-0"><i class="bi bi-tv text-primary me-2"></i>TVN QUẢN LÝ ĐIỀU HÀNH</h4>
         </a>
     </div>
     
@@ -78,6 +87,7 @@
         <li class="nav-item"><a href="/admin/tragop" class="nav-link"><i class="bi bi-bank2"></i> Sổ Trả góp</a></li>
         <li class="nav-item"><a href="/admin/sanpham" class="nav-link"><i class="bi bi-box-fill"></i> Sản phẩm (Tivi)</a></li>
         <li class="nav-item"><a href="/admin/khachhang" class="nav-link"><i class="bi bi-people-fill"></i> Khách hàng</a></li>
+        <li class="nav-item"><a href="/admin/doitra" class="nav-link"><i class="bi bi-arrow-repeat"></i> Yêu cầu Đổi/Trả</a></li>
 
         <% if (nhanvien && nhanvien.QuyenHan === 'admin') { %>
             <li class="nav-item mt-3 mb-2 px-4 text-uppercase fw-bold" style="font-size: 0.75rem; color: #494b74;">Quản trị Cấp cao</li>

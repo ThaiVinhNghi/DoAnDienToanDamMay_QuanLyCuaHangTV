@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="d-flex flex-column min-vh-100">
+    
+    <%- include('navbar') %>
+    
+    <div class="container mt-5 mb-5 flex-grow-1">
+        <h3 class="fw-bold mb-4 text-primary"><i class="bi bi-clock-history me-2"></i>Lịch Sử Mua Hàng</h3>
+        
+        <div class="row">
+            <% if(hoadon && hoadon.length > 0) { %>
+                <% hoadon.forEach(hd => { %>
+                    <div class="col-12 mb-4">
+                        <div class="card shadow-sm border-0 rounded-4">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center py-3 border-bottom-0 rounded-top-4">
+                                <strong class="text-secondary">Mã Đơn: #<%= hd._id.toString().slice(-6).toUpperCase() %></strong>
+                                <span class="badge bg-success px-3 py-2"><i class="bi bi-check-circle-fill me-1"></i> Đã thanh toán</span>
+                            </div>
+                            <div class="card-body p-4">
+                                <h5 class="fw-bold text-danger mb-3">Tổng tiền: <%= hd.TongTien.toLocaleString('vi-VN') %> đ</h5>
+                                
+                                <button type="button" class="btn btn-warning fw-bold px-4 rounded-pill shadow-sm" data-bs-toggle="modal" data-bs-target="#modalDoiTra<%= hd._id %>">
+                                    <i class="bi bi-arrow-left-right me-1"></i> Yêu cầu Đổi/Trả hàng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="modalDoiTra<%= hd._id %>" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <form action="/yeucau-doitra" method="POST" class="modal-content border-0 shadow rounded-4">
+                                <div class="modal-header bg-warning border-bottom-0 rounded-top-4">
+                                    <h5 class="modal-title fw-bold text-dark"><i class="bi bi-arrow-repeat me-2"></i>Yêu cầu Đổi/Trả Đơn Hàng</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body p-4">
+                                    <input type="hidden" name="HoaDonId" value="<%= hd._id %>">
+                                    
+                                    <div class="mb-4">
+                                        <label class="fw-bold mb-2 text-dark">1. Loại yêu cầu:</label>
+                                        <select name="LoaiYeuCau" class="form-select loai-yeu-cau py-2 rounded-3 shadow-sm" required>
+                                            <option value="Trả hàng">Trả hàng (Hoàn tiền)</option>
+                                            <option value="Đổi hàng">Đổi sang Tivi khác</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-4 box-chon-sp" style="display: none;">
+                                        <label class="fw-bold text-primary mb-2">2. Chọn Tivi muốn đổi lấy:</label>
+                                        <select name="SanPhamMoiId" class="form-select py-2 rounded-3 shadow-sm border-primary">
+                                            <% sanpham.forEach(sp => { %>
+                                                <option value="<%= sp._id %>"><%= sp.TenSP %> - <%= sp.GiaBan.toLocaleString('vi-VN') %>đ</option>
+                                            <% }) %>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <label class="fw-bold mb-2 text-dark">Lý do đổi/trả:</label>
+                                        <textarea name="LyDo" class="form-control rounded-3 shadow-sm" rows="3" placeholder="Vui lòng cho chúng tôi biết lý do..." required></textarea>
+                                    </div>
+                                </div>
+                                <div class="modal-footer border-top-0 pt-0 pb-4 px-4">
+                                    <button type="submit" class="btn btn-danger w-100 fw-bold py-2 rounded-pill shadow-sm">GỬI YÊU CẦU</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="col-12 text-center py-5">
+                    <i class="bi bi-receipt display-1 text-muted opacity-25"></i>
+                    <h4 class="mt-3 text-secondary">Bạn chưa có đơn hàng nào có thể đổi trả!</h4>
+                    <a href="/" class="btn btn-primary mt-3 rounded-pill px-4 fw-bold">Mua sắm ngay</a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <%- include('footer') %>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // JS nhỏ để Ẩn/Hiện chọn sản phẩm khi đổi hàng
+        document.querySelectorAll('.loai-yeu-cau').forEach(select => {
+            select.addEventListener('change', function() {
+                let boxSP = this.closest('.modal-body').querySelector('.box-chon-sp');
+                if(this.value === 'Đổi hàng') {
+                    boxSP.style.display = 'block';
+                } else {
+                    boxSP.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

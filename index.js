@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 var session = require('express-session');
 
 // Kết nối MongoDB Atlas (Thay <db_user>, <db_password> và URL cluster của bạn vào đây)
-// Bạn chú ý chữ "qltivistore" được thêm vào trước dấu chấm hỏi nhé:
+
 var uri = 'mongodb://admin:admin123@ac-mehl2fb-shard-00-00.ci790jr.mongodb.net:27017,ac-mehl2fb-shard-00-01.ci790jr.mongodb.net:27017,ac-mehl2fb-shard-00-02.ci790jr.mongodb.net:27017/qltivistore?ssl=true&replicaSet=atlas-14ilul-shard-0&authSource=admin&appName=qltivistore';
 mongoose.connect(uri) 
   .then(() => console.log('Đã kết nối thành công tới MongoDB Atlas.')) 
@@ -22,12 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 // Đừng quên tạo thư mục 'public' ở thư mục gốc nhé
 app.use(express.static('public'));
 
-// --- KHAI BÁO ROUTER SẼ NẰM Ở ĐÂY ---
-// Ví dụ: 
-// var indexRouter = require('./routes/index'); // Cho khách xem chùa / mua hàng
-// var adminRouter = require('./routes/admin'); // Cho tab admin
-// app.use('/', indexRouter);
-// app.use('/admin', adminRouter);
+
 
 // Cấu hình Session (Bắt buộc phải nằm trước các Router)
 app.use(session({

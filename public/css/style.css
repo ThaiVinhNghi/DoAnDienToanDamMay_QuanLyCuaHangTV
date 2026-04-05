@@ -1,0 +1,175 @@
+/* === CÀI ĐẶT CHUNG === */
+html { scroll-behavior: smooth; }
+body { 
+    font-family: 'Inter', sans-serif; 
+    background-color: #f4f7f6; /* Nền xám khói */
+    color: #2d3436;
+}
+
+/* === BANNER CAROUSEL === */
+.carousel-item > div {
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin: 0 10px;
+}
+.btn-gradient-warning {
+    background: linear-gradient(135deg, #f1c40f, #f39c12);
+    color: #fff;
+    border: none;
+    transition: all 0.3s;
+}
+.btn-gradient-warning:hover { transform: scale(1.05); color: #fff; box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4); }
+
+/* === BỘ LỌC TÌM KIẾM === */
+.filter-wrapper {
+    background: #ffffff;
+    border-radius: 50px;
+    padding: 8px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.04);
+    border: 1px solid rgba(0,0,0,0.02);
+}
+.filter-box {
+    background-color: #f8f9fa;
+    border: none;
+    border-radius: 30px !important;
+    padding: 12px 20px;
+    font-weight: 500;
+}
+.filter-box:focus { box-shadow: none; background-color: #fff; border: 1px solid #0d6efd; }
+.btn-filter {
+    border-radius: 30px !important;
+    background: linear-gradient(135deg, #0d6efd, #0052cc);
+    border: none;
+    font-weight: 600;
+}
+
+/* === THẺ SẢN PHẨM (CARD) === */
+.product-card {
+    background: #ffffff;
+    border-radius: 20px;
+    border: none;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+}
+.product-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0,104,255,0.15);
+}
+.product-img-wrap {
+    height: 200px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+}
+.product-img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    transition: transform 0.3s;
+}
+.product-card:hover .product-img { transform: scale(1.08); }
+
+.badge-brand {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    background-color: #e9ecef;
+    color: #495057;
+}
+.product-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #2b2b2b;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 44px;
+}
+.price-old { font-size: 0.85rem; color: #a4b0be; text-decoration: line-through; }
+.price-new { font-size: 1.25rem; font-weight: 800; color: #ff4757; }
+
+.btn-buy {
+    background-color: #fff;
+    color: #0d6efd;
+    border: 2px solid #0d6efd;
+    border-radius: 12px;
+    font-weight: 700;
+    transition: all 0.3s;
+}
+.btn-buy:hover { background-color: #0d6efd; color: #fff; }
+
+.btn-buy-sale {
+    background: linear-gradient(135deg, #ff4757, #ff6b81);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3);
+}
+.btn-buy-sale:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(255, 71, 87, 0.5); color: #fff; }
+
+/* === FLASH SALE TAG & TIMER === */
+.badge-sale-tag {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: linear-gradient(135deg, #ff4757, #ff6b81);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 0.8rem;
+    box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3);
+    z-index: 2;
+}
+.flash-sale-timer {
+    background: #2f3640;
+    color: #f5f6fa;
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 1.2rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    animation: pulse-timer 2s infinite;
+}
+@keyframes pulse-timer {
+    0% { box-shadow: 0 0 0 0 rgba(47, 54, 64, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(47, 54, 64, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(47, 54, 64, 0); }
+}
+
+/* === ZALO BUTTON === */
+.zalo-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #0068ff, #0054cc);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 5px 20px rgba(0, 104, 255, 0.4);
+    z-index: 9999;
+    animation: pulse-zalo 2s infinite;
+    transition: transform 0.3s;
+}
+.zalo-btn:hover { transform: scale(1.15) rotate(-10deg); }
+.zalo-btn svg { width: 32px; height: 32px; }
+@keyframes pulse-zalo {
+    0% { box-shadow: 0 0 0 0 rgba(0, 104, 255, 0.6); }
+    70% { box-shadow: 0 0 0 15px rgba(0, 104, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 104, 255, 0); }
+}
+
+/* Tiêu đề Section */
+.section-title { font-weight: 800; font-size: 1.6rem; text-transform: uppercase; color: #2d3436; }
+#lien-he, #khuyen-mai, #tat-ca-san-pham { scroll-margin-top: 100px; }
