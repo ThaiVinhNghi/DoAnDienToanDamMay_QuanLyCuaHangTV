@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <style>
+        body, html { height: 100%; margin: 0; background-color: #f3f6f9; }
+        /* Giới hạn số dòng cho phần tóm tắt để bảng không bị phình to */
+        .text-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex h-100">
+        <%- include('sidebar') %>
+
+        <div class="flex-grow-1 p-4 overflow-auto">
+            <div class="container-fluid bg-white p-4 rounded-4 shadow-sm">
+                
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                    <h3 class="fw-bold text-primary m-0">
+                        <i class="bi bi-newspaper me-2"></i> Quản Lý Bảng Tin & Công Nghệ
+                    </h3>
+                    <a href="/admin/tintuc/them" class="btn btn-primary fw-bold rounded-pill px-4 shadow-sm">
+                        <i class="bi bi-plus-circle me-1"></i> Viết bài mới
+                    </a>
+                </div>
+
+                <table class="table table-bordered table-hover align-middle text-center">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%;">#</th>
+                            <th style="width: 12%;">Hình ảnh</th>
+                            <th style="width: 25%;">Tiêu đề</th>
+                            <th style="width: 30%;">Tóm tắt</th>
+                            <th style="width: 10%;">Ngày đăng</th>
+                            <th style="width: 8%;">Trạng thái</th>
+                            <th style="width: 10%;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if(tintuc && tintuc.length > 0) { %>
+                            <% tintuc.forEach((tt, index) => { %>
+                                <tr>
+                                    <td class="fw-bold text-muted"><%= index + 1 %></td>
+                                    
+                                    <td>
+                                        <% 
+                                            let imgSrc = tt.HinhAnh;
+                                            if (!imgSrc.startsWith('http')) {
+                                                imgSrc = '/images/' + imgSrc;
+                                            }
+                                        %>
+                                        <img src="<%= imgSrc %>" alt="News Image" class="shadow-sm" style="width: 80px; height: 60px; object-fit: cover; border-radius: 6px;">
+                                    </td>
+
+                                    <td class="text-start fw-bold text-dark">
+                                        <%= tt.TieuDe %>
+                                    </td>
+
+                                    <td class="text-start text-muted">
+                                        <div class="text-clamp-2" title="<%= tt.TomTat %>"><%= tt.TomTat %></div>
+                                    </td>
+
+                                    <td class="fw-semibold">
+                                        <%= new Date(tt.NgayDang).toLocaleDateString('en-GB') %>
+                                    </td>
+
+                                    <td>
+                                        <% if(tt.TrangThai) { %>
+                                            <span class="badge bg-success px-2 py-1"><i class="bi bi-eye"></i> Hiện</span>
+                                        <% } else { %>
+                                            <span class="badge bg-secondary px-2 py-1"><i class="bi bi-eye-slash"></i> Ẩn</span>
+                                        <% } %>
+                                    </td>
+
+                                    <td>
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <a href="/admin/tintuc/sua/<%= tt._id %>" class="btn btn-sm btn-warning text-dark fw-bold" title="Sửa bài viết">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            <a href="/admin/tintuc/xoa/<%= tt._id %>" class="btn btn-sm btn-danger fw-bold" title="Xóa bài viết" onclick="return confirm('Bạn có chắc chắn muốn xóa bài viết này không? Hành động này không thể hoàn tác!');">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="7" class="py-5 text-muted fw-bold">
+                                    <i class="bi bi-inboxes fs-1 d-block mb-3 opacity-50"></i>
+                                    Chưa có bài viết nào trong cơ sở dữ liệu!
+                                </td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

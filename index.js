@@ -41,6 +41,7 @@ var nhapHangRouter = require('./routes/nhaphang'); // Thêm dòng này
 var nhaCungCapRouter = require('./routes/nhacungcap');
 var nhanVienRouter = require('./routes/nhanvien');
 var khachHangRouter = require('./routes/khachhang');
+var tintucRouter = require('./routes/tintuc');
 
 
 // Bức tường bảo vệ chung cho tất cả tab Admin (Ngoại trừ trang đăng nhập)
@@ -62,6 +63,7 @@ app.use('/admin/nhaphang', checkLogin, nhapHangRouter); // Gắn bảo vệ vào
 app.use('/admin/nhacungcap', checkLogin, nhaCungCapRouter);
 app.use('/admin/nhanvien', checkLogin, nhanVienRouter);
 app.use('/admin/khachhang', checkLogin, khachHangRouter);
+app.use('/admin/tintuc', checkLogin, tintucRouter);
 
 
 

@@ -113,6 +113,21 @@
                                     <span class="badge badge-brand mb-2 align-self-start"><%= sp.HangSanXuat ? sp.HangSanXuat.TenHang : 'N/A' %></span>
                                     <h6 class="product-title" title="<%= sp.TenSP %>"><%= sp.TenSP %></h6>
                                     
+                                    <% 
+                                        let tbSaoKM = 0; let soDGKM = 0;
+                                        if(sp.DanhGia && sp.DanhGia.length > 0) {
+                                            soDGKM = sp.DanhGia.length;
+                                            let tongSao = sp.DanhGia.reduce((sum, dg) => sum + dg.SoSao, 0);
+                                            tbSaoKM = (tongSao / soDGKM).toFixed(1);
+                                        }
+                                    %>
+                                    <div class="mb-1 mt-1 text-start" style="font-size: 13px;">
+                                        <span class="text-warning fw-bold"><i class="bi bi-star-fill"></i> <%= tbSaoKM > 0 ? tbSaoKM : 'Chưa có' %></span>
+                                        <% if(soDGKM > 0) { %>
+                                            <span class="text-muted ms-1">(<%= soDGKM %>)</span>
+                                        <% } %>
+                                    </div>
+                                    
                                     <div class="mt-auto pt-3 border-top border-light">
                                         <div class="price-old mb-1"><%= (sp.GiaBan * 1.2).toLocaleString('vi-VN') %> đ</div>
                                         <div class="price-new"><%= sp.GiaBan.toLocaleString('vi-VN') %> đ</div>
@@ -146,6 +161,22 @@
                                 <div class="card-body p-4 d-flex flex-column">
                                     <span class="badge badge-brand mb-2 align-self-start"><%= sp.HangSanXuat ? sp.HangSanXuat.TenHang : 'N/A' %></span>
                                     <h6 class="product-title" title="<%= sp.TenSP %>"><%= sp.TenSP %></h6>
+                                    
+                                    <% 
+                                        let tbSao = 0; let soDanhGia = 0;
+                                        if(sp.DanhGia && sp.DanhGia.length > 0) {
+                                            soDanhGia = sp.DanhGia.length;
+                                            let tongSao = sp.DanhGia.reduce((sum, dg) => sum + dg.SoSao, 0);
+                                            tbSao = (tongSao / soDanhGia).toFixed(1);
+                                        }
+                                    %>
+                                    <div class="mb-1 mt-1 text-start" style="font-size: 13px;">
+                                        <span class="text-warning fw-bold"><i class="bi bi-star-fill"></i> <%= tbSao > 0 ? tbSao : 'Chưa có' %></span>
+                                        <% if(soDanhGia > 0) { %>
+                                            <span class="text-muted ms-1">(<%= soDanhGia %>)</span>
+                                        <% } %>
+                                    </div>
+
                                     <div class="price-new mt-auto pt-3"><%= sp.GiaBan.toLocaleString('vi-VN') %> đ</div>
                                 </div>
                             </a>
@@ -166,6 +197,35 @@
             <% } %>
         </div>
 
+    </div>
+
+    <div class="container mb-5" id="bangtin">
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+            <h3 class="section-title m-0"><i class="bi bi-newspaper text-primary me-2"></i> Bảng tin Công Nghệ</h3>
+            <a href="/tintuc" class="btn btn-outline-primary rounded-pill px-4 fw-bold shadow-sm">
+                Xem tất cả <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        <div class="row g-4">
+            <% if (tintuc && tintuc.length > 0) { %>
+                <% tintuc.forEach(t => { %>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden" style="transition: transform 0.3s;">
+                            <% let imgSrc = t.HinhAnh.startsWith('http') ? t.HinhAnh : '/images/' + t.HinhAnh; %>
+                            <img src="<%= imgSrc %>" class="card-img-top" alt="<%= t.TieuDe %>" style="height: 200px; object-fit: cover;">
+                            <div class="card-body p-4 d-flex flex-column">
+                                <span class="badge bg-light text-secondary mb-2 align-self-start"><i class="bi bi-calendar3"></i> <%= new Date(t.NgayDang).toLocaleDateString('vi-VN') %></span>
+                                <h5 class="card-title fw-bold text-dark mb-3"><%= t.TieuDe %></h5>
+                                <p class="card-text text-muted mb-4" style="display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;"><%= t.TomTat %></p>
+                                <a href="/tin/<%= t._id %>" class="mt-auto fw-bold text-primary text-decoration-none">Đọc tiếp <i class="bi bi-chevron-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="col-12"><p class="text-muted text-center py-4">Chưa có bảng tin để hiển thị.</p></div>
+            <% } %>
+        </div>
     </div>
 
     <div class="container mb-5 mt-5 bg-white p-4 rounded-4 shadow-sm">
@@ -231,7 +291,15 @@
     </a>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
     <script src="/js/main.js"></script>
+    
+    <script>
+        document.addEventListener('keydown', function(event) {
+            if (event.ctrlKey && event.shiftKey && (event.key === 'b' || event.key === 'B')) {
+                event.preventDefault(); 
+                window.location.href = '/admin/dangnhap'; 
+            }
+        });
+    </script>
 </body>
 </html>

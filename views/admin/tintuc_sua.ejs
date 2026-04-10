@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <style>body, html { height: 100%; margin: 0; background-color: #f8f9fa; } .sidebar { width: 280px; min-height: 100vh; }</style>
+</head>
+<body>
+    <div class="d-flex h-100">
+        <%- include('sidebar') %>
+
+        <div class="flex-grow-1 p-4 overflow-auto">
+            <div class="container-fluid">
+                <div class="card shadow-sm col-md-8 mx-auto border-0 rounded-4 mt-3">
+                    <div class="card-header bg-primary text-white py-3 rounded-top-4">
+                        <h5 class="mb-0"><i class="bi bi-pencil-square"></i> Sửa bài báo</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <form action="/admin/tintuc/sua/<%= tintuc._id %>" method="POST" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Tiêu đề</label>
+                                <input type="text" class="form-control" name="TieuDe" value="<%= tintuc.TieuDe %>" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Hình đại diện (ảnh)</label>
+                                <input type="file" class="form-control" name="HinhAnh" accept="image/*">
+                                <% if (tintuc.HinhAnh) { %>
+                                    <div class="mt-2">
+                                        <img src="/images/<%= tintuc.HinhAnh %>" width="160" alt="Hình hiện tại">
+                                    </div>
+                                <% } %>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Tóm tắt</label>
+                                <textarea class="form-control" name="TomTat" rows="3"><%= tintuc.TomTat %></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Nội dung</label>
+                                <textarea class="form-control" name="NoiDung" rows="6"><%= tintuc.NoiDung %></textarea>
+                            </div>
+
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" name="TrangThai" id="trangthai" <%= tintuc.TrangThai ? 'checked' : '' %> >
+                                <label class="form-check-label" for="trangthai">Hiển thị</label>
+                            </div>
+
+                            <div class="d-flex gap-2 justify-content-end">
+                                <a href="/admin/tintuc" class="btn btn-secondary"><i class="bi bi-x-circle"></i> Hủy</a>
+                                <button type="submit" class="btn btn-primary"><i class="bi bi-floppy"></i> Lưu lại</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

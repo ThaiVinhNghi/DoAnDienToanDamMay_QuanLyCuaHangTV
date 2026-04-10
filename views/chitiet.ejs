@@ -66,6 +66,65 @@
             </div>
         </div>
 
+        <div class="card border-0 shadow-sm rounded-4 p-4 mt-5 bg-white">
+            <h4 class="fw-bold mb-4 border-bottom pb-3"><i class="bi bi-star-fill text-warning me-2"></i>Đánh giá từ khách hàng</h4>
+
+            <% if (khachhang) { %>
+                <form action="/danhgia/<%= sanpham._id %>" method="POST" class="mb-5 bg-light p-4 rounded-3 border">
+                    <h6 class="fw-bold mb-3">Bạn chấm sản phẩm này mấy sao?</h6>
+                    <div class="mb-3">
+                        <div class="btn-group" role="group">
+                            <input type="radio" class="btn-check" name="SoSao" id="sao5" value="5" checked>
+                            <label class="btn btn-outline-warning fw-bold" for="sao5">5 <i class="bi bi-star-fill"></i></label>
+
+                            <input type="radio" class="btn-check" name="SoSao" id="sao4" value="4">
+                            <label class="btn btn-outline-warning fw-bold" for="sao4">4 <i class="bi bi-star-fill"></i></label>
+
+                            <input type="radio" class="btn-check" name="SoSao" id="sao3" value="3">
+                            <label class="btn btn-outline-warning fw-bold" for="sao3">3 <i class="bi bi-star-fill"></i></label>
+                            
+                            <input type="radio" class="btn-check" name="SoSao" id="sao2" value="2">
+                            <label class="btn btn-outline-warning fw-bold" for="sao2">2 <i class="bi bi-star-fill"></i></label>
+
+                            <input type="radio" class="btn-check" name="SoSao" id="sao1" value="1">
+                            <label class="btn btn-outline-warning fw-bold" for="sao1">1 <i class="bi bi-star-fill"></i></label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <textarea name="BinhLuan" class="form-control" rows="3" placeholder="Chia sẻ trải nghiệm của bạn về chiếc Tivi này..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary fw-bold px-4 rounded-pill">Gửi đánh giá</button>
+                </form>
+            <% } else { %>
+                <div class="alert alert-warning fw-bold">
+                    <i class="bi bi-exclamation-circle"></i> Vui lòng <a href="/dangnhap" class="text-danger text-decoration-underline">Đăng nhập</a> để để lại đánh giá của bạn!
+                </div>
+            <% } %>
+
+            <div class="review-list">
+                <% if(sanpham.DanhGia && sanpham.DanhGia.length > 0) { %>
+                    <% sanpham.DanhGia.reverse().forEach(dg => { %>
+                        <div class="d-flex mb-4 pb-3 border-bottom">
+                            <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center fw-bold me-3 shadow-sm" style="width: 45px; height: 45px; font-size: 1.2rem;">
+                                <%= dg.KhachHang ? dg.KhachHang.HoVaTen.charAt(0).toUpperCase() : 'K' %>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1"><%= dg.KhachHang ? dg.KhachHang.HoVaTen : 'Khách hàng ẩn danh' %></h6>
+                                <div class="text-warning mb-2" style="font-size: 0.9rem;">
+                                    <% for(let i=1; i<=5; i++) { %>
+                                        <i class="bi <%= i <= dg.SoSao ? 'bi-star-fill' : 'bi-star' %>"></i>
+                                    <% } %>
+                                    <span class="text-muted ms-2 small"><%= new Date(dg.NgayDanhGia).toLocaleDateString('vi-VN') %></span>
+                                </div>
+                                <p class="mb-0 text-secondary"><%= dg.BinhLuan %></p>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <p class="text-muted fst-italic">Chưa có đánh giá nào. Hãy trở thành người đầu tiên đánh giá sản phẩm này!</p>
+                <% } %>
+            </div>
+        </div>
         <% if(splienquan.length > 0) { %>
             <h4 class="fw-bold mt-5 mb-4 border-bottom pb-2">Sản phẩm cùng loại</h4>
             <div class="row row-cols-1 row-cols-md-4 g-4">
@@ -76,6 +135,22 @@
                                 <img src="/images/<%= sp.HinhAnh %>" class="card-img-top mx-auto" style="height: 150px; object-fit: contain;" alt="<%= sp.TenSP %>">
                                 <div class="card-body p-2">
                                     <h6 class="card-title fw-bold text-dark text-truncate" title="<%= sp.TenSP %>"><%= sp.TenSP %></h6>
+                                    
+                                    <% 
+                                        let tbSaoLienQuan = 0; let soDGLienQuan = 0;
+                                        if(sp.DanhGia && sp.DanhGia.length > 0) {
+                                            soDGLienQuan = sp.DanhGia.length;
+                                            let tongSao = sp.DanhGia.reduce((sum, dg) => sum + dg.SoSao, 0);
+                                            tbSaoLienQuan = (tongSao / soDGLienQuan).toFixed(1);
+                                        }
+                                    %>
+                                    <div class="mb-2 text-center" style="font-size: 13px;">
+                                        <span class="text-warning fw-bold"><i class="bi bi-star-fill"></i> <%= tbSaoLienQuan > 0 ? tbSaoLienQuan : 'Chưa có' %></span>
+                                        <% if(soDGLienQuan > 0) { %>
+                                            <span class="text-muted ms-1">(<%= soDGLienQuan %>)</span>
+                                        <% } %>
+                                    </div>
+
                                     <p class="card-text text-danger fw-bold mb-0"><%= sp.GiaBan.toLocaleString('vi-VN') %> đ</p>
                                 </div>
                             </a>

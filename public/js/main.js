@@ -26,4 +26,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 1000); // 1000ms = 1 giây
     }
+    
+    // Phím tắt: Ctrl + Shift + A -> mở trang đăng nhập Admin
+    document.addEventListener('keydown', function(e) {
+        try {
+            if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+                const active = document.activeElement;
+                const tag = active && active.tagName ? active.tagName.toLowerCase() : '';
+                if (tag === 'input' || tag === 'textarea' || active && active.isContentEditable) return; // tránh khi đang nhập
+                window.location.href = '/admin/dangnhap';
+            }
+        } catch (err) { console.log(err); }
+    });
 });
