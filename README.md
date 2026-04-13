@@ -52,5 +52,4 @@ Hệ thống đã có sẵn một số tài khoản cấp trước để bạn k
 - Quản lý Đổi/Trả hàng: Khi duyệt yêu cầu Đổi/Trả, số lượng tồn kho tự động được cập nhật hoàn lại/trừ đi tùy theo mặt hàng, và hóa đơn tương ứng sẽ được tự động đổi trạng thái.
 - Quản lý Kho bằng Nhập Hàng: Bổ sung nguồn hàng bằng tính năng phiếu Nhập Hàng. Tồn kho tự động tăng lên sau khi nhập.
 
-Chúc bạn đánh giá và bảo vệ đồ án thành công!
-=============================================
+
