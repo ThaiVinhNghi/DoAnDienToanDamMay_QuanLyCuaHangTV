@@ -22,7 +22,7 @@
                         <form action="/admin/sanpham/sua/<%= sanpham._id %>" method="POST" enctype="multipart/form-data">
                             
                             <div class="row">
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-5 mb-3">
                                     <label class="form-label fw-bold">Tên Tivi</label>
                                     <input type="text" class="form-control" name="TenSP" value="<%= sanpham.TenSP %>" required>
                                 </div>
@@ -30,7 +30,11 @@
                                     <label class="form-label fw-bold">Giá bán (VNĐ)</label>
                                     <input type="number" class="form-control" name="GiaBan" value="<%= sanpham.GiaBan %>" required>
                                 </div>
-                                <div class="col-md-3 mb-3">
+                                <div class="col-md-2 mb-3">
+                                    <label class="form-label fw-bold">Giá gốc (VNĐ) <small class="text-muted">Flash Sale</small></label>
+                                    <input type="number" class="form-control" name="GiaGoc" value="<%= sanpham.GiaGoc || 0 %>" placeholder="Để 0 nếu không giảm giá">
+                                </div>
+                                <div class="col-md-2 mb-3">
                                     <label class="form-label fw-bold">Số lượng tồn</label>
                                     <input type="number" class="form-control" name="SoLuongTon" value="<%= sanpham.SoLuongTon %>">
                                 </div>

@@ -1,44 +1,106 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow-sm py-2">
-    <div class="container">
-        <a class="navbar-brand fw-bold fs-4 d-flex align-items-center" href="/">
-            <i class="bi bi-tv me-2"></i> TVN Store
-        </a>
+<nav class="bg-brand-600 text-white sticky top-0 z-50 shadow-md">
+    <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center py-3">
+            <a href="/"
+                class="flex items-center text-2xl font-extrabold text-white no-underline hover:text-brand-100 transition-colors">
+                <i class="bi bi-tv mr-2"></i> TVN Store
+            </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+            <div class="hidden md:flex space-x-8 items-center">
+                <a href="/" class="text-white hover:text-brand-200 font-semibold transition-colors flex items-center"><i
+                        class="bi bi-house-door mr-1"></i> Trang chủ</a>
+                <a href="/sanpham"
+                    class="text-white hover:text-brand-200 font-semibold transition-colors flex items-center"><i
+                        class="bi bi-box mr-1"></i> Sản phẩm</a>
+                <a href="/tintuc"
+                    class="text-white hover:text-brand-200 font-semibold transition-colors flex items-center"><i
+                        class="bi bi-newspaper mr-1"></i> Bảng tin</a>
+                <a href="/#lien-he"
+                    class="text-white hover:text-brand-200 font-semibold transition-colors flex items-center"><i
+                        class="bi bi-telephone mr-1"></i> Liên hệ</a>
+            </div>
 
-        <div class="collapse navbar-collapse" id="mainNav">
-            <ul class="navbar-nav mb-2 mb-lg-0 gap-2 ms-4">
-                <li class="nav-item"><a class="nav-link fw-semibold" href="/"><i class="bi bi-house-door me-1"></i> Trang chủ</a></li>
-                <li class="nav-item"><a class="nav-link fw-semibold" href="/#tat-ca-san-pham"><i class="bi bi-box me-1"></i> Sản phẩm</a></li>
-                <li class="nav-item"><a class="nav-link fw-semibold" href="/#bangtin"><i class="bi bi-newspaper me-1"></i> Bảng tin</a></li>
-                <li class="nav-item"><a class="nav-link fw-semibold" href="/#lien-he"><i class="bi bi-telephone me-1"></i> Liên hệ</a></li>
-            </ul>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="/giohang"
+                    class="text-amber-400 hover:text-amber-300 font-bold flex items-center transition-colors">
+                    <i class="bi bi-cart-fill text-xl mr-1"></i> Giỏ hàng
+                </a>
 
-            <ul class="navbar-nav ms-auto align-items-center gap-3">
-                <li class="nav-item">
-                    <a class="nav-link text-warning fw-bold d-flex align-items-center" href="/giohang">
-                        <i class="bi bi-cart-fill fs-5 me-1"></i> Giỏ hàng
-                    </a>
-                </li>
+                <% if (typeof khachhang !=='undefined' && khachhang) { %>
+                    <div class="relative group cursor-pointer py-2">
+                        <div class="flex items-center font-bold text-white hover:text-brand-100 transition-colors">
+                            <i class="bi bi-person-circle text-xl mr-1"></i>
+                            <%= khachhang.HoVaTen %>
+                        </div>
+                        <div
+                            class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right border border-slate-100">
+                            <a href="/lichsu"
+                                class="block px-4 py-2.5 text-slate-700 hover:bg-brand-50 hover:text-brand-600 font-semibold transition-colors">
+                                <i class="bi bi-receipt mr-2 text-brand-500"></i>Đơn hàng của tôi
+                            </a>
+                            <div class="border-t border-slate-100 my-1"></div>
 
-                <% if (typeof khachhang !== 'undefined' && khachhang) { %>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-white fw-bold d-flex align-items-center" href="#" data-bs-toggle="dropdown">
-                            <i class="bi bi-person-circle fs-5 me-1"></i> <%= khachhang.HoVaTen %>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-                            <li><a class="dropdown-item py-2 fw-bold" href="/lichsu"><i class="bi bi-receipt me-2 text-primary"></i>Đơn hàng của tôi</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item py-2 text-danger fw-bold" href="/dangxuat"><i class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
-                        </ul>
-                    </li>
-                <% } else { %>
-                    <li class="nav-item"><a class="nav-link text-white fw-semibold" href="/dangnhap"><i class="bi bi-box-arrow-in-right me-1"></i> Đăng nhập</a></li>
-                    <li class="nav-item"><a class="nav-link text-white fw-semibold" href="/dangky"><i class="bi bi-person-plus me-1"></i> Đăng ký</a></li>
-                <% } %>
-            </ul>
+                            <a href="/dangxuat"
+                                class="block px-4 py-2.5 text-red-600 hover:bg-red-50 font-semibold transition-colors">
+                                <i class="bi bi-box-arrow-right mr-2"></i>Đăng xuất
+                            </a>
+
+                        </div>
+                    </div>
+                    <% } else { %>
+                        <div class="flex items-center space-x-4">
+                            <a href="/dangnhap"
+                                class="text-white hover:text-brand-200 font-semibold transition-colors"><i
+                                    class="bi bi-box-arrow-in-right mr-1"></i> Đăng nhập</a>
+                            <a href="/dangky"
+                                class="bg-white text-brand-600 hover:bg-brand-50 px-5 py-2 rounded-full font-bold transition-colors shadow-sm"><i
+                                    class="bi bi-person-plus mr-1"></i> Đăng ký</a>
+                        </div>
+                        <% } %>
+            </div>
+
+            <div class="md:hidden flex items-center">
+                <button id="mobile-menu-btn"
+                    class="text-white focus:outline-none hover:text-brand-200 transition-colors">
+                    <i class="bi bi-list text-3xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="hidden md:hidden pb-4">
+            <div class="flex flex-col space-y-3 mt-2 border-t border-brand-500 pt-4">
+                <a href="/" class="text-white hover:text-brand-200 font-semibold px-2"><i
+                        class="bi bi-house-door mr-2"></i> Trang chủ</a>
+                <a href="/sanpham" class="text-white hover:text-brand-200 font-semibold px-2"><i
+                        class="bi bi-box mr-2"></i> Sản phẩm</a>
+                <a href="/tintuc" class="text-white hover:text-brand-200 font-semibold px-2"><i
+                        class="bi bi-newspaper mr-2"></i> Bảng tin</a>
+                <a href="/#lien-he" class="text-white hover:text-brand-200 font-semibold px-2"><i
+                        class="bi bi-telephone mr-2"></i> Liên hệ</a>
+                <a href="/giohang" class="text-amber-400 hover:text-amber-300 font-bold px-2 mt-2"><i
+                        class="bi bi-cart-fill mr-2"></i> Giỏ hàng</a>
+
+                <div class="border-t border-brand-500 my-2"></div>
+
+                <% if (typeof khachhang !=='undefined' && khachhang) { %>
+                    <a href="/lichsu" class="text-white hover:text-brand-200 font-semibold px-2"><i
+                            class="bi bi-receipt mr-2"></i>Đơn hàng của <%= khachhang.HoVaTen %></a>
+                    <a href="/dangxuat" class="text-red-300 hover:text-red-200 font-semibold px-2"><i
+                            class="bi bi-box-arrow-right mr-2"></i>Đăng xuất</a>
+                    <% } else { %>
+                        <a href="/dangnhap" class="text-white hover:text-brand-200 font-semibold px-2"><i
+                                class="bi bi-box-arrow-in-right mr-2"></i>Đăng nhập</a>
+                        <a href="/dangky" class="text-white hover:text-brand-200 font-semibold px-2"><i
+                                class="bi bi-person-plus mr-2"></i>Đăng ký</a>
+                        <% } %>
+            </div>
         </div>
     </div>
 </nav>
+
+<script>
+    document.getElementById('mobile-menu-btn').addEventListener('click', function () {
+        var menu = document.getElementById('mobile-menu');
+        menu.classList.toggle('hidden');
+    });
+</script>

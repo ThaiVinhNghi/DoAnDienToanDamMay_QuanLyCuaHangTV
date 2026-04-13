@@ -50,25 +50,9 @@ router.post('/dangnhap', async (req, res) => {
     }
 });
 
-// 4. ĐƯỜNG DẪN BÍ MẬT: Tạo tài khoản Admin đầu tiên
-router.get('/taomau', async (req, res) => {
-    try {
-        const checkExist = await NhanVien.findOne({ TenDangNhap: 'admin' });
-        if (checkExist) return res.send('Tài khoản admin đã tồn tại rồi!');
+// FIX #11: Xóa route /taomau để tránh lộ thông tin trong môi trường thực tế
+// router.get('/taomau', ...) — Đã xóa
 
-        const salt = bcrypt.genSaltSync(10);
-        await NhanVien.create({
-            HoVaTen: 'Quản trị viên',
-            TenDangNhap: 'admin',
-            MatKhau: bcrypt.hashSync('123456', salt), 
-            QuyenHan: 'admin',
-            TrangThai: 1
-        });
-        res.send('Đã tạo thành công tài khoản: admin / Mật khẩu: 123456. Hãy quay lại trang /admin/dangnhap để thử.');
-    } catch (error) {
-        res.send('Lỗi tạo mẫu: ' + error.message);
-    }
-});
 
 // ======================== BẢNG ĐIỀU KHIỂN ========================
 router.get('/', checkLogin, async (req, res) => {
@@ -80,13 +64,17 @@ router.get('/', checkLogin, async (req, res) => {
         const danhSachHoaDon = await HoaDon.find({ TrangThai: 'Đã duyệt' });
         let tongDoanhThu = danhSachHoaDon.reduce((sum, hd) => sum + hd.TongTien, 0);
 
+        // THÊM MỚI: Lấy 5 hóa đơn mới nhất đẩy ra giao diện
+        const hoaDonMoi = await HoaDon.find().sort({ _id: -1 }).limit(5).populate('KhachHang');
+
         res.render('admin/index', { 
             title: 'Bảng điều khiển Admin', 
             nhanvien: req.session.NhanVien,
             soSanPham: soSanPham,
             soKhachHang: soKhachHang,
             soHoaDon: soHoaDon,
-            tongDoanhThu: tongDoanhThu
+            tongDoanhThu: tongDoanhThu,
+            hoaDonMoi: hoaDonMoi // Truyền biến mới này
         });
     } catch (error) {
         console.log(error);
@@ -284,7 +272,7 @@ router.post('/doitra/duyet/:id', checkLogin, async (req, res) => {
                 sp.SoLuongTon += item.SoLuong;
                 await sp.save();
             }
-            hd.TrangThai = 'Đã hoàn trả'; // Không nên xóa cứng DB, đổi trạng thái để giữ lịch sử
+            hd.TrangThai = 'Đã hoàn trả';
             await hd.save();
 
         } else if (dt.LoaiYeuCau === 'Đổi hàng') {
@@ -295,19 +283,23 @@ router.post('/doitra/duyet/:id', checkLogin, async (req, res) => {
                 spCu.SoLuongTon += item.SoLuong;
                 await spCu.save();
             }
-            
-            // Trừ kho SP mới
-            let spMoi = dt.SanPhamMoi[0].SanPham;
+
+            // FIX #6: Trừ kho SP mới đúng số lượng từ yêu cầu đổi (không cứng 1)
+            let spMoiReq = dt.SanPhamMoi[0];
+            let spMoi = spMoiReq.SanPham;
+            let soLuongDoi = spMoiReq.SoLuong || 1;
             let spDb = await SanPham.findById(spMoi._id);
-            spDb.SoLuongTon -= 1;
+            spDb.SoLuongTon -= soLuongDoi;
+            if (spDb.SoLuongTon < 0) spDb.SoLuongTon = 0;
             await spDb.save();
 
             // Cập nhật lại Hóa đơn thành SP mới
-            hd.ChiTietHoaDon = [{ SanPham: spMoi._id, SoLuong: 1, DonGiaBan: spMoi.GiaBan }];
-            hd.TongTien = spMoi.GiaBan;
+            hd.ChiTietHoaDon = [{ SanPham: spMoi._id, SoLuong: soLuongDoi, DonGiaBan: spMoi.GiaBan }];
+            hd.TongTien = spMoi.GiaBan * soLuongDoi;
             hd.TrangThai = 'Đã đổi hàng';
             await hd.save();
         }
+
 
         dt.TrangThai = 'Đã duyệt';
         await dt.save();

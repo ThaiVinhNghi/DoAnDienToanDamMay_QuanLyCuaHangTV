@@ -52,20 +52,18 @@ router.post('/them', upload.single('HinhAnh'), async (req, res) => {
         var data = {
             TenSP: req.body.TenSP,
             GiaBan: req.body.GiaBan,
+            GiaGoc: req.body.GiaGoc || 0, // FIX #4: Lưu giá gốc
             SoLuongTon: req.body.SoLuongTon,
             MoTa: req.body.MoTa,
             LoaiSanPham: req.body.LoaiSanPham,
             HangSanXuat: req.body.HangSanXuat
         };
-        // Nếu có upload file thì lưu tên file vào DB
-        if (req.file) {
-            data.HinhAnh = req.file.filename;
-        }
-
+        if (req.file) { data.HinhAnh = req.file.filename; }
         await SanPham.create(data);
         res.redirect('/admin/sanpham');
     } catch (error) { console.log(error); }
 });
+
 
 // GET: Form Sửa Sản phẩm
 router.get('/sua/:id', async (req, res) => {
@@ -90,22 +88,18 @@ router.post('/sua/:id', upload.single('HinhAnh'), async (req, res) => {
         var data = {
             TenSP: req.body.TenSP,
             GiaBan: req.body.GiaBan,
+            GiaGoc: req.body.GiaGoc || 0, // FIX #4: Cập nhật giá gốc
             SoLuongTon: req.body.SoLuongTon,
             MoTa: req.body.MoTa,
             LoaiSanPham: req.body.LoaiSanPham,
             HangSanXuat: req.body.HangSanXuat
         };
-        
-        // Cực kỳ quan trọng: Nếu req.file tồn tại nghĩa là người dùng có chọn ảnh mới
-        // Lúc đó mới gán tên file mới vào data, nếu không thì CSDL giữ nguyên ảnh cũ
-        if (req.file) {
-            data.HinhAnh = req.file.filename;
-        }
-
+        if (req.file) { data.HinhAnh = req.file.filename; }
         await SanPham.findByIdAndUpdate(req.params.id, data);
         res.redirect('/admin/sanpham');
     } catch (error) { console.log(error); }
 });
+
 
 // GET: Xử lý Xóa
 router.get('/xoa/:id', async (req, res) => {

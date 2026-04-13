@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var HoaDon = require('../models/hoadon');
+var SanPham = require('../models/sanpham');
 
 // GET: Danh sách Hóa đơn
 router.get('/', async (req, res) => {
@@ -36,26 +37,33 @@ router.get('/chitiet/:id', async (req, res) => {
     } catch (error) { console.log(error); }
 });
 
-// GET: Duyệt Hóa đơn
-router.get('/duyet/:id', async (req, res) => {
-    try {
-        await HoaDon.findByIdAndUpdate(req.params.id, { 
-            TrangThai: 'Đã duyệt',
-            NhanVienDuyet: req.session.NhanVien._id // Lưu ID admin duyệt đơn
-        });
-        res.redirect('/admin/hoadon');
-    } catch (error) { console.log(error); }
-});
+// FIX #2: Xóa route /duyet/:id tại đây — logic duyệt đầy đủ (trừ kho + tạo trả góp)
+// đã có ở routes/admin.js tại GET /admin/hoadon/duyet/:id, dùng route đó.
 
-// GET: Hủy Hóa đơn
+// FIX #3: Hủy Hóa đơn — cộng lại kho nếu đơn đã duyệt trước đó
 router.get('/huy/:id', async (req, res) => {
     try {
-        await HoaDon.findByIdAndUpdate(req.params.id, { 
-            TrangThai: 'Đã hủy',
-            NhanVienDuyet: req.session.NhanVien._id
-        });
+        const hd = await HoaDon.findById(req.params.id);
+        if (!hd) return res.redirect('/admin/hoadon');
+
+        // Nếu đơn đã duyệt và kho đã bị trừ → cộng lại kho
+        if (hd.TrangThai === 'Đã duyệt') {
+            for (let item of hd.ChiTietHoaDon) {
+                await SanPham.findByIdAndUpdate(item.SanPham, {
+                    $inc: { SoLuongTon: item.SoLuong }
+                });
+            }
+        }
+
+        hd.TrangThai = 'Đã hủy';
+        hd.NhanVienDuyet = req.session.NhanVien._id;
+        await hd.save();
+
         res.redirect('/admin/hoadon');
-    } catch (error) { console.log(error); }
+    } catch (error) { 
+        console.log(error);
+        res.send("Lỗi hủy hóa đơn: " + error.message);
+    }
 });
 
 module.exports = router;

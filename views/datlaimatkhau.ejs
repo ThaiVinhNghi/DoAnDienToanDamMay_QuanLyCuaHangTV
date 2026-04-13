@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+        <%= title %>
+    </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { brand: { 50: '#eff6ff', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' } } } } }
+    </script>
+</head>
+
+<body class="min-h-screen bg-slate-50 flex flex-col font-sans">
+
+    <%- include('navbar') %>
+
+        <div class="flex-grow flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden flex max-w-4xl w-full">
+
+                <div class="hidden md:block md:w-1/2 relative bg-emerald-600">
+                    <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80"
+                        class="absolute inset-0 w-full h-full object-cover opacity-50" alt="Bảo mật">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-emerald-900/80 to-transparent flex flex-col justify-end p-10 text-white">
+                        <h3 class="text-3xl font-bold mb-2">Bảo mật tài khoản</h3>
+                        <p class="text-emerald-100">Hãy đặt một mật khẩu mạnh để bảo vệ thông tin mua hàng của bạn an
+                            toàn nhất.</p>
+                    </div>
+                </div>
+
+                <div class="w-full md:w-1/2 p-8 sm:p-12">
+                    <div class="text-center mb-8">
+                        <div
+                            class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-50 text-emerald-500 mb-4 shadow-sm">
+                            <i class="bi bi-key-fill text-3xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-extrabold text-slate-900">Mật Khẩu Mới</h2>
+                        <p class="text-sm text-slate-500 mt-1">Khôi phục quyền truy cập thành công</p>
+                    </div>
+
+                    <% if (typeof error !=='undefined' && error) { %>
+                        <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r-lg flex items-center">
+                            <i class="bi bi-exclamation-circle-fill text-red-500 mr-3 text-lg"></i>
+                            <p class="text-sm text-red-700 font-semibold">
+                                <%= error %>
+                            </p>
+                        </div>
+                        <% } %>
+
+                            <form action="/datlaimatkhau" method="POST" class="space-y-5">
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-1">Nhập mật khẩu
+                                        mới</label>
+                                    <div class="relative">
+                                        <div
+                                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <i class="bi bi-lock text-slate-400"></i></div>
+                                        <input type="password" name="MatKhauMoi" required autofocus
+                                            class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors outline-none text-slate-700"
+                                            placeholder="••••••••">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-1">Xác nhận lại mật
+                                        khẩu</label>
+                                    <div class="relative">
+                                        <div
+                                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <i class="bi bi-check-circle text-slate-400"></i></div>
+                                        <input type="password" name="XacNhanMatKhau" required
+                                            class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors outline-none text-slate-700"
+                                            placeholder="••••••••">
+                                    </div>
+                                </div>
+
+                                <button type="submit"
+                                    class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all hover:-translate-y-0.5 mt-4">
+                                    LƯU MẬT KHẨU MỚI
+                                </button>
+                            </form>
+                </div>
+            </div>
+        </div>
+
+        <%- include('footer') %>
+</body>
+
+</html>

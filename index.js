@@ -68,11 +68,6 @@ app.use('/admin/tintuc', checkLogin, tintucRouter);
 
 
 
-// Trang chủ tạm thời
-app.get('/', (req, res) => {
-    res.send('<h1>Trang chủ Cửa hàng Tivi</h1><p>Đang chờ ghép giao diện EJS.</p>');
-}); 
-
 // Khởi động server
 app.listen(3000, () => { 
   console.log('Server is running at http://127.0.0.1:3000');

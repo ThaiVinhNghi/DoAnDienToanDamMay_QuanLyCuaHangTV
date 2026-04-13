@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+        <%= title %>
+    </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: { brand: { 50: '#eff6ff', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' } }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="flex flex-col min-h-screen bg-slate-50 font-sans text-slate-800">
+
+    <%- include('navbar') %>
+
+        <div class="relative bg-slate-900 py-24 pb-32">
+            <div class="absolute inset-0 overflow-hidden">
+                <img src="/images/banner-sanpham.jpg" class="w-full h-full object-cover opacity-40"
+                    alt="Products Banner">
+            </div>
+            <div class="relative container mx-auto px-4 text-center z-10">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4">Bộ Sưu Tập Tivi Cao Cấp</h1>
+                <p class="text-lg text-slate-200 max-w-2xl mx-auto">Khám phá không gian giải trí đỉnh cao với hàng trăm
+                    mẫu Tivi chính hãng.</p>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-4 flex-grow mb-16">
+
+            <div class="relative max-w-4xl mx-auto -mt-16 mb-12 z-20">
+                <form action="/sanpham" method="GET"
+                    class="bg-white/90 backdrop-blur-md border border-white/40 p-2 rounded-full shadow-2xl flex flex-col md:flex-row items-center gap-2">
+                    <div class="flex-1 flex items-center pl-4 w-full">
+                        <i class="bi bi-search text-brand-500 text-xl"></i>
+                        <input type="text" name="timkiem" placeholder="Nhập tên Tivi bạn muốn tìm..."
+                            value="<%= query.timkiem || '' %>"
+                            class="w-full bg-transparent border-none focus:ring-0 text-slate-700 px-4 py-3 outline-none placeholder-slate-400">
+                    </div>
+                    <div class="h-10 w-px bg-slate-200 hidden md:block"></div>
+                    <!-- Lọc theo Hãng -->
+                    <div class="w-full md:w-auto px-4">
+                        <select name="hang"
+                            class="w-full bg-transparent border-none focus:ring-0 text-slate-600 font-medium outline-none cursor-pointer">
+                            <option value="">Tất cả hãng</option>
+                            <% if(typeof hangsanxuat !== 'undefined') { hangsanxuat.forEach(h => { %>
+                                <option value="<%= h._id %>" <%= query.hang == h._id.toString() ? 'selected' : '' %>>
+                                    <%= h.TenHang %>
+                                </option>
+                            <% }); } %>
+                        </select>
+                    </div>
+                    <div class="h-10 w-px bg-slate-200 hidden md:block"></div>
+                    <!-- Lọc theo Giá -->
+                    <div class="w-full md:w-auto px-4">
+                        <select name="gia"
+                            class="w-full bg-transparent border-none focus:ring-0 text-slate-600 font-medium outline-none cursor-pointer">
+                            <option value="">Tất cả mức giá</option>
+                            <option value="duoi10" <%=query.gia=='duoi10' ? 'selected' : '' %>>Dưới 10.000.000 đ</option>
+                            <option value="10den20" <%=query.gia=='10den20' ? 'selected' : '' %>>10.000.000 - 20.000.000 đ</option>
+                            <option value="tren20" <%=query.gia=='tren20' ? 'selected' : '' %>>Trên 20.000.000 đ</option>
+                        </select>
+                    </div>
+                    <button type="submit"
+                        class="w-full md:w-auto bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-8 rounded-full transition-colors shadow-lg shadow-brand-500/30">
+                        <i class="bi bi-funnel-fill mr-1"></i> LỌC
+                    </button>
+                </form>
+            </div>
+
+            <% if (query.timkiem || query.gia || query.hang) { %>
+                <div class="mb-8 text-center bg-brand-50 py-3 rounded-2xl border border-brand-100 text-brand-800">
+                    <% if (query.timkiem) { %>
+                        <span class="font-medium">Tìm kiếm:</span>
+                        <strong class="mx-1">"<%= query.timkiem %>"</strong>
+                    <% } %>
+                    <% if (query.hang && typeof hangsanxuat !== 'undefined') {
+                        let selectedHang = hangsanxuat.find(h => h._id.toString() == query.hang);
+                    %>
+                        <span class="font-medium ml-2">Hãng:</span>
+                        <strong class="mx-1"><%= selectedHang ? selectedHang.TenHang : '' %></strong>
+                    <% } %>
+                    <% if (query.gia) { %>
+                        <span class="font-medium ml-2">Mức giá:</span>
+                        <strong><%= query.gia=='duoi10' ? 'Dưới 10 triệu' : (query.gia=='10den20' ? '10 - 20 triệu' : (query.gia=='tren20' ? 'Trên 20 triệu' : '')) %></strong>
+                    <% } %>
+                    <a href="/sanpham" class="ml-3 text-sm text-red-500 font-bold hover:underline">
+                        <i class="bi bi-x-circle mr-1"></i>Xóa bộ lọc
+                    </a>
+                </div>
+            <% } %>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <% if(sanpham && sanpham.length > 0) { %>
+                    <% sanpham.forEach(sp=> { %>
+                        <div
+                            class="bg-white rounded-3xl p-4 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col group">
+                            <a href="/sanpham/<%= sp._id %>" class="flex flex-col flex-grow">
+                                <div
+                                    class="h-52 flex items-center justify-center mb-4 overflow-hidden rounded-2xl p-4 bg-slate-50 relative">
+                                    <% let imgSrc=sp.HinhAnh.startsWith('http') ? sp.HinhAnh : '/images/' + sp.HinhAnh; %>
+                                    <img src="<%= imgSrc %>"
+                                        class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                        alt="<%= sp.TenSP %>">
+                                    <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-500"></div>
+                                </div>
+
+                                <div class="flex flex-col flex-grow z-10">
+                                    <span class="text-xs font-semibold text-brand-600 bg-brand-50 px-2 py-1 rounded-md w-fit mb-2 border border-brand-100">
+                                        <%= sp.HangSanXuat ? sp.HangSanXuat.TenHang : 'Tivi Chính Hãng' %>
+                                    </span>
+                                    <h6 class="text-slate-800 font-bold leading-tight mb-2 line-clamp-2 hover:text-brand-600 transition-colors">
+                                        <%= sp.TenSP %>
+                                    </h6>
+
+                                    <% let tbSao=0; let soDanhGia=0; if(sp.DanhGia && sp.DanhGia.length> 0) {
+                                        soDanhGia = sp.DanhGia.length;
+                                        tbSao = (sp.DanhGia.reduce((sum, dg) => sum + dg.SoSao, 0) / soDanhGia).toFixed(1);
+                                    } %>
+                                    <div class="flex items-center text-sm mb-4">
+                                        <i class="bi bi-star-fill text-amber-400 mr-1"></i>
+                                        <span class="font-bold text-slate-700">
+                                            <%= tbSao > 0 ? tbSao : 'Chưa có' %>
+                                        </span>
+                                        <% if(soDanhGia > 0) { %><span class="text-slate-400 ml-1">(<%= soDanhGia %>)</span><% } %>
+                                    </div>
+
+                                    <div class="mt-auto text-brand-600 font-extrabold text-xl">
+                                        <%= sp.GiaBan.toLocaleString('vi-VN') %> đ
+                                    </div>
+                                </div>
+                            </a>
+                            <div class="pt-4 mt-auto">
+                                <a href="/themvaogio/<%= sp._id %>"
+                                    class="block w-full bg-slate-50 hover:bg-brand-50 text-slate-700 hover:text-brand-600 border border-slate-200 hover:border-brand-300 font-bold py-2.5 rounded-xl text-center transition-colors">
+                                    <i class="bi bi-cart-plus mr-1"></i> Chọn Mua
+                                </a>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="col-span-full bg-white rounded-3xl p-12 text-center border border-slate-100 shadow-sm">
+                        <img src="https://cdn-icons-png.flaticon.com/512/7486/7486754.png"
+                            width="100" class="mx-auto mb-4 opacity-40" alt="Not found">
+                        <h4 class="text-xl font-bold text-slate-700 mb-2">Không tìm thấy sản phẩm nào!</h4>
+                        <p class="text-slate-500 mb-6">Vui lòng thử lại với từ khóa khác hoặc xóa bộ lọc để xem toàn bộ sản phẩm.</p>
+                        <a href="/sanpham"
+                            class="bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-8 rounded-full transition-colors shadow-md inline-block">
+                            XÓA BỘ LỌC
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <%- include('footer') %>
+</body>
+
+</html>

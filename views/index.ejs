@@ -4,302 +4,403 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title><%= title %></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <title>
+        <%= title %>
+    </title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="/css/style.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' },
+                        danger: { 500: '#ef4444', 600: '#dc2626' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* CSS tùy chỉnh nhỏ cho thanh cuộn và hiệu ứng mượt */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
 </head>
 
-<body class="d-flex flex-column min-vh-100">
+<body class="flex flex-col min-h-screen text-slate-800">
 
     <%- include('navbar') %>
 
-    <div class="container mt-4 mb-4">
-        <div id="bannerCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
-            <div class="carousel-indicators mb-4">
-                <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="0" class="active"></button>
-                <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="1"></button>
-                <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="2"></button>
-            </div>
-            <div class="carousel-inner">
-                <div class="carousel-item active" data-bs-interval="4000">
-                    <div class="p-5 text-center d-flex flex-column justify-content-center align-items-center"
-                        style="height: 380px; background: linear-gradient(135deg, #0984e3, #74b9ff);">
-                        <h1 class="display-4 fw-bold text-white mb-3" style="text-shadow: 0 2px 10px rgba(0,0,0,0.2);">Đón Lễ Lớn - Sale Chạm Đáy 50%</h1>
-                        <p class="lead text-white mb-4 opacity-75">Sở hữu ngay siêu phẩm Smart Tivi 4K, OLED với giá chưa từng có.</p>
-                        <a href="#khuyen-mai" class="btn btn-gradient-warning btn-lg fw-bold rounded-pill px-5 py-3">
-                            <i class="bi bi-lightning-charge-fill"></i> Săn Deal Ngay
-                        </a>
-                    </div>
-                </div>
-                <div class="carousel-item" data-bs-interval="4000">
-                    <div class="p-5 text-center d-flex flex-column justify-content-center align-items-center"
-                        style="height: 380px; background: linear-gradient(135deg, #d63031, #ff7675);">
-                        <h1 class="display-4 fw-bold text-white mb-3" style="text-shadow: 0 2px 10px rgba(0,0,0,0.2);">Thế Giới Tivi OLED Đỉnh Cao</h1>
-                        <p class="lead text-white mb-4 opacity-75">Mang rạp chiếu phim chuẩn Hollywood về ngay phòng khách nhà bạn.</p>
-                        <a href="#tat-ca-san-pham" class="btn btn-light btn-lg fw-bold rounded-pill text-danger px-5 py-3 shadow-sm">
-                            <i class="bi bi-stars"></i> Khám Phá Ngay
-                        </a>
-                    </div>
-                </div>
-                <div class="carousel-item" data-bs-interval="4000">
-                    <div class="p-5 text-center d-flex flex-column justify-content-center align-items-center"
-                        style="height: 380px; background: linear-gradient(135deg, #00b894, #55efc4);">
-                        <h1 class="display-4 fw-bold text-white mb-3" style="text-shadow: 0 2px 10px rgba(0,0,0,0.2);">Trả Góp 0% Lãi Suất</h1>
-                        <p class="lead text-white mb-4 opacity-75">Thủ tục nhanh gọn - Miễn phí lắp đặt tận nhà siêu tốc.</p>
-                        <a href="#lien-he" class="btn btn-dark btn-lg fw-bold rounded-pill px-5 py-3 shadow-sm">
-                            <i class="bi bi-headset"></i> Liên Hệ Tư Vấn
-                        </a>
-                    </div>
+        <main class="container mx-auto px-4 mt-8 mb-12">
+            <div class="relative w-full h-[450px] rounded-3xl overflow-hidden shadow-2xl group">
+                <img src="/images/banner-trangchu.jpg"
+                    class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    alt="Banner TV">
+                <div
+                    class="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent flex flex-col justify-center px-12 md:px-20">
+                    <span class="text-brand-500 font-bold tracking-wider uppercase mb-2">Đón Lễ Lớn</span>
+                    <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-4 leading-tight">Sale Chạm Đáy
+                        50%<br>Smart Tivi 4K</h1>
+                    <p class="text-lg text-slate-200 mb-8 max-w-lg">Nâng cấp không gian giải trí tại gia với các siêu
+                        phẩm OLED, Neo QLED thế hệ mới nhất. Miễn phí lắp đặt.</p>
+                    <a href="/sanpham"
+                        class="bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white font-bold py-4 px-10 rounded-full w-fit shadow-lg shadow-brand-500/30 transition-all hover:-translate-y-1">
+                        <i class="bi bi-lightning-charge-fill mr-2"></i> Khám Phá Ngay
+                    </a>
                 </div>
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon"></span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon"></span>
-            </button>
-        </div>
-    </div>
 
-    <div class="container mb-5">
-        <div class="filter-wrapper mx-auto">
-            <form action="/" method="GET" class="row g-2 align-items-center m-0">
-                <div class="col-md-4">
-                    <div class="input-group">
-                        <span class="input-group-text bg-light border-0 ps-4 rounded-start-pill text-primary"><i class="bi bi-search"></i></span>
-                        <input type="text" class="form-control filter-box ps-2" name="timkiem" placeholder="Nhập tên Tivi cần tìm..." value="<%= query.timkiem || '' %>">
+            <div class="relative -mt-8 mx-auto max-w-4xl z-10">
+                <form action="/sanpham" method="GET"
+                    class="bg-white/90 backdrop-blur-md border border-white/20 p-2 rounded-full shadow-xl flex flex-col md:flex-row items-center gap-2">
+                    <div class="flex-1 flex items-center pl-4 w-full">
+                        <i class="bi bi-search text-slate-400 text-xl"></i>
+                        <input type="text" name="timkiem" placeholder="Nhập tên Tivi cần tìm..."
+                            value="<%= query.timkiem || '' %>"
+                            class="w-full bg-transparent border-none focus:ring-0 text-slate-700 px-4 py-3 outline-none placeholder-slate-400">
                     </div>
-                </div>
-                
-                <div class="col-md-3">
-                    <select name="gia" class="form-select filter-box">
-                        <option value="">Mọi mức giá</option>
-                        <option value="duoi10" <%=query.gia=='duoi10' ? 'selected' : '' %>>Dưới 10.000.000 đ</option>
-                        <option value="10den20" <%=query.gia=='10den20' ? 'selected' : '' %>>10.000.000 - 20.000.000 đ</option>
-                        <option value="tren20" <%=query.gia=='tren20' ? 'selected' : '' %>>Trên 20.000.000 đ</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary btn-filter w-100 py-2"><i class="bi bi-funnel-fill me-1"></i> LỌC</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="container flex-grow-1 mb-5">
-
-        <% if(spgiamgia.length > 0) { %>
-            <div class="d-flex flex-wrap justify-content-between align-items-end mb-4" id="khuyen-mai">
-                <div class="d-flex align-items-center gap-3">
-                    <h3 class="section-title text-danger mb-0"><i class="bi bi-lightning-charge-fill"></i> Săn Sale Giờ Vàng</h3>
-                </div>
-                <div class="flash-sale-timer">02:59:59</div>
+                    <div class="h-10 w-px bg-slate-200 hidden md:block"></div>
+                    <div class="w-full md:w-auto px-4">
+                        <select name="gia"
+                            class="w-full bg-transparent border-none focus:ring-0 text-slate-600 font-medium outline-none cursor-pointer">
+                            <option value="">Tất cả mức giá</option>
+                            <option value="duoi10">Dưới 10 Triệu</option>
+                            <option value="10den20">10 - 20 Triệu</option>
+                            <option value="tren20">Trên 20 Triệu</option>
+                        </select>
+                    </div>
+                    <button type="submit"
+                        class="w-full md:w-auto bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-8 rounded-full transition-colors">
+                        Tìm Kiếm
+                    </button>
+                </form>
             </div>
+        </main>
 
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4 mb-5 pb-4 border-bottom">
-                <% spgiamgia.forEach(sp=> { %>
-                    <div class="col">
-                        <div class="product-card h-100 d-flex flex-column position-relative">
-                            <span class="badge-sale-tag">-20%</span>
-                            
-                            <a href="/sanpham/<%= sp._id %>" class="text-decoration-none d-flex flex-column flex-grow-1">
-                                <div class="product-img-wrap">
-                                    <img src="/images/<%= sp.HinhAnh %>" class="product-img" alt="<%= sp.TenSP %>">
-                                </div>
-                                <div class="card-body p-4 d-flex flex-column">
-                                    <span class="badge badge-brand mb-2 align-self-start"><%= sp.HangSanXuat ? sp.HangSanXuat.TenHang : 'N/A' %></span>
-                                    <h6 class="product-title" title="<%= sp.TenSP %>"><%= sp.TenSP %></h6>
-                                    
-                                    <% 
-                                        let tbSaoKM = 0; let soDGKM = 0;
-                                        if(sp.DanhGia && sp.DanhGia.length > 0) {
-                                            soDGKM = sp.DanhGia.length;
-                                            let tongSao = sp.DanhGia.reduce((sum, dg) => sum + dg.SoSao, 0);
-                                            tbSaoKM = (tongSao / soDGKM).toFixed(1);
-                                        }
-                                    %>
-                                    <div class="mb-1 mt-1 text-start" style="font-size: 13px;">
-                                        <span class="text-warning fw-bold"><i class="bi bi-star-fill"></i> <%= tbSaoKM > 0 ? tbSaoKM : 'Chưa có' %></span>
-                                        <% if(soDGKM > 0) { %>
-                                            <span class="text-muted ms-1">(<%= soDGKM %>)</span>
+        <div class="container mx-auto px-4 flex-grow mb-16">
+
+            <% if(spgiamgia.length> 0) { %>
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="text-3xl font-extrabold text-slate-900"><i
+                                class="bi bi-lightning-charge-fill text-red-500 mr-2"></i>Flash Sale Giờ Vàng</h2>
+                        <% if (!isFlashSaleReal) { %>
+                            <p class="text-slate-400 text-sm mt-1">Sản phẩm đang bán chạy — <a href="/sanpham"
+                                    class="text-brand-600 font-semibold hover:underline">Xem thêm &rarr;</a></p>
+                            <% } else { %>
+                                <p class="text-slate-400 text-sm mt-1">Giảm giá thật trong hôm nay — <a href="/sanpham"
+                                        class="text-brand-600 font-semibold hover:underline">Xem thêm &rarr;</a></p>
+                                <% } %>
+                    </div>
+                    <% if (isFlashSaleReal) { %>
+                        <div
+                            class="hidden sm:flex items-center bg-red-50 border border-red-100 text-red-600 font-bold px-4 py-2 rounded-full text-sm">
+                            <i class="bi bi-clock-fill mr-2"></i> Hôm nay
+                        </div>
+                        <% } %>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    <% spgiamgia.forEach(sp=> { %>
+                        <% let phanTramGiam=(isFlashSaleReal && sp.GiaGoc> 0) ? Math.round((1 - sp.GiaBan / sp.GiaGoc) *
+                            100) : 0;
+                            %>
+                            <div
+                                class="bg-white rounded-3xl p-4 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 relative flex flex-col group">
+
+                                <% if (isFlashSaleReal && phanTramGiam> 0) { %>
+                                    <span
+                                        class="absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-lg z-10">-
+                                        <%= phanTramGiam %>%</span>
+                                    <% } else { %>
+                                        <span
+                                            class="absolute top-4 left-4 bg-brand-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg z-10"><i
+                                                class="bi bi-fire"></i> Bán chạy</span>
                                         <% } %>
-                                    </div>
-                                    
-                                    <div class="mt-auto pt-3 border-top border-light">
-                                        <div class="price-old mb-1"><%= (sp.GiaBan * 1.2).toLocaleString('vi-VN') %> đ</div>
-                                        <div class="price-new"><%= sp.GiaBan.toLocaleString('vi-VN') %> đ</div>
-                                    </div>
-                                </div>
-                            </a>
-                            <div class="p-3 pt-0 mt-auto">
-                               <a href="/themvaogio/<%= sp._id %>" class="btn btn-buy-sale w-100 py-2">
-                                    <i class="bi bi-cart-plus-fill me-1"></i> Bỏ vào giỏ ngay
-                                </a>
+
+                                            <a href="/sanpham/<%= sp._id %>" class="flex flex-col flex-grow">
+                                                <div
+                                                    class="h-48 flex items-center justify-center mb-4 overflow-hidden rounded-2xl bg-slate-50 p-4">
+                                                    <img src="/images/<%= sp.HinhAnh %>"
+                                                        class="max-h-full object-contain group-hover:scale-110 transition-transform duration-500"
+                                                        alt="<%= sp.TenSP %>">
+                                                </div>
+                                                <div class="flex flex-col flex-grow">
+                                                    <span
+                                                        class="text-xs font-semibold text-brand-600 bg-brand-50 px-2 py-1 rounded-md w-fit mb-2">
+                                                        <%= sp.HangSanXuat ? sp.HangSanXuat.TenHang : 'Chính Hãng' %>
+                                                    </span>
+                                                    <h6
+                                                        class="text-slate-800 font-bold leading-tight mb-2 line-clamp-2 hover:text-brand-600 transition-colors">
+                                                        <%= sp.TenSP %>
+                                                    </h6>
+
+                                                    <% let tbSaoKM=0; let soDGKM=0; if(sp.DanhGia && sp.DanhGia.length>
+                                                        0) {
+                                                        soDGKM = sp.DanhGia.length;
+                                                        tbSaoKM = (sp.DanhGia.reduce((sum, dg) => sum + dg.SoSao, 0) /
+                                                        soDGKM).toFixed(1);
+                                                        } %>
+                                                        <div class="flex items-center text-sm mb-4">
+                                                            <i class="bi bi-star-fill text-amber-400 mr-1"></i>
+                                                            <span class="font-bold text-slate-700">
+                                                                <%= tbSaoKM> 0 ? tbSaoKM : 'Chưa có' %>
+                                                            </span>
+                                                            <% if(soDGKM> 0) { %><span class="text-slate-400 ml-1">(<%=
+                                                                        soDGKM %>)</span>
+                                                                <% } %>
+                                                        </div>
+
+                                                        <div class="mt-auto">
+                                                            <% if (isFlashSaleReal && sp.GiaGoc> 0) { %>
+                                                                <div class="text-slate-400 line-through text-sm">
+                                                                    <%= sp.GiaGoc.toLocaleString('vi-VN') %> đ
+                                                                </div>
+                                                                <% } %>
+                                                                    <div
+                                                                        class="<%= isFlashSaleReal ? 'text-red-500' : 'text-brand-600' %> font-extrabold text-xl">
+                                                                        <%= sp.GiaBan.toLocaleString('vi-VN') %> đ
+                                                                    </div>
+                                                        </div>
+                                                </div>
+                                            </a>
+                                            <a href="/themvaogio/<%= sp._id %>"
+                                                class="mt-4 bg-red-50 hover:bg-red-500 text-red-600 hover:text-white border border-red-200 hover:border-red-500 font-bold w-full py-2.5 rounded-xl text-center transition-colors">
+                                                <i class="bi bi-cart-plus mr-1"></i> Chọn Mua
+                                            </a>
                             </div>
+                            <% }) %>
+                </div>
+                <% } %>
+
+
+
+                    <div class="flex justify-between items-center mb-6 mt-12 border-b border-slate-200 pb-4">
+                        <h3 class="text-2xl font-extrabold text-slate-900"><i
+                                class="bi bi-grid-fill text-brand-500 mr-2"></i>Sản Phẩm Nổi Bật</h3>
+                        <a href="/sanpham"
+                            class="text-brand-600 hover:text-brand-800 font-semibold flex items-center group">
+                            Xem tất cả <i
+                                class="bi bi-arrow-right ml-1 group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <% if(sanpham.length> 0) { %>
+                            <% sanpham.slice(0, 8).forEach(sp=> { %>
+                                <div
+                                    class="bg-white rounded-3xl p-4 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col group">
+                                    <a href="/sanpham/<%= sp._id %>" class="flex flex-col flex-grow">
+                                        <div
+                                            class="h-48 flex items-center justify-center mb-4 overflow-hidden rounded-2xl p-4">
+                                            <img src="/images/<%= sp.HinhAnh %>"
+                                                class="max-h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                                                alt="<%= sp.TenSP %>">
+                                        </div>
+                                        <div class="flex flex-col flex-grow">
+                                            <span
+                                                class="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-1 rounded-md w-fit mb-2">
+                                                <%= sp.HangSanXuat ? sp.HangSanXuat.TenHang : 'Chính Hãng' %>
+                                            </span>
+                                            <h6
+                                                class="text-slate-800 font-bold leading-tight mb-2 line-clamp-2 hover:text-brand-600 transition-colors">
+                                                <%= sp.TenSP %>
+                                            </h6>
+
+                                            <% let tbSao=0; let soDanhGia=0; if(sp.DanhGia && sp.DanhGia.length> 0) {
+                                                soDanhGia = sp.DanhGia.length;
+                                                tbSao = (sp.DanhGia.reduce((sum, dg) => sum + dg.SoSao, 0) /
+                                                soDanhGia).toFixed(1);
+                                                }
+                                                %>
+                                                <div class="flex items-center text-sm mb-4">
+                                                    <i class="bi bi-star-fill text-amber-400 mr-1"></i>
+                                                    <span class="font-bold text-slate-700">
+                                                        <%= tbSao> 0 ? tbSao : 'Chưa có' %>
+                                                    </span>
+                                                </div>
+
+                                                <div class="mt-auto text-brand-600 font-extrabold text-xl">
+                                                    <%= sp.GiaBan.toLocaleString('vi-VN') %> đ
+                                                </div>
+                                        </div>
+                                    </a>
+                                    <a href="/themvaogio/<%= sp._id %>"
+                                        class="mt-4 bg-slate-50 hover:bg-brand-50 text-slate-700 hover:text-brand-600 border border-slate-200 hover:border-brand-300 font-bold w-full py-2.5 rounded-xl text-center transition-colors">
+                                        <i class="bi bi-cart-plus mr-1"></i> Chọn Mua
+                                    </a>
+                                </div>
+                                <% }) %>
+                                    <% } %>
+                    </div>
+        </div>
+
+        <div class="bg-white py-16 mt-8 border-t border-slate-100">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="text-2xl font-extrabold text-slate-900"><i
+                            class="bi bi-newspaper text-brand-500 mr-2"></i>Góc Công Nghệ</h3>
+                    <a href="/tintuc"
+                        class="bg-white border border-slate-200 hover:border-brand-500 hover:text-brand-600 text-slate-600 rounded-full px-6 py-2 font-semibold transition-colors">
+                        Xem tất cả
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <% if (tintuc && tintuc.length> 0) { %>
+                        <% tintuc.forEach(t=> { %>
+                            <div class="group cursor-pointer">
+                                <div class="overflow-hidden rounded-3xl mb-4 h-56 shadow-sm">
+                                    <% let imgSrc=t.HinhAnh.startsWith('http') ? t.HinhAnh : '/images/' + t.HinhAnh; %>
+                                        <img src="<%= imgSrc %>"
+                                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                            alt="<%= t.TieuDe %>">
+                                </div>
+                                <div class="flex items-center text-sm text-slate-500 mb-2 font-medium">
+                                    <i class="bi bi-calendar3 mr-2"></i>
+                                    <%= new Date(t.NgayDang).toLocaleDateString('vi-VN') %>
+                                </div>
+                                <h5
+                                    class="text-lg font-bold text-slate-900 mb-2 leading-snug group-hover:text-brand-600 transition-colors">
+                                    <%= t.TieuDe %>
+                                </h5>
+                                <p class="text-slate-600 line-clamp-2 text-sm">
+                                    <%= t.TomTat %>
+                                </p>
+                            </div>
+                            <% }) %>
+                                <% } %>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-4 py-16">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-7 bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100">
+                    <h4 class="text-xl font-bold text-slate-900 mb-6"><i
+                            class="bi bi-geo-alt-fill text-danger-500 mr-2"></i>Hệ Thống Showroom</h4>
+                    <div class="rounded-2xl overflow-hidden shadow-inner h-[350px]">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d490.6158388358315!2d105.45986987650394!3d10.347745325088344!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x310a73994fe3fd7f%3A0x5e333044c1f1b7c0!2zUXXDoW4gVHLDoCBT4buvYSBUaMO5eSBUcmFuZw!5e0!3m2!1svi!2s!4v1774806226593!5m2!1svi!2s"
+                            width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                </div>
+                <div class="lg:col-span-5 bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100">
+                    <h4 class="text-xl font-bold text-slate-900 mb-6"><i
+                            class="bi bi-facebook text-brand-600 mr-2"></i>Fanpage TVN</h4>
+                    <div
+                        class="rounded-2xl overflow-hidden shadow-inner bg-slate-50 h-[350px] flex items-center justify-center">
+                        <iframe
+                            src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fnghi.vinh.58726%2F&tabs=timeline&width=400&height=350&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
+                            width="100%" height="100%" style="border:none; overflow:hidden;" scrolling="no"
+                            frameborder="0" allowfullscreen="true"
+                            allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container mx-auto px-4 mb-16 mt-8" id="lien-he">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div
+                    class="bg-white rounded-3xl shadow-sm border border-slate-100 p-8 md:p-10 hover:shadow-md transition-shadow">
+                    <h4 class="text-2xl font-bold text-brand-600 mb-8"><i class="bi bi-shop mr-2"></i>Cửa Hàng Tivi TVN
+                    </h4>
+
+                    <div class="flex items-start mb-6 pb-6 border-b border-slate-100">
+                        <div
+                            class="bg-red-50 text-danger-500 w-12 h-12 rounded-2xl flex items-center justify-center text-xl shrink-0 mr-4">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-slate-800 mb-1">Trụ sở chính:</p>
+                            <p class="text-slate-600 leading-relaxed">54/98 Đường Trần Quang Khải, Phường Mỹ Thới, TP.
+                                Long Xuyên, An Giang</p>
                         </div>
                     </div>
-                <% }) %>
-            </div>
-        <% } %>
 
-        <div class="mb-4" id="tat-ca-san-pham">
-            <h3 class="section-title"><i class="bi bi-grid-fill text-primary"></i> Khám Phá Sản Phẩm</h3>
-        </div>
-
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
-            <% if(sanpham.length > 0) { %>
-                <% sanpham.forEach(sp=> { %>
-                    <div class="col">
-                        <div class="product-card h-100 d-flex flex-column">
-                            <a href="/sanpham/<%= sp._id %>" class="text-decoration-none d-flex flex-column flex-grow-1">
-                                <div class="product-img-wrap border-bottom border-light">
-                                    <img src="/images/<%= sp.HinhAnh %>" class="product-img" alt="<%= sp.TenSP %>">
-                                </div>
-                                <div class="card-body p-4 d-flex flex-column">
-                                    <span class="badge badge-brand mb-2 align-self-start"><%= sp.HangSanXuat ? sp.HangSanXuat.TenHang : 'N/A' %></span>
-                                    <h6 class="product-title" title="<%= sp.TenSP %>"><%= sp.TenSP %></h6>
-                                    
-                                    <% 
-                                        let tbSao = 0; let soDanhGia = 0;
-                                        if(sp.DanhGia && sp.DanhGia.length > 0) {
-                                            soDanhGia = sp.DanhGia.length;
-                                            let tongSao = sp.DanhGia.reduce((sum, dg) => sum + dg.SoSao, 0);
-                                            tbSao = (tongSao / soDanhGia).toFixed(1);
-                                        }
-                                    %>
-                                    <div class="mb-1 mt-1 text-start" style="font-size: 13px;">
-                                        <span class="text-warning fw-bold"><i class="bi bi-star-fill"></i> <%= tbSao > 0 ? tbSao : 'Chưa có' %></span>
-                                        <% if(soDanhGia > 0) { %>
-                                            <span class="text-muted ms-1">(<%= soDanhGia %>)</span>
-                                        <% } %>
-                                    </div>
-
-                                    <div class="price-new mt-auto pt-3"><%= sp.GiaBan.toLocaleString('vi-VN') %> đ</div>
-                                </div>
-                            </a>
-                            <div class="p-3 pt-0 mt-auto">
-                                <a href="/themvaogio/<%= sp._id %>" class="btn btn-buy w-100 py-2">
-                                    <i class="bi bi-cart-plus"></i> Chọn Mua
-                                </a>
-                            </div>
+                    <div class="flex items-start mb-6 pb-6 border-b border-slate-100">
+                        <div
+                            class="bg-emerald-50 text-emerald-500 w-12 h-12 rounded-2xl flex items-center justify-center text-xl shrink-0 mr-4">
+                            <i class="bi bi-telephone-fill"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-slate-800 mb-1">Hotline Tư Vấn:</p>
+                            <a href="tel:0931082845"
+                                class="text-2xl font-extrabold text-emerald-600 hover:text-emerald-700 transition-colors">0931.082.845</a>
                         </div>
                     </div>
-                <% }) %>
-            <% } else { %>
-                <div class="col-12 text-center py-5">
-                    <img src="https://cdn-icons-png.flaticon.com/512/7486/7486754.png" width="120" class="mb-3 opacity-50" alt="Not found">
-                    <h5 class="text-secondary fw-bold">Rất tiếc, không có Tivi nào khớp với tìm kiếm của bạn!</h5>
-                    <a href="/" class="btn btn-primary mt-3 rounded-pill px-5 py-2 fw-bold">Xóa bộ lọc</a>
+
+                    <div class="flex items-start">
+                        <div
+                            class="bg-amber-50 text-amber-500 w-12 h-12 rounded-2xl flex items-center justify-center text-xl shrink-0 mr-4">
+                            <i class="bi bi-envelope-fill"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-slate-800 mb-1">Email Hỗ Trợ:</p>
+                            <a href="mailto:hotro@tivin.com"
+                                class="text-lg font-bold text-slate-600 hover:text-brand-600 transition-colors">hotro@tivin.com</a>
+                        </div>
+                    </div>
                 </div>
-            <% } %>
+
+                <div
+                    class="bg-gradient-to-br from-brand-500 to-brand-700 rounded-3xl shadow-xl p-8 md:p-10 flex flex-col justify-center items-center text-center text-white relative overflow-hidden group">
+                    <div
+                        class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-20 -mt-20 group-hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div
+                        class="absolute bottom-0 left-0 w-40 h-40 bg-white opacity-5 rounded-full -ml-10 -mb-10 group-hover:scale-110 transition-transform duration-700">
+                    </div>
+
+                    <i
+                        class="bi bi-headset text-7xl mb-6 opacity-90 z-10 drop-shadow-md group-hover:-translate-y-2 transition-transform duration-500"></i>
+                    <h3 class="text-3xl md:text-4xl font-extrabold mb-4 z-10">Hỗ Trợ Khách Hàng 24/7</h3>
+                    <p class="text-brand-100 text-lg mb-8 max-w-md z-10">Bạn cần tư vấn cấu hình Tivi hoặc làm thủ tục
+                        trả góp 0%? Đừng ngần ngại gọi ngay cho chuyên viên của chúng tôi!</p>
+                    <a href="tel:0931082845"
+                        class="bg-white text-brand-600 hover:bg-brand-50 font-bold py-4 px-8 rounded-full shadow-lg transition-transform hover:-translate-y-1 z-10 flex items-center">
+                        <i class="bi bi-telephone-outbound-fill mr-2"></i> GỌI TỔNG ĐÀI TVN
+                    </a>
+                </div>
+            </div>
         </div>
+        <%- include('footer') %>
 
-    </div>
-
-    <div class="container mb-5" id="bangtin">
-        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
-            <h3 class="section-title m-0"><i class="bi bi-newspaper text-primary me-2"></i> Bảng tin Công Nghệ</h3>
-            <a href="/tintuc" class="btn btn-outline-primary rounded-pill px-4 fw-bold shadow-sm">
-                Xem tất cả <i class="bi bi-arrow-right"></i>
+            <a href="https://zalo.me/0931082845" target="_blank"
+                class="fixed bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-full shadow-2xl hover:shadow-blue-500/50 hover:-translate-y-2 transition-all duration-300 z-50 group"
+                title="Chat Zalo">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                    class="w-8 h-8 group-hover:scale-110 transition-transform" viewBox="0 0 16 16">
+                    <path
+                        d="M8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6-.097 1.016-.417 2.13-.771 2.966-.079.186.074.394.273.362 2.256-.37 3.597-.938 4.18-1.234A9.06 9.06 0 0 0 8 15z" />
+                </svg>
             </a>
-        </div>
-        <div class="row g-4">
-            <% if (tintuc && tintuc.length > 0) { %>
-                <% tintuc.forEach(t => { %>
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden" style="transition: transform 0.3s;">
-                            <% let imgSrc = t.HinhAnh.startsWith('http') ? t.HinhAnh : '/images/' + t.HinhAnh; %>
-                            <img src="<%= imgSrc %>" class="card-img-top" alt="<%= t.TieuDe %>" style="height: 200px; object-fit: cover;">
-                            <div class="card-body p-4 d-flex flex-column">
-                                <span class="badge bg-light text-secondary mb-2 align-self-start"><i class="bi bi-calendar3"></i> <%= new Date(t.NgayDang).toLocaleDateString('vi-VN') %></span>
-                                <h5 class="card-title fw-bold text-dark mb-3"><%= t.TieuDe %></h5>
-                                <p class="card-text text-muted mb-4" style="display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;"><%= t.TomTat %></p>
-                                <a href="/tin/<%= t._id %>" class="mt-auto fw-bold text-primary text-decoration-none">Đọc tiếp <i class="bi bi-chevron-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                <% }) %>
-            <% } else { %>
-                <div class="col-12"><p class="text-muted text-center py-4">Chưa có bảng tin để hiển thị.</p></div>
-            <% } %>
-        </div>
-    </div>
 
-    <div class="container mb-5 mt-5 bg-white p-4 rounded-4 shadow-sm">
-        <div class="row g-4">
-            <div class="col-lg-7">
-                <h4 class="fw-bold mb-3 text-dark"><i class="bi bi-geo-alt-fill text-danger me-2"></i>Bản Đồ Đường Đi</h4>
-                <div class="rounded-4 overflow-hidden border">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d490.6158388358315!2d105.45986987650394!3d10.347745325088344!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x310a73994fe3fd7f%3A0x5e333044c1f1b7c0!2zUXXDoW4gVHLDoCBT4buvYSBUaMO5eSBUcmFuZw!5e0!3m2!1svi!2s!4v1774806226593!5m2!1svi!2s" width="100%" height="350" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                </div>
-            </div>
-            <div class="col-lg-5">
-                <h4 class="fw-bold mb-3 text-dark"><i class="bi bi-facebook text-primary me-2"></i>Cộng Đồng TVN</h4>
-                <div class="rounded-4 overflow-hidden border d-flex align-items-center justify-content-center bg-light">
-                    <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fnghi.vinh.58726%2F&tabs=timeline&width=400&height=350&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId" 
-                        width="100%" height="350" style="border:none; overflow:hidden;" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="container mb-5 mt-4" id="lien-he">
-        <div class="row g-4">
-            <div class="col-md-6">
-                <div class="card border-0 shadow-sm h-100 rounded-4" style="background-color: #ffffff;">
-                    <div class="card-body p-4 p-lg-5">
-                        <h4 class="fw-bold mb-4 text-primary"><i class="bi bi-shop me-2"></i>Cửa Hàng Tivi TVN</h4>
-                        <div class="d-flex align-items-start mb-3">
-                            <i class="bi bi-geo-alt-fill text-danger fs-5 me-3"></i>
-                            <p class="mb-0 text-secondary"><strong>Địa chỉ:</strong> 54/98 Đường Trần Quang Khải, Phường Mỹ Thới, TP. Long Xuyên</p>
-                        </div>
-                        <div class="d-flex align-items-center mb-3">
-                            <i class="bi bi-telephone-fill text-success fs-5 me-3"></i>
-                            <p class="mb-0 text-secondary"><strong>Hotline:</strong> <a href="tel:0931082845" class="text-decoration-none fw-bold text-success fs-5">0931.082.845</a></p>
-                        </div>
-                        <div class="d-flex align-items-center mb-3">
-                            <i class="bi bi-envelope-fill text-warning fs-5 me-3"></i>
-                            <p class="mb-0 text-secondary"><strong>Email:</strong> <a href="mailto:hotro@tivin.com" class="text-decoration-none text-dark fw-bold">hotro@tivin.com</a></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card border-0 shadow-sm h-100 rounded-4" style="background: linear-gradient(135deg, #0d6efd, #0052cc);">
-                    <div class="card-body p-4 p-lg-5 text-center d-flex flex-column justify-content-center text-white">
-                        <i class="bi bi-headset display-4 mb-3 opacity-75"></i>
-                        <h4 class="fw-bold mb-3">Hỗ trợ khách hàng 24/7</h4>
-                        <p class="mb-4 opacity-75">Bạn cần tư vấn chọn mua Tivi hoặc hỗ trợ bảo hành trả góp? Đừng ngần ngại gọi ngay cho chúng tôi!</p>
-                        <a href="tel:0123456789" class="btn btn-light btn-lg fw-bold text-primary rounded-pill px-5 py-3 shadow-sm mx-auto" style="width: fit-content;">
-                            <i class="bi bi-telephone-outbound-fill me-2"></i> GỌI NGAY CHO TVN
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <%- include('footer') %>
-
-    <a href="https://zalo.me/0931082845" target="_blank" class="zalo-btn" title="Chat Zalo ngay!">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 16 16">
-            <path d="M8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6-.097 1.016-.417 2.13-.771 2.966-.079.186.074.394.273.362 2.256-.37 3.597-.938 4.18-1.234A9.06 9.06 0 0 0 8 15z" />
-        </svg>
-    </a>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/main.js"></script>
-    
-    <script>
-        document.addEventListener('keydown', function(event) {
-            if (event.ctrlKey && event.shiftKey && (event.key === 'b' || event.key === 'B')) {
-                event.preventDefault(); 
-                window.location.href = '/admin/dangnhap'; 
-            }
-        });
-    </script>
+            <script>
+                document.addEventListener('keydown', function (event) {
+                    if (event.ctrlKey && event.shiftKey && (event.key === 'b' || event.key === 'B')) {
+                        event.preventDefault();
+                        window.location.href = '/admin/dangnhap';
+                    }
+                });
+            </script>
 </body>
+
 </html>

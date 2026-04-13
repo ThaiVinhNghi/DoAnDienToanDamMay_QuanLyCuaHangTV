@@ -14,9 +14,9 @@ var TinTuc = require('../models/tintuc');
 // ======================== TRANG CHỦ & TÌM KIẾM ========================
 router.get('/', async (req, res) => {
     try {
-        let dieuKienLoc = {}; 
+        let dieuKienLoc = {};
         if (req.query.timkiem && req.query.timkiem.trim() !== '') {
-            dieuKienLoc.TenSP = { $regex: req.query.timkiem.trim(), $options: 'i' }; 
+            dieuKienLoc.TenSP = { $regex: req.query.timkiem.trim(), $options: 'i' };
         }
         if (req.query.hang && req.query.hang.trim() !== '') {
             dieuKienLoc.HangSanXuat = new mongoose.Types.ObjectId(req.query.hang.trim());
@@ -27,27 +27,43 @@ router.get('/', async (req, res) => {
             else if (req.query.gia === 'tren20') dieuKienLoc.GiaBan = { $gt: 20000000 };
         }
 
-        const dsHang = await HangSanXuat.find(); 
+        const dsHang = await HangSanXuat.find();
         const spTatCa = await SanPham.find(dieuKienLoc).populate('HangSanXuat');
-        const spGiamGia = await SanPham.find(dieuKienLoc).sort({ GiaBan: 1 }).limit(4).populate('HangSanXuat');
+
+        // Flash Sale: ưu tiên SP có GiaGoc > GiaBan (giảm giá thật)
+        // Nếu chưa có SP nào được set GiaGoc → fallback: lấy 4 SP rẻ nhất còn hàng
+        let spGiamGia = await SanPham.find({ GiaGoc: { $gt: 0 }, $expr: { $gt: ['$GiaGoc', '$GiaBan'] } })
+            .sort({ GiaBan: 1 }).limit(4).populate('HangSanXuat');
+
+        let isFlashSaleReal = spGiamGia.length > 0;
+
+        if (!isFlashSaleReal) {
+            // Fallback: lấy 4 SP rẻ nhất còn hàng để section không trống
+            spGiamGia = await SanPham.find({ SoLuongTon: { $gt: 0 } })
+                .sort({ GiaBan: 1 }).limit(4).populate('HangSanXuat');
+        }
+
         const tinTucMoi = await TinTuc.find({ TrangThai: true }).sort({ NgayDang: -1 }).limit(3);
 
-        res.render('index', { 
-            title: 'Cửa hàng Tivi TVN', 
+        res.render('index', {
+            title: 'Cửa hàng Tivi TVN',
             sanpham: spTatCa,
             spgiamgia: spGiamGia,
+            isFlashSaleReal: isFlashSaleReal, // true = có GiaGoc thật, false = fallback
             hangsanxuat: dsHang,
-            tintuc: tinTucMoi, 
-            khachhang: req.session.KhachHang, 
-            query: req.query 
+            tintuc: tinTucMoi,
+            khachhang: req.session.KhachHang,
+            query: req.query
         });
-    } catch (error) { 
-        console.log("Lỗi bộ lọc trang chủ:", error); 
-        res.redirect('/'); 
+    } catch (error) {
+        console.log("Lỗi bộ lọc trang chủ:", error);
+        res.redirect('/');
     }
 });
 
-// ======================== TIN TỨC (MỚI THÊM) ========================
+
+
+// ======================== TIN TỨC ========================
 // Trang danh sách tất cả tin tức
 router.get('/tintuc', async (req, res) => {
     try {
@@ -82,8 +98,12 @@ router.get('/tin/:id', async (req, res) => {
 // ======================== TẤT CẢ SẢN PHẨM ========================
 router.get('/sanpham', async (req, res) => {
     try {
-        let dieuKienLoc = {}; 
-        if (req.query.timkiem && req.query.timkiem.trim() !== '') dieuKienLoc.TenSP = { $regex: req.query.timkiem.trim(), $options: 'i' }; 
+        let dieuKienLoc = {};
+        if (req.query.timkiem && req.query.timkiem.trim() !== '') dieuKienLoc.TenSP = { $regex: req.query.timkiem.trim(), $options: 'i' };
+        // FIX #10: Thêm lọc theo Hãng cho trang /sanpham
+        if (req.query.hang && req.query.hang.trim() !== '') {
+            dieuKienLoc.HangSanXuat = new mongoose.Types.ObjectId(req.query.hang.trim());
+        }
         if (req.query.gia && req.query.gia !== '') {
             if (req.query.gia === 'duoi10') dieuKienLoc.GiaBan = { $lt: 10000000 };
             else if (req.query.gia === '10den20') dieuKienLoc.GiaBan = { $gte: 10000000, $lte: 20000000 };
@@ -91,24 +111,28 @@ router.get('/sanpham', async (req, res) => {
         }
 
         const spTatCa = await SanPham.find(dieuKienLoc).populate('HangSanXuat');
-        res.render('sanpham', { 
-            title: 'Tất cả Tivi', 
+        const dsHang = await HangSanXuat.find();
+        res.render('sanpham', {
+            title: 'Tất cả Tivi',
             sanpham: spTatCa,
-            khachhang: req.session.KhachHang, 
-            query: req.query 
+            hangsanxuat: dsHang,
+            khachhang: req.session.KhachHang,
+            query: req.query
         });
-    } catch (error) { 
-        res.redirect('/'); 
+    } catch (error) {
+        res.redirect('/');
     }
 });
+
 
 // ======================== CHI TIẾT SẢN PHẨM ========================
 router.get('/sanpham/:id', async (req, res) => {
     try {
-        const sp = await SanPham.findById(req.params.id).populate('HangSanXuat').populate('LoaiSanPham')
-        .populate('HangSanXuat')
-        .populate('LoaiSanPham')
-        .populate('DanhGia.KhachHang'); // <--- Thêm đoạn này
+        const sp = await SanPham.findById(req.params.id)
+            .populate('HangSanXuat')
+            .populate('LoaiSanPham')
+            .populate('DanhGia.KhachHang');
+
         if (!sp) return res.redirect('/');
 
         let queryLienQuan = { _id: { $ne: sp._id } };
@@ -116,14 +140,46 @@ router.get('/sanpham/:id', async (req, res) => {
 
         const spLienQuan = await SanPham.find(queryLienQuan).limit(4).populate('HangSanXuat');
 
+        let daMuaHang = false;
+        let daDanhGia = false;
+        let dangDoiTra = false; // THÊM BIẾN NÀY ĐỂ CHECK ĐỔI TRẢ Ở TRANG CHI TIẾT
+
+        if (req.session.KhachHang) {
+            // Check hóa đơn đã mua
+            const checkHD = await HoaDon.findOne({
+                KhachHang: req.session.KhachHang._id,
+                'ChiTietHoaDon.SanPham': sp._id,
+                TrangThai: { $ne: 'Chờ duyệt' }
+            }).lean();
+
+            if (checkHD) {
+                daMuaHang = true;
+                // Nếu đã mua, kiểm tra xem đơn hàng chứa sản phẩm này có đang yêu cầu Đổi/Trả không
+                const checkDoiTra = await DoiTra.findOne({ HoaDon: checkHD._id });
+                if (checkDoiTra) {
+                    dangDoiTra = true; // Bật cờ khóa đánh giá
+                }
+            }
+
+            // Check xem khách đã gửi đánh giá trước đó chưa
+            const checkDG = sp.DanhGia.find(dg => dg.KhachHang._id.toString() === req.session.KhachHang._id.toString());
+            if (checkDG) daDanhGia = true;
+        }
+
         res.render('chitiet', {
             title: sp.TenSP,
             sanpham: sp,
             splienquan: spLienQuan,
             khachhang: req.session.KhachHang,
-            query: req.query
+            query: req.query,
+            daMuaHang: daMuaHang,
+            daDanhGia: daDanhGia,
+            dangDoiTra: dangDoiTra // ĐẨY BIẾN NÀY RA GIAO DIỆN CHITIET.EJS
         });
-    } catch (error) { res.redirect('/'); }
+    } catch (error) {
+        console.log("Lỗi ở trang chi tiết:", error);
+        res.redirect('/');
+    }
 });
 
 // ======================== TÀI KHOẢN KHÁCH HÀNG ========================
@@ -134,21 +190,34 @@ router.get('/dangky', (req, res) => {
 
 router.post('/dangky', async (req, res) => {
     try {
-        const checkExist = await KhachHang.findOne({ TenDangNhap: req.body.TenDangNhap });
+        // FIX #13: Validate đầu vào
+        const { HoVaTen, SoDienThoai, TenDangNhap, MatKhau, Email, DiaChi } = req.body;
+        if (!TenDangNhap || TenDangNhap.trim().length < 4) {
+            return res.render('dangky', { title: 'Căng ký', error: 'Tên đăng nhập phải có ít nhất 4 ký tự!', khachhang: null });
+        }
+        if (!MatKhau || MatKhau.length < 6) {
+            return res.render('dangky', { title: 'Đăng ký', error: 'Mật khẩu phải có ít nhất 6 ký tự!', khachhang: null });
+        }
+        if (!/^\d{9,11}$/.test(SoDienThoai)) {
+            return res.render('dangky', { title: 'Đăng ký', error: 'Số điện thoại không hợp lệ!', khachhang: null });
+        }
+
+        const checkExist = await KhachHang.findOne({ TenDangNhap: TenDangNhap });
         if (checkExist) return res.render('dangky', { title: 'Đăng ký', error: 'Tên đăng nhập đã tồn tại!', khachhang: null });
 
         const salt = bcrypt.genSaltSync(10);
         await KhachHang.create({
-            HoVaTen: req.body.HoVaTen,
-            SoDienThoai: req.body.SoDienThoai,
-            Email: req.body.Email,
-            DiaChi: req.body.DiaChi,
-            TenDangNhap: req.body.TenDangNhap,
-            MatKhau: bcrypt.hashSync(req.body.MatKhau, salt)
+            HoVaTen: HoVaTen,
+            SoDienThoai: SoDienThoai,
+            Email: Email,
+            DiaChi: DiaChi,
+            TenDangNhap: TenDangNhap,
+            MatKhau: bcrypt.hashSync(MatKhau, salt)
         });
         res.redirect('/dangnhap');
     } catch (error) { console.log(error); }
 });
+
 
 router.get('/dangnhap', (req, res) => {
     if (req.session.KhachHang) return res.redirect('/');
@@ -170,51 +239,152 @@ router.get('/dangxuat', (req, res) => {
     req.session.destroy(() => res.redirect('/'));
 });
 
+// ======================== QUÊN MẬT KHẨU ========================
+// 1. Hiển thị form nhập thông tin xác thực
+router.get('/quenmatkhau', (req, res) => {
+    if (req.session.KhachHang) return res.redirect('/');
+    res.render('quenmatkhau', { title: 'Quên mật khẩu', error: null });
+});
+
+// 2. Xử lý kiểm tra thông tin
+router.post('/quenmatkhau', async (req, res) => {
+    try {
+        const { TenDangNhap, SoDienThoai } = req.body;
+        // Tìm khách hàng có khớp cả Tên đăng nhập và Số điện thoại không
+        const kh = await KhachHang.findOne({ TenDangNhap: TenDangNhap, SoDienThoai: SoDienThoai });
+
+        if (!kh) {
+            return res.render('quenmatkhau', { title: 'Quên mật khẩu', error: 'Tên đăng nhập hoặc Số điện thoại không chính xác!' });
+        }
+
+        // Nếu đúng, lưu tạm ID vào session để bước sau cho phép đổi mật khẩu
+        req.session.ResetPassId = kh._id;
+        res.redirect('/datlaimatkhau');
+    } catch (error) {
+        console.log(error);
+        res.redirect('/quenmatkhau');
+    }
+});
+
+// 3. Hiển thị form nhập mật khẩu mới
+router.get('/datlaimatkhau', (req, res) => {
+    // Chặn người dùng nếu chưa vượt qua bước nhập số điện thoại
+    if (!req.session.ResetPassId) return res.redirect('/quenmatkhau');
+    res.render('datlaimatkhau', { title: 'Đặt lại mật khẩu', error: null });
+});
+
+// 4. Xử lý lưu mật khẩu mới vào Database
+router.post('/datlaimatkhau', async (req, res) => {
+    if (!req.session.ResetPassId) return res.redirect('/quenmatkhau');
+
+    try {
+        const { MatKhauMoi, XacNhanMatKhau } = req.body;
+
+        if (MatKhauMoi !== XacNhanMatKhau) {
+            return res.render('datlaimatkhau', { title: 'Đặt lại mật khẩu', error: 'Mật khẩu xác nhận không khớp!' });
+        }
+
+        // Mã hóa mật khẩu mới
+        const salt = bcrypt.genSaltSync(10);
+        const hashPassword = bcrypt.hashSync(MatKhauMoi, salt);
+
+        // Cập nhật vào DB
+        await KhachHang.findByIdAndUpdate(req.session.ResetPassId, { MatKhau: hashPassword });
+
+        // Xóa quyền đổi mật khẩu tạm thời
+        delete req.session.ResetPassId;
+
+        // Báo thành công và chuyển về trang đăng nhập
+        res.send(`<script>alert("Khôi phục mật khẩu thành công! Vui lòng đăng nhập bằng mật khẩu mới."); window.location.href="/dangnhap";</script>`);
+    } catch (error) {
+        console.log(error);
+        res.redirect('/datlaimatkhau');
+    }
+});
+
 // ======================== LỊCH SỬ MUA HÀNG ========================
 router.get('/lichsu', async (req, res) => {
     if (!req.session.KhachHang) return res.redirect('/dangnhap');
     try {
-        const hoadon = await HoaDon.find({ 
+        // FIX #5: Bỏ lọc HinhThucThanhToan - hiển thị cả đơn trả góp
+        const hoadon = await HoaDon.find({
             KhachHang: req.session.KhachHang._id,
-            HinhThucThanhToan: 'Trả hết',
-            TrangThai: { $ne: 'Chờ duyệt' } 
-        }).populate('ChiTietHoaDon.SanPham');
+            TrangThai: { $ne: 'Chờ duyệt' }
+        }).populate('ChiTietHoaDon.SanPham').lean();
 
-        const tatCaSanPham = await SanPham.find({ SoLuongTon: { $gt: 0 } }); 
-        res.render('lichsu', { title: 'Lịch sử mua hàng', khachhang: req.session.KhachHang, hoadon: hoadon, sanpham: tatCaSanPham });
+        for (let hd of hoadon) {
+            // 1. LẤY CHI TIẾT YÊU CẦU ĐỔI TRẢ (᫪U CÓ)
+            let checkYeuCau = await DoiTra.findOne({ HoaDon: hd._id }).lean();
+            hd.YeuCauDoiTra = checkYeuCau || null;
+
+            // 2. KIỂM TRA ĐÃ ĐÁNH GIÁ
+            hd.daDanhGiaSanPham = false;
+            if (hd.ChiTietHoaDon && hd.ChiTietHoaDon.length > 0) {
+                for (let item of hd.ChiTietHoaDon) {
+                    if (item.SanPham && item.SanPham.DanhGia && item.SanPham.DanhGia.length > 0) {
+                        const foundReview = item.SanPham.DanhGia.find(
+                            dg => dg.KhachHang.toString() === req.session.KhachHang._id.toString()
+                        );
+                        if (foundReview) { hd.daDanhGiaSanPham = true; break; }
+                    }
+                }
+            }
+
+            // 3. FIX #5: LẤY THÔNG TIN TRẢ GÓP cho các đơn hàng trả góp
+            if (hd.HinhThucThanhToan === 'Trả góp') {
+                const tgInfo = await TraGop.findOne({ HoaDon: hd._id }).lean();
+                hd.TraGopInfo = tgInfo;
+            }
+        }
+
+        const tatCaSanPham = await SanPham.find({ SoLuongTon: { $gt: 0 } });
+        res.render('lichsu', {
+            title: 'Lịch sử mua hàng',
+            khachhang: req.session.KhachHang,
+            hoadon: hoadon,
+            sanpham: tatCaSanPham
+        });
     } catch (error) { console.log(error); }
 });
 
-router.post('/yeucau-doitra', async (req, res) => {
-    if (!req.session.KhachHang) return res.redirect('/dangnhap');
-    try {
-        const { HoaDonId, LoaiYeuCau, LyDo, SanPhamMoiId } = req.body;
-        let yeuCau = { KhachHang: req.session.KhachHang._id, HoaDon: HoaDonId, LoaiYeuCau: LoaiYeuCau, LyDo: LyDo };
-        if (LoaiYeuCau === 'Đổi hàng' && SanPhamMoiId) yeuCau.SanPhamMoi = [{ SanPham: SanPhamMoiId, SoLuong: 1 }];
-        
-        await DoiTra.create(yeuCau);
-        res.send(`<script>alert("Gửi yêu cầu ${LoaiYeuCau} thành công!"); window.location.href="/lichsu";</script>`);
-    } catch (error) { console.log(error); }
-});
 
 // ======================== TÍNH NĂNG ĐÁNH GIÁ SAO ========================
 router.post('/danhgia/:id', async (req, res) => {
-    // Phải đăng nhập mới được đánh giá
     if (!req.session.KhachHang) {
         return res.send('<script>alert("Vui lòng đăng nhập để gửi đánh giá!"); window.history.back();</script>');
     }
     try {
+        const checkHD = await HoaDon.findOne({
+            KhachHang: req.session.KhachHang._id,
+            'ChiTietHoaDon.SanPham': req.params.id,
+            TrangThai: { $ne: 'Chờ duyệt' }
+        });
+
+        if (!checkHD) {
+            return res.send('<script>alert("Cảnh báo: Bạn phải mua sản phẩm này thì mới được đánh giá!"); window.history.back();</script>');
+        }
+
+        // KIỂM TRA ĐỔI TRẢ ĐỂ CHẶN ĐÁNH GIÁ TỪ SERVER (BẢO MẬT)
+        const checkDoiTra = await DoiTra.findOne({ HoaDon: checkHD._id });
+        if (checkDoiTra) {
+            return res.send('<script>alert("Cảnh báo: Sản phẩm này đang yêu cầu đổi trả, không thể đánh giá!"); window.history.back();</script>');
+        }
+
         const sp = await SanPham.findById(req.params.id);
         if (sp) {
-            // Đẩy đánh giá mới vào mảng DanhGia của sản phẩm
+            const daDanhGia = sp.DanhGia.find(dg => dg.KhachHang.toString() === req.session.KhachHang._id.toString());
+            if (daDanhGia) {
+                return res.send('<script>alert("Bạn đã đánh giá sản phẩm này rồi!"); window.history.back();</script>');
+            }
+
             sp.DanhGia.push({
                 KhachHang: req.session.KhachHang._id,
                 SoSao: parseInt(req.body.SoSao),
                 BinhLuan: req.body.BinhLuan
             });
-            await sp.save(); // Lưu lại vào DB
+            await sp.save();
         }
-        res.redirect('/sanpham/' + req.params.id); // Load lại trang chi tiết Tivi
+        res.redirect('/sanpham/' + req.params.id);
     } catch (error) { console.log(error); }
 });
 
@@ -224,11 +394,20 @@ router.get('/themvaogio/:id', async (req, res) => {
         const sp = await SanPham.findById(req.params.id);
         if (!sp) return res.redirect('/');
 
-        let giaBanThucTe = sp.GiaBan; // Bỏ qua khuyến mãi tạm thời cho gọn
+        // FIX #8: Kiểm tra tồn kho trước khi cho vào giỏ
+        if (sp.SoLuongTon <= 0) {
+            return res.send('<script>alert("Sản phẩm này đã hết hàng!"); window.history.back();</script>');
+        }
+
+        let giaBanThucTe = sp.GiaBan;
         if (!req.session.GioHang) req.session.GioHang = [];
 
         let index = req.session.GioHang.findIndex(item => item.SanPhamId == sp._id);
         if (index !== -1) {
+            // Kiểm tra số lượng trong giỏ không vượt tồn kho
+            if (req.session.GioHang[index].SoLuong >= sp.SoLuongTon) {
+                return res.send('<script>alert("Số lượng trong giỏ đã đạt tối đa tồn kho!"); window.history.back();</script>');
+            }
             req.session.GioHang[index].SoLuong += 1;
             req.session.GioHang[index].ThanhTien = req.session.GioHang[index].SoLuong * req.session.GioHang[index].GiaBan;
         } else {
@@ -240,6 +419,7 @@ router.get('/themvaogio/:id', async (req, res) => {
         res.redirect('/giohang');
     } catch (error) { console.log(error); }
 });
+
 
 router.get('/giohang', async (req, res) => {
     let giohang = req.session.GioHang || [];
@@ -253,13 +433,57 @@ router.get('/giohang', async (req, res) => {
 
     res.render('giohang', {
         title: 'Giỏ hàng của bạn', khachhang: req.session.KhachHang,
-        giohang: giohang, tongTien: tongTien, isNoXau: isNoXau 
+        giohang: giohang, tongTien: tongTien, isNoXau: isNoXau
     });
 });
 
 router.get('/xoagiohang/:id', (req, res) => {
     if (req.session.GioHang) req.session.GioHang = req.session.GioHang.filter(item => item.SanPhamId != req.params.id);
     res.redirect('/giohang');
+});
+
+// ======================== YÊU CẦU ĐỔI / TRẢ HÀNG ========================
+router.post('/yeucau-doitra', async (req, res) => {
+    if (!req.session.KhachHang) return res.redirect('/dangnhap');
+
+    try {
+        const { HoaDonId, LoaiYeuCau, LyDo, SanPhamMoiId } = req.body;
+
+        // Xác minh hóa đơn thuộc về khách đang đăng nhập
+        const hd = await HoaDon.findOne({
+            _id: HoaDonId,
+            KhachHang: req.session.KhachHang._id,
+            TrangThai: { $ne: 'Chờ duyệt' } // Chỉ đổi/trả đơn đã được duyệt
+        });
+
+        if (!hd) {
+            return res.send('<script>alert("Yêu cầu không hợp lệ!"); window.history.back();</script>');
+        }
+
+        // Kiểm tra đã có yêu cầu đổi/trả cho đơn này chưa
+        const checkTonTai = await DoiTra.findOne({ HoaDon: HoaDonId });
+        if (checkTonTai) {
+            return res.send('<script>alert("Đơn hàng này đã có yêu cầu Đổi/Trả trước đó!"); window.history.back();</script>');
+        }
+
+        let sanPhamMoiData = [];
+        if (LoaiYeuCau === 'Đổi hàng' && SanPhamMoiId) {
+            sanPhamMoiData = [{ SanPham: SanPhamMoiId, SoLuong: 1 }];
+        }
+
+        await DoiTra.create({
+            KhachHang: req.session.KhachHang._id,
+            HoaDon: HoaDonId,
+            LoaiYeuCau: LoaiYeuCau,
+            LyDo: LyDo,
+            SanPhamMoi: sanPhamMoiData
+        });
+
+        res.send('<script>alert("Gửi yêu cầu Đổi/Trả thành công! Nhân viên sẽ liên hệ bạn sớm."); window.location.href="/lichsu";</script>');
+    } catch (error) {
+        console.log("Lỗi yeucau-doitra:", error);
+        res.send('<script>alert("Có lỗi xảy ra, vui lòng thử lại!"); window.history.back();</script>');
+    }
 });
 
 router.post('/thanhtoan', async (req, res) => {
@@ -272,6 +496,14 @@ router.post('/thanhtoan', async (req, res) => {
     let soThang = (hinhThuc === 'Trả góp') ? parseInt(req.body.SoThangTraGop) : 0;
 
     try {
+        // FIX #9: Kiểm tra tồn kho trước khi đặt hàng
+        for (let item of giohang) {
+            const sp = await SanPham.findById(item.SanPhamId);
+            if (!sp || sp.SoLuongTon < item.SoLuong) {
+                return res.send(`<script>alert("Sản phẩm '${item.TenSP}' không đủ số lượng trong kho (chỉ còn ${sp ? sp.SoLuongTon : 0})!"); window.history.back();</script>`);
+            }
+        }
+
         let chiTiet = giohang.map(item => ({ SanPham: item.SanPhamId, SoLuong: item.SoLuong, DonGiaBan: item.GiaBan }));
 
         if (hinhThuc === 'Trả góp') {
@@ -290,5 +522,6 @@ router.post('/thanhtoan', async (req, res) => {
         res.send(`<script>alert("Đặt hàng thành công!"); window.location.href="/";</script>`);
     } catch (error) { console.log(error); }
 });
+
 
 module.exports = router;

@@ -1,168 +1,267 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title><%= title %></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <title>
+        <%= title %>
+    </title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
-    <style>
-        body { background-color: #f8f9fa; }
-        .img-detail { width: 100%; height: auto; max-height: 400px; object-fit: contain; }
-        .card-tv:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); transition: 0.3s; }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { brand: { 50: '#eff6ff', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' } } } } }
+    </script>
 </head>
-<body class="d-flex flex-column min-vh-100">
+
+<body class="flex flex-col min-h-screen bg-slate-50 font-sans text-slate-800">
 
     <%- include('navbar') %>
 
-    <div class="container mt-4">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Trang chủ</a></li>
-                <li class="breadcrumb-item"><a href="#" class="text-decoration-none"><%= sanpham.LoaiSanPham ? sanpham.LoaiSanPham.TenLoai : 'Tivi' %></a></li>
-                <li class="breadcrumb-item active" aria-current="page"><%= sanpham.TenSP %></li>
-            </ol>
-        </nav>
-    </div>
-
-    <div class="container flex-grow-1 mb-5">
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden p-4">
-            <div class="row g-5">
-                <div class="col-md-5 text-center">
-                    <img src="/images/<%= sanpham.HinhAnh %>" alt="<%= sanpham.TenSP %>" class="img-detail rounded bg-white p-3 border">
-                </div>
-
-                <div class="col-md-7">
-                    <span class="badge bg-primary fs-6 mb-2"><%= sanpham.HangSanXuat ? sanpham.HangSanXuat.TenHang : 'N/A' %></span>
-                    
-                    <h2 class="fw-bold text-dark mb-3"><%= sanpham.TenSP %></h2>
-                    
-                    <h3 class="text-danger fw-bold mb-4"><%= sanpham.GiaBan.toLocaleString('vi-VN') %> đ</h3>
-
-                    <div class="mb-4">
-                        <% if(sanpham.SoLuongTon > 0) { %>
-                            <span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> Còn hàng (<%= sanpham.SoLuongTon %> sản phẩm)</span>
-                        <% } else { %>
-                            <span class="text-danger fw-bold"><i class="bi bi-x-circle-fill"></i> Đã hết hàng</span>
-                        <% } %>
-                    </div>
-
-                    <div class="mb-4">
-                        <% if(sanpham.SoLuongTon > 0) { %>
-                            <a href="/themvaogio/<%= sanpham._id %>" class="btn btn-danger btn-lg rounded-pill px-5 fw-bold shadow-sm">
-                                <i class="bi bi-cart-plus"></i> THÊM VÀO GIỎ HÀNG
-                            </a>
-                        <% } else { %>
-                            <button class="btn btn-secondary btn-lg rounded-pill px-5 fw-bold" disabled>
-                                KHÔNG THỂ MUA
-                            </button>
-                        <% } %>
-                    </div>
-
-                    <h5 class="fw-bold border-bottom pb-2 mt-4">Mô tả sản phẩm</h5>
-                    <p class="text-muted" style="white-space: pre-line;"><%= sanpham.MoTa %></p>
-                </div>
-            </div>
+        <div class="container mx-auto px-4 mt-6">
+            <nav class="flex text-slate-500 text-sm font-medium mb-8" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="/" class="hover:text-brand-600 flex items-center transition-colors"><i
+                                class="bi bi-house-door mr-1"></i>Trang chủ</a>
+                    </li>
+                    <li>
+                        <div class="flex items-center"><i class="bi bi-chevron-right mx-1"></i><a href="/sanpham"
+                                class="hover:text-brand-600 transition-colors">
+                                <%= sanpham.LoaiSanPham ? sanpham.LoaiSanPham.TenLoai : 'Tivi' %>
+                            </a></div>
+                    </li>
+                    <li aria-current="page">
+                        <div class="flex items-center"><i class="bi bi-chevron-right mx-1"></i><span
+                                class="text-slate-800 font-bold truncate max-w-[200px] sm:max-w-md">
+                                <%= sanpham.TenSP %>
+                            </span></div>
+                    </li>
+                </ol>
+            </nav>
         </div>
 
-        <div class="card border-0 shadow-sm rounded-4 p-4 mt-5 bg-white">
-            <h4 class="fw-bold mb-4 border-bottom pb-3"><i class="bi bi-star-fill text-warning me-2"></i>Đánh giá từ khách hàng</h4>
+        <div class="container mx-auto px-4 flex-grow mb-16">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden mb-12">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 p-6 md:p-10">
+                    <div
+                        class="bg-slate-50 rounded-2xl p-8 flex items-center justify-center border border-slate-100 min-h-[300px] lg:min-h-[400px]">
+                        <% let mainImg=sanpham.HinhAnh.startsWith('http') ? sanpham.HinhAnh : '/images/' +
+                            sanpham.HinhAnh; %>
+                            <img src="<%= mainImg %>" alt="<%= sanpham.TenSP %>"
+                                class="max-w-full max-h-[400px] object-contain drop-shadow-xl hover:scale-105 transition-transform duration-500">
+                    </div>
 
-            <% if (khachhang) { %>
-                <form action="/danhgia/<%= sanpham._id %>" method="POST" class="mb-5 bg-light p-4 rounded-3 border">
-                    <h6 class="fw-bold mb-3">Bạn chấm sản phẩm này mấy sao?</h6>
-                    <div class="mb-3">
-                        <div class="btn-group" role="group">
-                            <input type="radio" class="btn-check" name="SoSao" id="sao5" value="5" checked>
-                            <label class="btn btn-outline-warning fw-bold" for="sao5">5 <i class="bi bi-star-fill"></i></label>
+                    <div class="flex flex-col justify-center">
+                        <span class="bg-brand-50 text-brand-600 font-bold px-3 py-1 rounded-lg text-sm w-fit mb-4">
+                            <%= sanpham.HangSanXuat ? sanpham.HangSanXuat.TenHang : 'Chính Hãng' %>
+                        </span>
 
-                            <input type="radio" class="btn-check" name="SoSao" id="sao4" value="4">
-                            <label class="btn btn-outline-warning fw-bold" for="sao4">4 <i class="bi bi-star-fill"></i></label>
+                        <h1 class="text-3xl lg:text-4xl font-extrabold text-slate-900 mb-6 leading-tight">
+                            <%= sanpham.TenSP %>
+                        </h1>
 
-                            <input type="radio" class="btn-check" name="SoSao" id="sao3" value="3">
-                            <label class="btn btn-outline-warning fw-bold" for="sao3">3 <i class="bi bi-star-fill"></i></label>
-                            
-                            <input type="radio" class="btn-check" name="SoSao" id="sao2" value="2">
-                            <label class="btn btn-outline-warning fw-bold" for="sao2">2 <i class="bi bi-star-fill"></i></label>
-
-                            <input type="radio" class="btn-check" name="SoSao" id="sao1" value="1">
-                            <label class="btn btn-outline-warning fw-bold" for="sao1">1 <i class="bi bi-star-fill"></i></label>
+                        <div class="text-4xl font-black text-red-500 mb-6">
+                            <%= sanpham.GiaBan.toLocaleString('vi-VN') %> đ
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <textarea name="BinhLuan" class="form-control" rows="3" placeholder="Chia sẻ trải nghiệm của bạn về chiếc Tivi này..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary fw-bold px-4 rounded-pill">Gửi đánh giá</button>
-                </form>
-            <% } else { %>
-                <div class="alert alert-warning fw-bold">
-                    <i class="bi bi-exclamation-circle"></i> Vui lòng <a href="/dangnhap" class="text-danger text-decoration-underline">Đăng nhập</a> để để lại đánh giá của bạn!
-                </div>
-            <% } %>
 
-            <div class="review-list">
-                <% if(sanpham.DanhGia && sanpham.DanhGia.length > 0) { %>
-                    <% sanpham.DanhGia.reverse().forEach(dg => { %>
-                        <div class="d-flex mb-4 pb-3 border-bottom">
-                            <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center fw-bold me-3 shadow-sm" style="width: 45px; height: 45px; font-size: 1.2rem;">
-                                <%= dg.KhachHang ? dg.KhachHang.HoVaTen.charAt(0).toUpperCase() : 'K' %>
-                            </div>
-                            <div>
-                                <h6 class="fw-bold mb-1"><%= dg.KhachHang ? dg.KhachHang.HoVaTen : 'Khách hàng ẩn danh' %></h6>
-                                <div class="text-warning mb-2" style="font-size: 0.9rem;">
-                                    <% for(let i=1; i<=5; i++) { %>
-                                        <i class="bi <%= i <= dg.SoSao ? 'bi-star-fill' : 'bi-star' %>"></i>
+                        <div class="mb-8">
+                            <% if(sanpham.SoLuongTon> 0) { %>
+                                <span
+                                    class="inline-flex items-center bg-emerald-50 text-emerald-600 font-bold px-4 py-2 rounded-xl text-sm border border-emerald-100">
+                                    <i class="bi bi-check-circle-fill mr-2"></i> Còn hàng (<%= sanpham.SoLuongTon %>)
+                                </span>
+                                <% } else { %>
+                                    <span
+                                        class="inline-flex items-center bg-slate-100 text-slate-500 font-bold px-4 py-2 rounded-xl text-sm border border-slate-200">
+                                        <i class="bi bi-x-circle-fill mr-2"></i> Đã hết hàng
+                                    </span>
                                     <% } %>
-                                    <span class="text-muted ms-2 small"><%= new Date(dg.NgayDanhGia).toLocaleDateString('vi-VN') %></span>
-                                </div>
-                                <p class="mb-0 text-secondary"><%= dg.BinhLuan %></p>
-                            </div>
                         </div>
-                    <% }) %>
-                <% } else { %>
-                    <p class="text-muted fst-italic">Chưa có đánh giá nào. Hãy trở thành người đầu tiên đánh giá sản phẩm này!</p>
-                <% } %>
-            </div>
-        </div>
-        <% if(splienquan.length > 0) { %>
-            <h4 class="fw-bold mt-5 mb-4 border-bottom pb-2">Sản phẩm cùng loại</h4>
-            <div class="row row-cols-1 row-cols-md-4 g-4">
-                <% splienquan.forEach(sp => { %>
-                    <div class="col">
-                        <div class="card h-100 border-0 shadow-sm card-tv rounded-4 p-3 text-center">
-                            <a href="/sanpham/<%= sp._id %>" class="text-decoration-none">
-                                <img src="/images/<%= sp.HinhAnh %>" class="card-img-top mx-auto" style="height: 150px; object-fit: contain;" alt="<%= sp.TenSP %>">
-                                <div class="card-body p-2">
-                                    <h6 class="card-title fw-bold text-dark text-truncate" title="<%= sp.TenSP %>"><%= sp.TenSP %></h6>
-                                    
-                                    <% 
-                                        let tbSaoLienQuan = 0; let soDGLienQuan = 0;
-                                        if(sp.DanhGia && sp.DanhGia.length > 0) {
-                                            soDGLienQuan = sp.DanhGia.length;
-                                            let tongSao = sp.DanhGia.reduce((sum, dg) => sum + dg.SoSao, 0);
-                                            tbSaoLienQuan = (tongSao / soDGLienQuan).toFixed(1);
-                                        }
-                                    %>
-                                    <div class="mb-2 text-center" style="font-size: 13px;">
-                                        <span class="text-warning fw-bold"><i class="bi bi-star-fill"></i> <%= tbSaoLienQuan > 0 ? tbSaoLienQuan : 'Chưa có' %></span>
-                                        <% if(soDGLienQuan > 0) { %>
-                                            <span class="text-muted ms-1">(<%= soDGLienQuan %>)</span>
-                                        <% } %>
-                                    </div>
 
-                                    <p class="card-text text-danger fw-bold mb-0"><%= sp.GiaBan.toLocaleString('vi-VN') %> đ</p>
+                        <div class="mb-10">
+                            <% if(sanpham.SoLuongTon> 0) { %>
+                                <a href="/themvaogio/<%= sanpham._id %>"
+                                    class="flex items-center justify-center bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-extrabold text-lg py-4 px-8 rounded-full shadow-xl shadow-red-500/30 transition-transform hover:-translate-y-1">
+                                    <i class="bi bi-cart-plus text-2xl mr-2"></i> THÊM VÀO GIỎ HÀNG
+                                </a>
+                                <% } else { %>
+                                    <button
+                                        class="w-full bg-slate-200 text-slate-400 font-extrabold text-lg py-4 rounded-full cursor-not-allowed"
+                                        disabled>KHÔNG THỂ MUA</button>
+                                    <% } %>
+                        </div>
+
+                        <h3 class="text-xl font-bold text-slate-900 border-b border-slate-200 pb-3 mb-4">Mô tả sản phẩm
+                        </h3>
+                        <div
+                            class="prose prose-slate prose-p:leading-relaxed text-slate-600 whitespace-pre-line text-sm md:text-base">
+                            <%= sanpham.MoTa %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 md:p-10 mb-16">
+                <h3
+                    class="text-2xl font-extrabold text-slate-900 border-b border-slate-100 pb-4 mb-8 flex items-center">
+                    <i class="bi bi-star-fill text-amber-400 mr-3"></i>Đánh giá từ khách hàng</h3>
+
+                <% if (khachhang) { %>
+                    <% if (typeof dangDoiTra !== 'undefined' && dangDoiTra) { %>
+                        <div
+                            class="bg-amber-50 border border-amber-200 text-amber-700 p-6 rounded-2xl font-bold text-center mb-10 flex items-center justify-center flex-col">
+                            <i class="bi bi-arrow-left-right text-4xl mb-2"></i>
+                            Sản phẩm này đang trong quá trình yêu cầu Đổi/Trả. Không thể đánh giá lúc này!
+                        </div>
+                    <% } else if (typeof daDanhGia !== 'undefined' && daDanhGia) { %>
+                        <div
+                            class="bg-emerald-50 border border-emerald-100 text-emerald-700 p-6 rounded-2xl font-bold text-center mb-10 flex items-center justify-center flex-col">
+                            <i class="bi bi-check-circle-fill text-4xl mb-2"></i> Cảm ơn bạn đã gửi đánh giá cho sản
+                            phẩm này!
+                        </div>
+                        <% } else if (typeof daMuaHang !=='undefined' && daMuaHang) { %>
+                            <form action="/danhgia/<%= sanpham._id %>" method="POST"
+                                class="bg-slate-50 border border-slate-100 p-6 rounded-2xl mb-10">
+                                <h6 class="font-bold text-slate-800 mb-4 text-lg">Bạn chấm sản phẩm này mấy sao?</h6>
+                                <div class="mb-4 flex flex-wrap gap-2">
+                                    <% [5, 4, 3, 2, 1].forEach(sao=> { %>
+                                        <label class="relative cursor-pointer">
+                                            <input type="radio" name="SoSao" value="<%= sao %>" class="peer sr-only"
+                                                <%=sao===5 ? 'checked' : '' %>>
+                                            <div
+                                                class="px-4 py-2 rounded-full border-2 border-slate-200 text-slate-500 font-bold peer-checked:bg-amber-50 peer-checked:border-amber-400 peer-checked:text-amber-600 hover:bg-slate-100 transition-colors flex items-center">
+                                                <%= sao %> <i class="bi bi-star-fill ml-1"></i>
+                                            </div>
+                                        </label>
+                                        <% }) %>
+                                </div>
+                                <div class="mb-4">
+                                    <textarea name="BinhLuan" rows="3" required
+                                        class="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-4 py-3 outline-none focus:border-brand-500 font-medium resize-none shadow-sm"
+                                        placeholder="Chia sẻ trải nghiệm của bạn về chiếc Tivi này..."></textarea>
+                                </div>
+                                <button type="submit"
+                                    class="bg-brand-600 hover:bg-brand-700 text-white font-bold py-2.5 px-8 rounded-full shadow-md transition-transform hover:-translate-y-0.5">Gửi
+                                    đánh giá</button>
+                            </form>
+                            <% } else { %>
+                                <div
+                                    class="bg-brand-50 border border-brand-100 text-brand-700 p-6 rounded-2xl font-bold text-center mb-10 flex items-center justify-center flex-col">
+                                    <i class="bi bi-bag-check-fill text-4xl mb-2"></i> Bạn cần mua sản phẩm này (đơn
+                                    hàng đã duyệt) để có thể viết đánh giá!
+                                </div>
+                                <% } %>
+                                    <% } else { %>
+                                        <div
+                                            class="bg-amber-50 border border-amber-100 text-amber-700 p-6 rounded-2xl font-bold text-center mb-10 flex items-center justify-center flex-col">
+                                            <i class="bi bi-exclamation-circle text-4xl mb-2"></i>
+                                            <span>Vui lòng <a href="/dangnhap"
+                                                    class="text-brand-600 underline hover:text-brand-800">Đăng nhập</a>
+                                                và mua hàng để để lại đánh giá!</span>
+                                        </div>
+                                        <% } %>
+
+                                            <div class="space-y-6">
+                                                <% if(sanpham.DanhGia && sanpham.DanhGia.length> 0) { %>
+                                                    <% sanpham.DanhGia.reverse().forEach(dg=> { %>
+                                                        <div
+                                                            class="flex gap-4 pb-6 border-b border-slate-100 last:border-0 last:pb-0">
+                                                            <div
+                                                                class="w-12 h-12 shrink-0 bg-gradient-to-br from-brand-500 to-brand-700 text-white rounded-full flex items-center justify-center font-extrabold text-lg shadow-md">
+                                                                <%= dg.KhachHang ?
+                                                                    dg.KhachHang.HoVaTen.charAt(0).toUpperCase() : 'K'
+                                                                    %>
+                                                            </div>
+                                                            <div>
+                                                                <h6 class="font-bold text-slate-900 text-lg">
+                                                                    <%= dg.KhachHang ? dg.KhachHang.HoVaTen
+                                                                        : 'Khách hàng ẩn danh' %>
+                                                                </h6>
+                                                                <div
+                                                                    class="flex items-center text-amber-400 text-sm my-1">
+                                                                    <% for(let i=1; i<=5; i++) { %>
+                                                                        <i
+                                                                            class="bi <%= i <= dg.SoSao ? 'bi-star-fill' : 'bi-star' %>"></i>
+                                                                        <% } %>
+                                                                            <span
+                                                                                class="text-slate-400 ml-3 text-xs font-medium"><i
+                                                                                    class="bi bi-clock mr-1"></i>
+                                                                                <%= new
+                                                                                    Date(dg.NgayDanhGia).toLocaleDateString('vi-VN')
+                                                                                    %>
+                                                                            </span>
+                                                                </div>
+                                                                <p class="text-slate-600 mt-2 leading-relaxed">
+                                                                    <%= dg.BinhLuan %>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <% }) %>
+                                                            <% } else { %>
+                                                                <div class="text-center py-8">
+                                                                    <i
+                                                                        class="bi bi-chat-square-quote text-slate-200 text-6xl mb-3 block"></i>
+                                                                    <p class="text-slate-500 font-medium">Chưa có đánh
+                                                                        giá nào. Hãy trở thành người đầu tiên đánh giá
+                                                                        sản phẩm này!</p>
+                                                                </div>
+                                                                <% } %>
+                                            </div>
+            </div>
+
+            <% if(splienquan.length> 0) { %>
+                <div class="flex justify-between items-center mb-6 mt-12 border-b border-slate-200 pb-4">
+                    <h3 class="text-2xl font-extrabold text-slate-900"><i class="bi bi-tv text-brand-500 mr-2"></i>Sản
+                        Phẩm Cùng Loại</h3>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <% splienquan.forEach(sp=> { %>
+                        <div
+                            class="bg-white rounded-3xl p-4 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col group">
+                            <a href="/sanpham/<%= sp._id %>" class="flex flex-col flex-grow">
+                                <div class="h-48 flex items-center justify-center mb-4 overflow-hidden rounded-2xl p-4">
+                                    <% let relImg=sp.HinhAnh.startsWith('http') ? sp.HinhAnh : '/images/' + sp.HinhAnh;
+                                        %>
+                                        <img src="<%= relImg %>"
+                                            class="max-h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                                            alt="<%= sp.TenSP %>">
+                                </div>
+                                <div class="flex flex-col flex-grow text-center">
+                                    <h6
+                                        class="text-slate-800 font-bold leading-tight mb-2 line-clamp-1 hover:text-brand-600 transition-colors">
+                                        <%= sp.TenSP %>
+                                    </h6>
+
+                                    <% let tbSaoLienQuan=0; let soDGLienQuan=0; if(sp.DanhGia && sp.DanhGia.length> 0) {
+                                        soDGLienQuan = sp.DanhGia.length;
+                                        tbSaoLienQuan = (sp.DanhGia.reduce((sum, dg) => sum + dg.SoSao, 0) /
+                                        soDGLienQuan).toFixed(1);
+                                        }
+                                        %>
+                                        <div class="flex items-center justify-center text-sm mb-3">
+                                            <i class="bi bi-star-fill text-amber-400 mr-1"></i>
+                                            <span class="font-bold text-slate-700">
+                                                <%= tbSaoLienQuan> 0 ? tbSaoLienQuan : 'Chưa có' %>
+                                            </span>
+                                            <% if(soDGLienQuan> 0) { %><span class="text-slate-400 ml-1">(<%=
+                                                        soDGLienQuan %>)</span>
+                                                <% } %>
+                                        </div>
+                                        <div class="mt-auto text-red-500 font-extrabold text-lg">
+                                            <%= sp.GiaBan.toLocaleString('vi-VN') %> đ
+                                        </div>
                                 </div>
                             </a>
                         </div>
-                    </div>
-                <% }) %>
-            </div>
-        <% } %>
-    </div>
-    
-    <%- include('footer') %>
+                        <% }) %>
+                </div>
+                <% } %>
+        </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <%- include('footer') %>
 </body>
+
 </html>
