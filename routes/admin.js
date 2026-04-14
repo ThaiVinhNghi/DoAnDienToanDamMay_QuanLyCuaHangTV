@@ -11,9 +11,9 @@ var DoiTra = require('../models/doitra');
 // 1. MIDDLEWARE: Bức tường bảo vệ tab Admin
 const checkLogin = (req, res, next) => {
     if (req.session && req.session.NhanVien) {
-        next(); 
+        next();
     } else {
-        res.redirect('/admin/dangnhap'); 
+        res.redirect('/admin/dangnhap');
     }
 };
 
@@ -43,7 +43,7 @@ router.post('/dangnhap', async (req, res) => {
         }
 
         req.session.NhanVien = nv;
-        res.redirect('/admin'); 
+        res.redirect('/admin');
     } catch (error) {
         console.log(error);
         res.render('dangnhap', { title: 'Đăng nhập Quản trị', error: 'Lỗi hệ thống!' });
@@ -59,7 +59,7 @@ router.get('/', checkLogin, async (req, res) => {
     try {
         const soSanPham = await SanPham.countDocuments();
         const soKhachHang = await KhachHang.countDocuments();
-        const soHoaDon = await HoaDon.countDocuments({ TrangThai: 'Chờ duyệt' }); 
+        const soHoaDon = await HoaDon.countDocuments({ TrangThai: 'Chờ duyệt' });
 
         const danhSachHoaDon = await HoaDon.find({ TrangThai: 'Đã duyệt' });
         let tongDoanhThu = danhSachHoaDon.reduce((sum, hd) => sum + hd.TongTien, 0);
@@ -67,8 +67,8 @@ router.get('/', checkLogin, async (req, res) => {
         // THÊM MỚI: Lấy 5 hóa đơn mới nhất đẩy ra giao diện
         const hoaDonMoi = await HoaDon.find().sort({ _id: -1 }).limit(5).populate('KhachHang');
 
-        res.render('admin/index', { 
-            title: 'Bảng điều khiển Admin', 
+        res.render('admin/index', {
+            title: 'Bảng điều khiển Admin',
             nhanvien: req.session.NhanVien,
             soSanPham: soSanPham,
             soKhachHang: soKhachHang,
@@ -88,7 +88,7 @@ router.get('/', checkLogin, async (req, res) => {
 router.get('/hoadon/duyet/:id', checkLogin, async (req, res) => {
     try {
         const hd = await HoaDon.findById(req.params.id);
-        
+
         // Chặn lỗi click duyệt 2 lần làm trừ kho 2 lần
         if (!hd || hd.TrangThai !== 'Chờ duyệt') {
             return res.redirect('/admin/hoadon');
@@ -111,13 +111,13 @@ router.get('/hoadon/duyet/:id', checkLogin, async (req, res) => {
         // Tự động tạo sổ nợ (Giữ nguyên logic cũ)
         if (hd.HinhThucThanhToan === 'Trả góp') {
             const checkTonTai = await TraGop.findOne({ HoaDon: hd._id });
-            if(!checkTonTai) {
+            if (!checkTonTai) {
                 let traTruoc = hd.TongTien * 0.3; // Thu trước 30%
                 let conLai = hd.TongTien - traTruoc; // Gốc còn lại cần vay
-                
-                let soThang = hd.SoThangTraGop || 6; 
+
+                let soThang = hd.SoThangTraGop || 6;
                 let laiSuat = 1; // Cứng 1% / tháng
-                
+
                 let tienMoiThang = Math.round((conLai / soThang) + (conLai * (laiSuat / 100)));
 
                 await TraGop.create({
@@ -133,8 +133,8 @@ router.get('/hoadon/duyet/:id', checkLogin, async (req, res) => {
             }
         }
         res.redirect('/admin/hoadon');
-    } catch (error) { 
-        console.log(error); 
+    } catch (error) {
+        console.log(error);
         res.send("Lỗi hệ thống: " + error.message);
     }
 });
@@ -148,14 +148,14 @@ router.get('/tragop', checkLogin, async (req, res) => {
             if (tg.TrangThai !== 'Đã tất toán') {
                 let diffTime = Math.abs(now - tg.NgayThanhToanGanNhat);
                 let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                
-                let soLanNhac = tg.SoLanNhacNho || 0; 
+
+                let soLanNhac = tg.SoLanNhacNho || 0;
 
                 // Quá 90 ngày HOẶC Bị nhắc 3 lần -> Bắt buộc là Nợ Xấu
-                if (diffDays > 90 || soLanNhac >= 3) { 
-                    tg.TrangThai = 'Nợ xấu'; 
-                } else if (diffDays > 30) { 
-                    tg.TrangThai = 'Quá hạn'; 
+                if (diffDays > 90 || soLanNhac >= 3) {
+                    tg.TrangThai = 'Nợ xấu';
+                } else if (diffDays > 30) {
+                    tg.TrangThai = 'Quá hạn';
                 } else {
                     tg.TrangThai = 'Đang trả';
                 }
@@ -172,7 +172,7 @@ router.post('/tragop/thutien/:id', checkLogin, async (req, res) => {
     try {
         let tg = await TraGop.findById(req.params.id);
         if (!tg) return res.redirect('/admin/tragop');
-        
+
         tg.SoThangDaTra += 1;
         tg.NgayThanhToanGanNhat = new Date(); // Reset mốc thời gian
         tg.SoLanNhacNho = 0; // Đã nộp tiền thì xóa cảnh báo nhắc nhở
@@ -191,7 +191,7 @@ router.post('/tragop/thutien/:id', checkLogin, async (req, res) => {
 
         await tg.save();
         res.redirect('/admin/tragop');
-    } catch(err) { console.log(err); }
+    } catch (err) { console.log(err); }
 });
 
 // 4. Nhắc nhở nợ
@@ -199,48 +199,51 @@ router.get('/tragop/nhacnho/:id', checkLogin, async (req, res) => {
     try {
         let tg = await TraGop.findById(req.params.id);
         if (tg && tg.TrangThai !== 'Đã tất toán' && tg.TrangThai !== 'Nợ xấu') {
-            tg.SoLanNhacNho = (tg.SoLanNhacNho || 0) + 1; 
-            
+            tg.SoLanNhacNho = (tg.SoLanNhacNho || 0) + 1;
+
             if (tg.SoLanNhacNho >= 3) {
                 tg.TrangThai = 'Nợ xấu';
             }
             await tg.save();
         }
         res.redirect('/admin/tragop');
-    } catch (error) { 
-        console.log(error); 
+    } catch (error) {
+        console.log(error);
         res.send("Lỗi nhắc nhở: " + error.message);
     }
 });
 
-// 5. Tất toán toàn bộ
+// 5. Tất toán toàn bộ (Đã fix lỗi redirect back)
 router.post('/tragop/tattoan/:id', checkLogin, async (req, res) => {
     try {
-        let tg = await TraGop.findById(req.params.id);
-        
-        if (tg && tg.TrangThai !== 'Đã tất toán') {
-            let soThangConLai = tg.SoThang - tg.SoThangDaTra;
-            let soTienTatToan = soThangConLai * tg.TienTraMoiThang;
+        const tragop = await TraGop.findById(req.params.id);
 
-            tg.SoThangDaTra = tg.SoThang;
-            tg.TrangThai = 'Đã tất toán';
-            tg.NgayThanhToanGanNhat = new Date();
-            tg.SoLanNhacNho = 0; // Tất toán xong thì sạch nợ, sạch cảnh báo
-
-            tg.LichSuThuTien.push({
-                SoTienThu: soTienTatToan,
-                KỳThanhToan: tg.SoThang 
-            });
-
-            await tg.save();
+        if (!tragop) {
+            return res.redirect('/admin/tragop');
         }
+
+        // KIỂM TRA PHÂN LOẠI TRƯỚC KHI ĐÓNG SỔ
+        if (tragop.TrangThai === 'Nợ xấu') {
+            // Lưu lại vết nhơ tài chính (Đưa vào Blacklist)
+            tragop.TrangThai = 'Đã thu hồi nợ';
+        } else {
+            // Khách hàng uy tín trả xong bình thường
+            tragop.TrangThai = 'Đã tất toán';
+        }
+
+        // Cập nhật tiến độ thành 100%
+        tragop.SoThangDaTra = tragop.SoThang;
+        await tragop.save();
+
+        // FIX: Trỏ thẳng về trang Quản lý Trả góp thay vì dùng 'back'
         res.redirect('/admin/tragop');
-    } catch (error) { 
-        console.log(error); 
-        res.send("Lỗi tất toán: " + error.message); 
+
+    } catch (error) {
+        console.log("Lỗi khi tất toán:", error);
+        // Nếu có lỗi cũng an toàn đẩy về trang danh sách, không để trang trắng
+        res.redirect('/admin/tragop');
     }
 });
-
 // 1. Hiển thị danh sách Yêu cầu
 router.get('/doitra', checkLogin, async (req, res) => {
     try {
@@ -315,8 +318,8 @@ router.get('/hoadon/in/:id', checkLogin, async (req, res) => {
     try {
         const hd = await HoaDon.findById(req.params.id)
             .populate('KhachHang')
-            .populate('ChiTietHoaDon.SanPham'); 
-            
+            .populate('ChiTietHoaDon.SanPham');
+
         if (!hd) return res.send('Không tìm thấy hóa đơn!');
 
         res.render('admin/hoadon_in', { title: 'In Hóa Đơn', hoadon: hd });

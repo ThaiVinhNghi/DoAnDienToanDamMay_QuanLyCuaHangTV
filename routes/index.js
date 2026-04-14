@@ -506,10 +506,15 @@ router.post('/thanhtoan', async (req, res) => {
 
         let chiTiet = giohang.map(item => ({ SanPham: item.SanPhamId, SoLuong: item.SoLuong, DonGiaBan: item.GiaBan }));
 
+        // XỬ LÝ CHẶN DANH SÁCH ĐEN KHI MUA TRẢ GÓP
         if (hinhThuc === 'Trả góp') {
-            const checkNoXau = await TraGop.findOne({ KhachHang: req.session.KhachHang._id, TrangThai: 'Nợ xấu' });
-            if (checkNoXau) {
-                return res.send(`<script>alert("Tài khoản NỢ XẤU, không thể trả góp!"); window.history.back();</script>`);
+            const checkBlacklist = await TraGop.findOne({
+                KhachHang: req.session.KhachHang._id,
+                TrangThai: { $in: ['Nợ xấu', 'Đã thu hồi nợ'] }
+            });
+
+            if (checkBlacklist) {
+                return res.send(`<script>alert("TỪ CHỐI: Tài khoản của bạn nằm trong Danh Sách Đen do từng có lịch sử Nợ Xấu. Bạn vĩnh viễn không thể sử dụng tính năng Trả góp!"); window.history.back();</script>`);
             }
         }
 
