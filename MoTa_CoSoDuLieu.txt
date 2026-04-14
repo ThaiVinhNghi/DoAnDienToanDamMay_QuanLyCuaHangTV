@@ -1,0 +1,118 @@
+MÔ TẢ CHI TIẾT CƠ SỞ DỮ LIỆU ĐỒ ÁN
+==================================================
+
+Dự án sử dụng cơ sở dữ liệu MongoDB thông qua thư viện Mongoose. Dưới đây là chi tiết các Collection (Bảng) và cấu trúc các Field (Cột) trong từng Collection:
+
+1. Collection: SanPham (Sản phẩm)
+---------------------------------
+- TenSP: String, bắt buộc (Tên sản phẩm)
+- GiaBan: Number, bắt buộc (Giá bán hiện tại)
+- GiaGoc: Number, mặc định 0 (Giá gốc trước khi giảm. Nếu GiaGoc > GiaBan → đang Flash Sale)
+- SoLuongTon: Number, mặc định 0 (Số lượng lưu kho)
+- HinhAnh: String (Đường dẫn hình ảnh)
+- MoTa: String (Mô tả sản phẩm)
+- LoaiSanPham: ObjectId (Khóa ngoại tham chiếu đến Collection LoaiSanPham)
+- HangSanXuat: ObjectId (Khóa ngoại tham chiếu đến Collection HangSanXuat)
+- DanhGia: Array (Mảng chứa các đánh giá của khách hàng)
+  + KhachHang: ObjectId (Tham chiếu đến bảng KhachHang)
+  + SoSao: Number, từ 1 đến 5 sao
+  + BinhLuan: String
+  + NgayDanhGia: Date, mặc định khi tạo
+
+2. Collection: KhachHang (Khách hàng)
+-------------------------------------
+- HoVaTen: String, bắt buộc
+- TenDangNhap: String, bắt buộc, duy nhất (Tài khoản)
+- MatKhau: String, bắt buộc
+- SoDienThoai: String, bắt buộc
+- Email: String
+- DiaChi: String, bắt buộc (Dùng để giao hàng)
+
+3. Collection: HoaDon (Hóa đơn)
+-------------------------------
+- KhachHang: ObjectId, bắt buộc (Khóa ngoại tham chiếu đến KhachHang)
+- NhanVienDuyet: ObjectId (Khóa ngoại tham chiếu đến NhanVien duyệt đơn)
+- NgayLap: Date, mặc định ngày tạo
+- HinhThucThanhToan: String, mặc định 'Trả hết'
+- SoThangTraGop: Number, mặc định 0
+- SoLanNhacNho: Number, mặc định 0
+- TongTien: Number, bắt buộc
+- TrangThai: String, mặc định 'Chờ duyệt' (Chờ duyệt, Đã duyệt, Đang giao, Đã thanh toán, Đã hủy)
+- ChiTietHoaDon: Array (Mảng các sản phẩm trong hóa đơn)
+  + SanPham: ObjectId, bắt buộc (Tham chiếu đến SanPham)
+  + SoLuong: Number, bắt buộc
+  + DonGiaBan: Number, bắt buộc
+
+4. Collection: NhanVien (Nhân viên)
+-----------------------------------
+- HoVaTen: String, bắt buộc
+- TenDangNhap: String, bắt buộc, duy nhất
+- MatKhau: String, bắt buộc
+- QuyenHan: String, mặc định 'admin' (admin, nhanvien)
+- TrangThai: Number, mặc định 1 (1: Hoạt động, 0: Khóa)
+
+5. Collection: LoaiSanPham (Loại sản phẩm)
+------------------------------------------
+- TenLoai: String, bắt buộc, duy nhất (Vd: Smart TV, TV OLED...)
+
+6. Collection: HangSanXuat (Hãng sản xuất)
+------------------------------------------
+- TenHang: String, bắt buộc, duy nhất (Vd: Sony, Samsung, LG...)
+- QuocGia: String
+
+7. Collection: NhaCungCap (Nhà cung cấp)
+----------------------------------------
+- TenNCC: String, bắt buộc
+- SoDienThoai: String
+- Email: String
+- DiaChi: String
+
+8. Collection: NhapHang (Nhập hàng - Phiếu nhập)
+------------------------------------------------
+- NhanVien: ObjectId, bắt buộc (Người lập phiếu, tham chiếu đến NhanVien)
+- NhaCungCap: ObjectId, bắt buộc (Tham chiếu đến NhaCungCap)
+- NgayNhap: Date, mặc định ngày tạo
+- TongTienNhap: Number, mặc định 0
+- ChiTietNhap: Array (Mảng chi tiết sản phẩm nhập kho)
+  + SanPham: ObjectId, bắt buộc
+  + SoLuong: Number, bắt buộc
+  + DonGiaNhap: Number, bắt buộc
+
+9. Collection: DoiTra (Yêu cầu Đổi/Trả hàng)
+--------------------------------------------
+- KhachHang: ObjectId, bắt buộc
+- HoaDon: ObjectId, bắt buộc
+- LoaiYeuCau: String, bắt buộc ('Trả hàng' hoặc 'Đổi hàng')
+- SanPhamMoi: Array (Mảng sản phẩm muốn đổi lấy, áp dụng khi Đổi hàng)
+  + SanPham: ObjectId
+  + SoLuong: Number, mặc định 1
+- LyDo: String (Lý do đổi trả)
+- TrangThai: String, mặc định 'Chờ xử lý' (Chờ xử lý, Đã duyệt, Từ chối)
+- NgayYeuCau: Date, mặc định ngày tạo
+
+10. Collection: TraGop (Hồ sơ Trả góp)
+--------------------------------------
+- HoaDon: ObjectId, bắt buộc
+- KhachHang: ObjectId, bắt buộc
+- SoTienTraTruoc: Number, bắt buộc
+- SoThang: Number, bắt buộc (Vd: 6, 9, 12 tháng)
+- LaiSuat: Number, mặc định 0 (%)
+- TienTraMoiThang: Number, bắt buộc
+- TrangThai: String, mặc định 'Đang trả' (Đang trả, Quá hạn, Nợ xấu, Đã tất toán)
+- SoThangDaTra: Number, mặc định 0
+- NgayThanhToanGanNhat: Date, mặc định ngày tạo
+- SoLanNhacNho: Number, mặc định 0
+- LichSuThuTien: Array (Lưu vết tiến độ thu tiền hàng tháng)
+  + NgayThu: Date, mặc định ngày tạo
+  + SoTienThu: Number
+  + KỳThanhToan: Number
+
+11. Collection: TinTuc (Tin tức / Bài viết)
+-------------------------------------------
+- TieuDe: String, bắt buộc
+- HinhAnh: String, bắt buộc
+- TomTat: String, bắt buộc
+- NoiDung: String
+- NgayDang: Date, mặc định ngày tạo
+- TrangThai: Boolean, mặc định true (true: Hiện, false: Ẩn)
+==================================================
