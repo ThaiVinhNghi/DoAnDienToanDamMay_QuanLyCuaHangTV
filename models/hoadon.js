@@ -5,6 +5,8 @@ var hoaDonSchema = new mongoose.Schema({
     NgayLap: { type: Date, default: Date.now },
     HinhThucThanhToan: { type: String, default: 'Trả hết' },
     SoThangTraGop: { type: Number, default: 0 },
+    CCCD: { type: String },         // Thêm dòng này
+    NgaySinh: { type: Date },        // Thêm dòng này
     SoLanNhacNho: { type: Number, default: 0 },
     TongTien: { type: Number, required: true },
     TrangThai: { type: String, default: 'Chờ duyệt' }, // Chờ duyệt, Đã duyệt, Đang giao, Đã thanh toán, Đã hủy

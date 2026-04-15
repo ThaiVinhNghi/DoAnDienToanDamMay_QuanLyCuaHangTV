@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var nhapHangSchema = new mongoose.Schema({
     NhanVien: { type: mongoose.Schema.Types.ObjectId, ref: 'NhanVien', required: true }, // Ai nhập
     NhaCungCap: { type: mongoose.Schema.Types.ObjectId, ref: 'NhaCungCap', required: true },
+    HangSanXuat: { type: mongoose.Schema.Types.ObjectId, ref: 'HangSanXuat' }, // THÊM DÒNG NÀY
     NgayNhap: { type: Date, default: Date.now },
     TongTienNhap: { type: Number, default: 0 },
     ChiTietNhap: [{

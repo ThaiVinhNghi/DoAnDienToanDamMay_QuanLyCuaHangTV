@@ -23,7 +23,7 @@
                     <thead class="table-light">
                         <tr>
                             <th width="5%">#</th>
-                            <th class="text-start">Nhà cung cấp</th>
+                            <th class="text-start">Hãng sản xuất (Nguồn nhập)</th>
                             <th>Ngày nhập</th>
                             <th>Người nhập</th>
                             <th>Tổng tiền gốc</th>
@@ -35,17 +35,31 @@
                         <% nhaphang.forEach(pn => { %>
                             <tr>
                                 <th><%= stt++ %></th>
-                                <td class="text-start fw-bold text-primary"><%= pn.NhaCungCap ? pn.NhaCungCap.TenNCC : 'N/A' %></td>
+                                
+                                <td class="text-start fw-bold text-primary">
+                                    <% 
+                                        let tenNguonNhap = 'N/A';
+                                        if (pn.NhaCungCap) {
+                                            // Check xem có thuộc tính TenHang hay TenNCC
+                                            tenNguonNhap = pn.NhaCungCap.TenHang || pn.NhaCungCap.TenNCC || 'Đã đổi tên hãng';
+                                        } 
+                                    %>
+                                    <%= tenNguonNhap %>
+                                </td>
+                                
                                 <td><%= pn.NgayNhap.toLocaleString('vi-VN') %></td>
                                 <td class="small"><%= pn.NhanVien ? pn.NhanVien.HoVaTen : '-' %></td>
                                 <td class="text-danger fw-bold"><%= pn.TongTienNhap.toLocaleString('vi-VN') %> đ</td>
                                 <td>
-                                    <a href="/admin/nhaphang/chitiet/<%= pn._id %>" class="btn btn-sm btn-info text-white"><i class="bi bi-eye"></i></a>
+                                    <a href="/admin/nhaphang/chitiet/<%= pn._id %>" class="btn btn-sm btn-info text-white" title="Xem chi tiết">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
                                 </td>
                             </tr>
                         <% }); %>
+                        
                         <% if(nhaphang.length === 0) { %>
-                            <tr><td colspan="6" class="py-4">Chưa có dữ liệu nhập hàng.</td></tr>
+                            <tr><td colspan="6" class="py-4 text-muted fst-italic">Chưa có dữ liệu phiếu nhập hàng nào.</td></tr>
                         <% } %>
                     </tbody>
                 </table>

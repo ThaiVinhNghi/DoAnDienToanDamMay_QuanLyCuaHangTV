@@ -22,11 +22,15 @@
                         <form action="/admin/nhaphang/them" method="POST">
                             
                             <div class="mb-4 col-md-4">
-                                <label class="form-label fw-bold">Chọn Nhà Cung Cấp</label>
-                                <select class="form-select border-primary" name="NhaCungCap" required>
-                                    <option value="">-- Chọn NCC --</option>
-                                    <% nhacungcap.forEach(ncc => { %>
-                                        <option value="<%= ncc._id %>"><%= ncc.TenNCC %></option>
+                                <label class="form-label fw-bold">Nhập hàng từ (Hãng Sản Xuất)</label>
+                                <select class="form-select border-primary" name="NhaCungCap" id="chonHangSanXuat" required onchange="locSanPhamTheoHang()">
+                                    <option value="">-- Chọn Hãng Sản Xuất --</option>
+                                    <% 
+                                        // Mẹo nhỏ: Hỗ trợ linh hoạt cả 2 tên biến đề phòng Backend truyền xuống khác nhau
+                                        let dsHienThi = typeof hangsanxuat !== 'undefined' ? hangsanxuat : (typeof nhacungcap !== 'undefined' ? nhacungcap : []); 
+                                    %>
+                                    <% dsHienThi.forEach(hang => { %>
+                                        <option value="<%= hang._id %>"><%= hang.TenHang || hang.TenNCC %></option>
                                     <% }); %>
                                 </select>
                             </div>
@@ -45,10 +49,18 @@
                                 <tbody>
                                     <tr>
                                         <td>
-                                            <select class="form-select" name="SanPhamId[]" required>
-                                                <option value="">-- Chọn Tivi --</option>
-                                                <% sanpham.forEach(sp => { %>
-                                                    <option value="<%= sp._id %>"><%= sp.TenSP %> (Tồn: <%= sp.SoLuongTon %>)</option>
+                                            <select class="form-select select-sanpham" name="SanPhamId[]" required>
+                                                <option value="" class="opt-macdinh">-- Chọn Tivi --</option>
+                                                <% sanpham.forEach(sp => { 
+                                                    // Chỉ lấy ID của Hãng Sản Xuất để lọc
+                                                    let hangId = '';
+                                                    if (sp.HangSanXuat) {
+                                                        hangId = sp.HangSanXuat._id ? sp.HangSanXuat._id.toString() : sp.HangSanXuat.toString();
+                                                    }
+                                                %>
+                                                    <option value="<%= sp._id %>" data-hang="<%= hangId %>" class="opt-sanpham">
+                                                        <%= sp.TenSP %> | Giá bán: <%= sp.GiaBan ? sp.GiaBan.toLocaleString('vi-VN') : 0 %> đ (Tồn: <%= sp.SoLuongTon %>)
+                                                    </option>
                                                 <% }); %>
                                             </select>
                                         </td>
@@ -76,19 +88,67 @@
     </div>
 
     <script>
+        // HÀM LỌC ĐÃ ĐƯỢC CHUYỂN SANG DÙNG HÃNG SẢN XUẤT
+        function locSanPhamTheoHang() {
+            var hangId = document.getElementById('chonHangSanXuat').value;
+            var cacOChonSP = document.querySelectorAll('.select-sanpham');
+
+            cacOChonSP.forEach(function(selectSP) {
+                var options = selectSP.querySelectorAll('.opt-sanpham');
+                var countVisible = 0; 
+
+                options.forEach(function(opt) {
+                    var spHangId = opt.getAttribute('data-hang');
+                    
+                    if (hangId === "" || spHangId === hangId) {
+                        // Trùng hãng -> Hiện ra
+                        opt.disabled = false;
+                        opt.hidden = false;
+                        opt.style.display = "";
+                        countVisible++;
+                    } else {
+                        // Khác hãng -> Ẩn đi
+                        opt.disabled = true;
+                        opt.hidden = true;
+                        opt.style.display = "none";
+                        
+                        // Chống lỗi lưu data: Nếu Option đang ẩn mà lại đang được chọn thì gỡ chọn
+                        if(opt.selected) {
+                            selectSP.value = "";
+                        }
+                    }
+                });
+
+                // Đổi text thông minh nếu Hãng chưa có Tivi nào
+                var defaultOpt = selectSP.querySelector('.opt-macdinh');
+                if (countVisible === 0 && hangId !== "") {
+                    defaultOpt.text = "-- Hãng này chưa có Tivi nào --";
+                } else {
+                    defaultOpt.text = "-- Chọn Tivi --";
+                }
+            });
+        }
+
+        // Chạy lọc ngay khi load trang
+        locSanPhamTheoHang();
+
+        // Xử lý thêm dòng mới
         document.getElementById('btnThemDong').addEventListener('click', function() {
             var tbody = document.querySelector('#bangNhapHang tbody');
             var firstRow = tbody.querySelector('tr');
             var newRow = firstRow.cloneNode(true);
             
-            // Xóa giá trị cũ khi copy dòng mới
+            newRow.querySelector('select[name="SanPhamId[]"]').value = "";
             newRow.querySelector('input[name="SoLuong[]"]').value = 1;
             newRow.querySelector('input[name="DonGiaNhap[]"]').value = 0;
             
             tbody.appendChild(newRow);
+            
+            // Ép dòng mới lọc theo cấu hình hiện tại
+            locSanPhamTheoHang();
         });
 
-        // Dùng event delegation để xóa dòng
+        // Xử lý xóa dòng
         document.querySelector('#bangNhapHang').addEventListener('click', function(e) {
             if (e.target.closest('.btn-xoa-dong')) {
                 var tbody = document.querySelector('#bangNhapHang tbody');

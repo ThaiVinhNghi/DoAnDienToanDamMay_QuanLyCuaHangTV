@@ -519,8 +519,14 @@ router.post('/thanhtoan', async (req, res) => {
         }
 
         await HoaDon.create({
-            KhachHang: req.session.KhachHang._id, TongTien: tongTien, ChiTietHoaDon: chiTiet,
-            HinhThucThanhToan: hinhThuc, SoThangTraGop: soThang, TrangThai: 'Chờ duyệt'
+            KhachHang: req.session.KhachHang._id, 
+            TongTien: tongTien, 
+            ChiTietHoaDon: chiTiet,
+            HinhThucThanhToan: hinhThuc, 
+            SoThangTraGop: soThang, 
+            TrangThai: 'Chờ duyệt',
+            CCCD: req.body.CCCD,           // <--- THÊM DÒNG NÀY VÀO
+            NgaySinh: req.body.NgaySinh    // <--- THÊM DÒNG NÀY VÀO
         });
 
         req.session.GioHang = [];
