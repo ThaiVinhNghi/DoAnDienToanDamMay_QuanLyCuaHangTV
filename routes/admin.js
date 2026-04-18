@@ -9,7 +9,7 @@ var SanPham = require('../models/sanpham');
 var HoaDon = require('../models/hoadon');
 var TraGop = require('../models/tragop');
 var DoiTra = require('../models/doitra');
-var HangSanXuat = require('../models/hangsanxuat'); 
+var HangSanXuat = require('../models/hangsanxuat');
 var NhapHang = require('../models/nhaphang'); // ĐÃ THÊM: Import Model Nhập Hàng
 
 // 1. MIDDLEWARE: Bức tường bảo vệ tab Admin
@@ -64,16 +64,26 @@ router.get('/', checkLogin, async (req, res) => {
         const danhSachHoaDon = await HoaDon.find({ TrangThai: 'Đã duyệt' });
         let tongDoanhThu = danhSachHoaDon.reduce((sum, hd) => sum + hd.TongTien, 0);
 
-        const hoaDonMoi = await HoaDon.find().sort({ _id: -1 }).limit(5).populate('KhachHang');
+        // --- CÁC TRUY VẤN MỚI CHO DASHBOARD TỰ ĐỘNG ---
+
+        // 1. Sản phẩm sắp hết hàng (Tồn kho <= 5)
+        const spHetHang = await SanPham.find({ SoLuongTon: { $lte: 5 } }).sort({ SoLuongTon: 1 }).limit(5);
+
+        // 2. Các yêu cầu chưa xử lý (Đổi trả chờ xử lý)
+        const ycKhachHang = await DoiTra.find({ TrangThai: 'Chờ xử lý' }).populate('KhachHang').limit(5);
+
+        // 3. Đơn hàng chờ duyệt mới nhất
+        const hdChoDuyet = await HoaDon.find({ TrangThai: 'Chờ duyệt' }).populate('KhachHang').sort({ NgayLap: -1 }).limit(5);
+
+        // 4. Sản phẩm bán chạy 
+        // (Lưu ý: Mình đang sort tạm theo số lượng tồn ít nhất. Nếu DB bạn có cột 'SoLuongDaBan' thì đổi thành .sort({ SoLuongDaBan: -1 }))
+        const spBanChay = await SanPham.find({}).sort({ SoLuongTon: 1 }).limit(5);
 
         res.render('admin/index', {
             title: 'Bảng điều khiển Admin',
             nhanvien: req.session.NhanVien,
-            soSanPham: soSanPham,
-            soKhachHang: soKhachHang,
-            soHoaDon: soHoaDon,
-            tongDoanhThu: tongDoanhThu,
-            hoaDonMoi: hoaDonMoi 
+            soSanPham, soKhachHang, soHoaDon, tongDoanhThu,
+            spHetHang, ycKhachHang, hdChoDuyet, spBanChay
         });
     } catch (error) {
         console.log(error);
@@ -99,8 +109,8 @@ router.get('/hoadon/duyet/:id', checkLogin, async (req, res) => {
         for (let item of hd.ChiTietHoaDon) {
             let sp = await SanPham.findById(item.SanPham);
             if (sp) {
-                sp.SoLuongTon -= item.SoLuong; 
-                if (sp.SoLuongTon < 0) sp.SoLuongTon = 0; 
+                sp.SoLuongTon -= item.SoLuong;
+                if (sp.SoLuongTon < 0) sp.SoLuongTon = 0;
                 await sp.save();
             }
         }
@@ -108,11 +118,11 @@ router.get('/hoadon/duyet/:id', checkLogin, async (req, res) => {
         if (hd.HinhThucThanhToan === 'Trả góp') {
             const checkTonTai = await TraGop.findOne({ HoaDon: hd._id });
             if (!checkTonTai) {
-                let traTruoc = hd.TongTien * 0.3; 
-                let conLai = hd.TongTien - traTruoc; 
+                let traTruoc = hd.TongTien * 0.3;
+                let conLai = hd.TongTien - traTruoc;
 
                 let soThang = hd.SoThangTraGop || 6;
-                let laiSuat = 1; 
+                let laiSuat = 1;
 
                 let tienMoiThang = Math.round((conLai / soThang) + (conLai * (laiSuat / 100)));
 
@@ -185,8 +195,8 @@ router.post('/tragop/thutien/:id', checkLogin, async (req, res) => {
         if (!tg) return res.redirect('/admin/tragop');
 
         tg.SoThangDaTra += 1;
-        tg.NgayThanhToanGanNhat = new Date(); 
-        tg.SoLanNhacNho = 0; 
+        tg.NgayThanhToanGanNhat = new Date();
+        tg.SoLanNhacNho = 0;
 
         tg.LichSuThuTien.push({
             SoTienThu: tg.TienTraMoiThang,
@@ -194,7 +204,7 @@ router.post('/tragop/thutien/:id', checkLogin, async (req, res) => {
         });
 
         if (tg.SoThangDaTra >= tg.SoThang) {
-            tg.SoThangDaTra = tg.SoThang; 
+            tg.SoThangDaTra = tg.SoThang;
             tg.TrangThai = 'Đã tất toán';
         } else {
             tg.TrangThai = 'Đang trả';
@@ -295,7 +305,7 @@ router.post('/doitra/duyet/:id', checkLogin, async (req, res) => {
             let spMoi = spMoiReq.SanPham;
             let soLuongDoi = spMoiReq.SoLuong || 1;
             let spDb = await SanPham.findById(spMoi._id);
-            
+
             spDb.SoLuongTon -= soLuongDoi;
             if (spDb.SoLuongTon < 0) spDb.SoLuongTon = 0;
             await spDb.save();
@@ -320,13 +330,13 @@ router.get('/nhaphang', checkLogin, async (req, res) => {
     try {
         // Lấy danh sách, populate HangSanXuat (hoặc NhaCungCap) và NhanVien
         const dsNhapHang = await NhapHang.find()
-            .populate('HangSanXuat') 
+            .populate('HangSanXuat')
             .populate('NhaCungCap') // Đề phòng DB dùng field cũ
             .populate('NhanVien')
             .sort({ NgayNhap: -1 });
 
-        res.render('admin/nhaphang', { 
-            title: 'Lịch sử Nhập Hàng', 
+        res.render('admin/nhaphang', {
+            title: 'Lịch sử Nhập Hàng',
             nhaphang: dsNhapHang,
             nhanvien: req.session.NhanVien
         });
@@ -339,12 +349,12 @@ router.get('/nhaphang', checkLogin, async (req, res) => {
 // 2. GET: Hiển thị trang Tạo Phiếu Nhập Hàng Mới
 router.get('/nhaphang/them', checkLogin, async (req, res) => {
     try {
-        const dsHangSanXuat = await HangSanXuat.find({}); 
-        const dsSanPham = await SanPham.find({}).populate('HangSanXuat'); 
+        const dsHangSanXuat = await HangSanXuat.find({});
+        const dsSanPham = await SanPham.find({}).populate('HangSanXuat');
 
         res.render('admin/nhaphang_them', {
             title: 'Tạo Phiếu Nhập Hàng Mới',
-            hangsanxuat: dsHangSanXuat, 
+            hangsanxuat: dsHangSanXuat,
             sanpham: dsSanPham,
             nhanvien: req.session.NhanVien
         });
@@ -358,7 +368,7 @@ router.get('/nhaphang/them', checkLogin, async (req, res) => {
 router.post('/nhaphang/them', checkLogin, async (req, res) => {
     try {
         let { NhaCungCap, SanPhamId, SoLuong, DonGiaNhap } = req.body;
-        
+
         // Xử lý trường hợp chỉ nhập 1 sản phẩm (form gửi lên dạng chuỗi thay vì mảng)
         if (!Array.isArray(SanPhamId)) {
             SanPhamId = [SanPhamId];
