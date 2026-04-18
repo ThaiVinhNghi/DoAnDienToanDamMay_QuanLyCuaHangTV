@@ -11,6 +11,66 @@ var DoiTra = require('../models/doitra');
 var TraGop = require('../models/tragop');
 var TinTuc = require('../models/tintuc');
 
+
+const passport = require('passport');
+const FacebookStrategy = require('passport-facebook').Strategy;
+
+// 1. Cấu hình Chiến lược Đăng nhập Facebook
+passport.use(new FacebookStrategy({
+    clientID: '26573543515632775',       // Sẽ lấy ở Bước 3
+    clientSecret: 'cbacc4d544f065d90fb668388358ea63', // Sẽ lấy ở Bước 3
+    callbackURL: "https://doandientoandammay-quanlycuahangtv.onrender.com/auth/facebook/callback",
+
+    profileFields: ['id', 'displayName', 'emails']
+},
+    async function (accessToken, refreshToken, profile, cb) {
+        try {
+            // Kiểm tra xem khách này đã từng đăng nhập bằng Facebook chưa
+            let user = await KhachHang.findOne({ FacebookId: profile.id });
+
+            if (!user) {
+                // Nếu là khách mới tinh -> Tự động tạo tài khoản mới vào CSDL
+                user = await KhachHang.create({
+                    FacebookId: profile.id,
+                    HoVaTen: profile.displayName,
+                    Email: profile.emails ? profile.emails[0].value : '',
+                    TenDangNhap: 'fb_' + profile.id, // Tạo tên đăng nhập tự động
+                    MatKhau: 'da_dang_nhap_bang_facebook', // Bỏ qua mật khẩu
+                    DiaChi: 'Chưa cập nhật',
+                    SoDienThoai: 'Chưa cập nhật',
+                    TrangThai: 1
+                });
+            }
+            return cb(null, user); // Trả thông tin user về cho Passport
+        } catch (err) {
+            return cb(err, null);
+        }
+    }
+));
+
+// (Bắt buộc cho Passport) Hàm đóng gói user
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((user, done) => done(null, user));
+
+
+// ================================================================
+// 2. TẠO 2 ROUTE ĐỂ GIAO TIẾP VỚI FACEBOOK
+// ================================================================
+
+// Route 1: Khi khách bấm nút "Đăng nhập bằng FB", đẩy họ sang trang của Facebook
+// Mới
+router.get('/auth/facebook', passport.authenticate('facebook'));
+// Route 2: Nơi Facebook trả kết quả về sau khi khách bấm "Tiếp tục dưới tên..."
+router.get('/auth/facebook/callback',
+    passport.authenticate('facebook', { failureRedirect: '/dangnhap' }),
+    function (req, res) {
+        // Thành công! Lưu thông tin khách vào Session giống hệt cách bạn đang làm
+        req.session.KhachHang = req.user;
+        res.redirect('/'); // Đá về trang chủ
+    }
+);
+
+
 // ======================== TRANG CHỦ & TÌM KIẾM ========================
 router.get('/', async (req, res) => {
     try {
@@ -519,11 +579,11 @@ router.post('/thanhtoan', async (req, res) => {
         }
 
         await HoaDon.create({
-            KhachHang: req.session.KhachHang._id, 
-            TongTien: tongTien, 
+            KhachHang: req.session.KhachHang._id,
+            TongTien: tongTien,
             ChiTietHoaDon: chiTiet,
-            HinhThucThanhToan: hinhThuc, 
-            SoThangTraGop: soThang, 
+            HinhThucThanhToan: hinhThuc,
+            SoThangTraGop: soThang,
             TrangThai: 'Chờ duyệt',
             CCCD: req.body.CCCD,           // <--- THÊM DÒNG NÀY VÀO
             NgaySinh: req.body.NgaySinh    // <--- THÊM DÒNG NÀY VÀO

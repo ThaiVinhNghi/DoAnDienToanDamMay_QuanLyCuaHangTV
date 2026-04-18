@@ -17,7 +17,9 @@
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' }
+                        brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' },
+                        facebook: '#1877F2', // Thêm màu chuẩn của Facebook
+                        'facebook-hover': '#166FE5'
                     }
                 }
             }
@@ -29,7 +31,7 @@
 
     <%- include('navbar') %>
 
-        <div class="flex-grow flex items-center justify-center p-4">
+        <div class="flex-grow flex items-center justify-center p-4 mt-8 mb-12">
             <div class="bg-white rounded-3xl shadow-xl overflow-hidden flex max-w-4xl w-full">
 
                 <div class="hidden md:block md:w-1/2 relative bg-brand-600">
@@ -101,6 +103,22 @@
                                     ĐĂNG NHẬP
                                 </button>
                             </form>
+
+                            <div class="mt-6">
+                                <div class="relative mb-6">
+                                    <div class="absolute inset-0 flex items-center">
+                                        <div class="w-full border-t border-slate-200"></div>
+                                    </div>
+                                    <div class="relative flex justify-center text-sm">
+                                        <span class="px-3 bg-white text-slate-500 font-medium">Hoặc tiếp tục với</span>
+                                    </div>
+                                </div>
+
+                                <a href="/auth/facebook"
+                                    class="w-full flex items-center justify-center bg-facebook hover:bg-facebook-hover text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-0.5">
+                                    <i class="bi bi-facebook text-xl mr-2"></i> Đăng nhập bằng Facebook
+                                </a>
+                            </div>
 
                             <p class="mt-8 text-center text-sm text-slate-600">
                                 Chưa có tài khoản?

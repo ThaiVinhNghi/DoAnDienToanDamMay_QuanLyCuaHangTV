@@ -5,6 +5,7 @@ var khachHangSchema = new mongoose.Schema({
     MatKhau: { type: String, required: true },
     SoDienThoai: { type: String, required: true },
     Email: { type: String },
+    FacebookId: { type: String, default: null },
     DiaChi: { type: String, required: true } // Cần để giao hàng
 });
 module.exports = mongoose.model('KhachHang', khachHangSchema);

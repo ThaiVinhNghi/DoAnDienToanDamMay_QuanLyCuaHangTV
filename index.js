@@ -1,21 +1,21 @@
-var express = require('express'); 
-var app = express(); 
-var mongoose = require('mongoose'); 
+var express = require('express');
+var app = express();
+var mongoose = require('mongoose');
 var session = require('express-session');
 
 // Kết nối MongoDB Atlas (Thay <db_user>, <db_password> và URL cluster của bạn vào đây)
 
 var uri = 'mongodb://admin:admin123@ac-mehl2fb-shard-00-00.ci790jr.mongodb.net:27017,ac-mehl2fb-shard-00-01.ci790jr.mongodb.net:27017,ac-mehl2fb-shard-00-02.ci790jr.mongodb.net:27017/qltivistore?ssl=true&replicaSet=atlas-14ilul-shard-0&authSource=admin&appName=qltivistore';
-mongoose.connect(uri) 
-  .then(() => console.log('Đã kết nối thành công tới MongoDB Atlas.')) 
-  .catch(err => console.log('Lỗi kết nối CSDL:', err)); 
+mongoose.connect(uri)
+  .then(() => console.log('Đã kết nối thành công tới MongoDB Atlas.'))
+  .catch(err => console.log('Lỗi kết nối CSDL:', err));
 
 // Cấu hình View Engine là EJS
 app.set('views', './views');
-app.set('view engine', 'ejs'); 
+app.set('view engine', 'ejs');
 
 // Đọc dữ liệu từ body của request (form submit)
-app.use(express.json()); 
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Thiết lập thư mục public chứa file tĩnh (css, js, hình ảnh sản phẩm)
@@ -26,10 +26,10 @@ app.use(express.static('public'));
 
 // Cấu hình Session (Bắt buộc phải nằm trước các Router)
 app.use(session({
-    secret: 'cuahangtivi_secret_key_2026', // Khóa bảo mật tự chọn
-    resave: false,
-    saveUninitialized: true,
-    cookie: { maxAge: 1000 * 60 * 60 * 24 } // Session sống 1 ngày (tính bằng mili giây)
+  secret: 'cuahangtivi_secret_key_2026', // Khóa bảo mật tự chọn
+  resave: false,
+  saveUninitialized: true,
+  cookie: { maxAge: 1000 * 60 * 60 * 24 } // Session sống 1 ngày (tính bằng mili giây)
 }));
 var indexRouter = require('./routes/index');
 var adminRouter = require('./routes/admin'); // Router cho Admin
@@ -46,12 +46,14 @@ var tintucRouter = require('./routes/tintuc');
 
 // Bức tường bảo vệ chung cho tất cả tab Admin (Ngoại trừ trang đăng nhập)
 const checkLogin = (req, res, next) => {
-    if (req.session && req.session.NhanVien) {
-        next();
-    } else {
-        res.redirect('/admin/dangnhap');
-    }
+  if (req.session && req.session.NhanVien) {
+    next();
+  } else {
+    res.redirect('/admin/dangnhap');
+  }
 };
+
+
 
 app.use('/admin', adminRouter);
 app.use('/', indexRouter);
@@ -65,10 +67,13 @@ app.use('/admin/nhanvien', checkLogin, nhanVienRouter);
 app.use('/admin/khachhang', checkLogin, khachHangRouter);
 app.use('/admin/tintuc', checkLogin, tintucRouter);
 
-
+// Khởi tạo Passport (Dán ngay dưới app.use(session(...)))
+const passport = require('passport');
+app.use(passport.initialize());
+app.use(passport.session());
 
 
 // Khởi động server
-app.listen(3000, () => { 
+app.listen(3000, () => {
   console.log('Server is running at http://127.0.0.1:3000');
 });
