@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body, html { height: 100%; margin: 0; font-family: 'Inter', sans-serif; background-color: #f3f6f9; }
+
+        .stat-card {
+            border-radius: 16px; border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+            transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-3px); }
+
+        .filter-bar {
+            background: #fff; border-radius: 16px;
+            border: 1px solid #e9ecef; padding: 16px 20px;
+        }
+
+        .table thead th {
+            background-color: #f3f6f9; font-size: 0.8rem;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            font-weight: 700; color: #6c7588;
+        }
+        .table tbody td { font-size: 0.88rem; vertical-align: middle; }
+
+        /* BADGE TRẠNG THÁI BH */
+        .badge-con     { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+        .badge-sap-het { background: #fff8e1; color: #e65100; border: 1px solid #ffcc02; }
+        .badge-het     { background: #fce4ec; color: #c62828; border: 1px solid #ef9a9a; }
+        .badge-huy     { background: #f5f5f5; color: #616161; border: 1px solid #e0e0e0; }
+
+        .bh-row:hover { background-color: #f8f9ff !important; }
+
+        .day-counter {
+            font-size: 1.1rem; font-weight: 700; line-height: 1;
+        }
+        .day-label { font-size: 0.72rem; color: #9e9e9e; }
+
+        /* Progress bar hạn BH */
+        .bh-progress {
+            height: 6px; border-radius: 3px;
+            background: #e9ecef; overflow: hidden;
+        }
+        .bh-progress-bar { height: 100%; border-radius: 3px; }
+
+        .modal-header { border-bottom: 1px solid #e9ecef; }
+        .search-row { background: #fff; }
+    </style>
+</head>
+<body>
+<div class="d-flex h-100">
+    <%- include('sidebar') %>
+
+    <div class="flex-grow-1 p-4 overflow-auto">
+
+        <!-- TIÊU ĐỀ -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold mb-1" style="color:#1e1e2d;">
+                    <i class="bi bi-shield-check text-success me-2"></i>Quản Lý Bảo Hành
+                </h3>
+                <p class="text-muted mb-0" style="font-size:0.9rem;">
+                    Tự động sinh phiếu khi duyệt hóa đơn — bảo hành chính hãng 24 tháng
+                </p>
+            </div>
+        </div>
+
+        <!-- THỐNG KÊ NHANH -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card stat-card p-3 h-100" style="border-left: 5px solid #3699ff !important;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-3 d-flex align-items-center justify-content-center"
+                             style="width:50px;height:50px;background:#e8f0ff;">
+                            <i class="bi bi-shield-fill fs-4 text-primary"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold fs-4 lh-1"><%= tongPhieu.toLocaleString('vi-VN') %></div>
+                            <div class="text-muted" style="font-size:0.82rem;">Tổng phiếu BH</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card p-3 h-100" style="border-left: 5px solid #43a047 !important;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-3 d-flex align-items-center justify-content-center"
+                             style="width:50px;height:50px;background:#e8f5e9;">
+                            <i class="bi bi-shield-check fs-4" style="color:#43a047;"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold fs-4 lh-1"><%= conBH.toLocaleString('vi-VN') %></div>
+                            <div class="text-muted" style="font-size:0.82rem;">Còn bảo hành</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card p-3 h-100" style="border-left: 5px solid #fb8c00 !important;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-3 d-flex align-items-center justify-content-center"
+                             style="width:50px;height:50px;background:#fff3e0;">
+                            <i class="bi bi-clock-history fs-4" style="color:#fb8c00;"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold fs-4 lh-1"><%= sapHet.toLocaleString('vi-VN') %></div>
+                            <div class="text-muted" style="font-size:0.82rem;">Sắp hết (&lt;30 ngày)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card p-3 h-100" style="border-left: 5px solid #e53935 !important;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-3 d-flex align-items-center justify-content-center"
+                             style="width:50px;height:50px;background:#fce4ec;">
+                            <i class="bi bi-shield-x fs-4" style="color:#e53935;"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold fs-4 lh-1"><%= hetBH.toLocaleString('vi-VN') %></div>
+                            <div class="text-muted" style="font-size:0.82rem;">Hết bảo hành</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BỘ LỌC -->
+        <div class="filter-bar mb-4">
+            <form method="GET" action="/admin/baohanh" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold text-muted" style="font-size:0.82rem;">
+                        <i class="bi bi-search me-1"></i>TÌM THEO TÊN SẢN PHẨM
+                    </label>
+                    <input type="text" name="timkiem" class="form-control"
+                           placeholder="Nhập tên sản phẩm..."
+                           value="<%= query && query.timkiem ? query.timkiem : '' %>">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold text-muted" style="font-size:0.82rem;">
+                        <i class="bi bi-funnel-fill me-1"></i>LỌC THEO TRẠNG THÁI
+                    </label>
+                    <select name="trangthai" class="form-select">
+                        <option value="">-- Tất cả --</option>
+                        <option value="Còn bảo hành"      <%= (query && query.trangthai === 'Còn bảo hành')      ? 'selected' : '' %>>🟢 Còn bảo hành</option>
+                        <option value="Sắp hết bảo hành"  <%= (query && query.trangthai === 'Sắp hết bảo hành')  ? 'selected' : '' %>>🟡 Sắp hết bảo hành</option>
+                        <option value="Hết bảo hành"      <%= (query && query.trangthai === 'Hết bảo hành')      ? 'selected' : '' %>>🔴 Hết bảo hành</option>
+                        <option value="Đã hủy"            <%= (query && query.trangthai === 'Đã hủy')            ? 'selected' : '' %>>⚫ Đã hủy</option>
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary fw-bold flex-grow-1">
+                        <i class="bi bi-search me-1"></i> Lọc
+                    </button>
+                    <a href="/admin/baohanh" class="btn btn-outline-secondary fw-bold">
+                        <i class="bi bi-x-circle"></i> Xóa lọc
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- BẢNG BẢO HÀNH -->
+        <div class="card border-0 rounded-4 shadow-sm overflow-hidden">
+            <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center py-3 px-4">
+                <span class="fw-bold text-dark">
+                    <i class="bi bi-list-ul text-success me-2"></i>
+                    Danh sách phiếu bảo hành
+                    <span class="badge bg-success ms-2"><%= dsbaohanh.length %></span>
+                </span>
+                <span class="text-muted" style="font-size:0.8rem;">Cập nhật trạng thái tự động mỗi lần tải trang</span>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th width="3%">#</th>
+                            <th width="20%">Khách hàng</th>
+                            <th width="22%">Sản phẩm</th>
+                            <th width="10%">Ngày bắt đầu</th>
+                            <th width="10%">Ngày kết thúc</th>
+                            <th width="12%">Còn lại</th>
+                            <th width="10%">Trạng thái</th>
+                            <th width="13%">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <% if (dsbaohanh.length === 0) { %>
+                        <tr>
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                <i class="bi bi-shield-slash" style="font-size:3rem;color:#dee2e6;"></i>
+                                <p class="mt-3 fw-bold">Chưa có phiếu bảo hành nào</p>
+                                <p style="font-size:0.85rem;">Phiếu bảo hành sẽ tự sinh khi Admin duyệt hóa đơn.</p>
+                            </td>
+                        </tr>
+                    <% } else { %>
+                    <% dsbaohanh.forEach((bh, i) => {
+                        const now = new Date();
+                        const ketThuc = new Date(bh.NgayKetThuc);
+                        const batDau  = new Date(bh.NgayBatDau);
+                        const diffMs  = ketThuc - now;
+                        const conLaiNgay = Math.ceil(diffMs / (1000*60*60*24));
+                        const tongThoiGianMs = ketThuc - batDau;
+                        const daQuaMs = now - batDau;
+                        const phanTram = tongThoiGianMs > 0 ? Math.max(0, Math.min(100, Math.round((daQuaMs / tongThoiGianMs) * 100))) : 100;
+                        const isHet  = bh.TrangThai === 'Hết bảo hành';
+                        const isSap  = bh.TrangThai === 'Sắp hết bảo hành';
+                        const isHuy  = bh.TrangThai === 'Đã hủy';
+                        const barColor = isHuy ? '#bdbdbd' : (isHet ? '#e53935' : isSap ? '#fb8c00' : '#43a047');
+                        
+                        // Đưa style ra ngoài để VS Code không báo lỗi đỏ
+                        const progressStyle = `width: ${phanTram}%; background: ${barColor};`;
+                    %>
+                    <tr class="bh-row">
+                        <td class="text-muted" style="font-size:0.78rem;"><%= i+1 %></td>
+                        <td>
+                            <div class="fw-semibold"><%= bh.KhachHang ? bh.KhachHang.HoVaTen : '—' %></div>
+                            <div class="text-muted" style="font-size:0.78rem;"><%= bh.KhachHang ? bh.KhachHang.SoDienThoai : '' %></div>
+                        </td>
+                        <td>
+                            <div class="fw-semibold"><%= bh.TenSanPham %></div>
+                            <div class="text-muted" style="font-size:0.75rem;">SL: <%= bh.SoLuong %> chiếc</div>
+                        </td>
+                        <td style="font-size:0.82rem;"><%= new Date(bh.NgayBatDau).toLocaleDateString('vi-VN') %></td>
+                        <td style="font-size:0.82rem;"><%= new Date(bh.NgayKetThuc).toLocaleDateString('vi-VN') %></td>
+                        <td>
+                            <% if (isHuy) { %>
+                                <div class="day-counter text-secondary" style="font-size:0.95rem;">Đã hủy</div>
+                            <% } else if (isHet) { %>
+                                <div class="day-counter text-danger">Hết hạn</div>
+                            <% } else { %>
+                                <div class="day-counter <%= isSap ? 'text-warning' : 'text-success' %>"><%= conLaiNgay %></div>
+                                <div class="day-label">ngày còn lại</div>
+                            <% } %>
+                            <div class="bh-progress mt-1">
+                                <%- `<div class="bh-progress-bar" style="${progressStyle}"></div>` %>
+                            </div>
+                        </td>
+                        <td>
+                            <% if (isHuy) { %>
+                                <span class="badge badge-huy rounded-pill px-3 py-2 fw-semibold" style="font-size:0.75rem;">
+                                    <i class="bi bi-slash-circle me-1"></i>Đã hủy
+                                </span>
+                            <% } else if (isHet) { %>
+                                <span class="badge badge-het rounded-pill px-3 py-2 fw-semibold" style="font-size:0.75rem;">
+                                    <i class="bi bi-shield-x me-1"></i>Hết BH
+                                </span>
+                            <% } else if (isSap) { %>
+                                <span class="badge badge-sap-het rounded-pill px-3 py-2 fw-semibold" style="font-size:0.75rem;">
+                                    <i class="bi bi-clock-history me-1"></i>Sắp hết
+                                </span>
+                            <% } else { %>
+                                <span class="badge badge-con rounded-pill px-3 py-2 fw-semibold" style="font-size:0.75rem;">
+                                    <i class="bi bi-shield-check me-1"></i>Còn BH
+                                </span>
+                            <% } %>
+                        </td>
+                        <td>
+                            <div class="d-flex flex-column gap-1">
+                                <a href="/admin/baohanh/in/<%= bh._id %>" target="_blank"
+                                   class="btn btn-sm btn-primary fw-bold">
+                                    <i class="bi bi-printer-fill me-1"></i>In phiếu
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-secondary fw-bold"
+                                        data-bs-toggle="modal" data-bs-target="#modalGhiChu<%= bh._id %>">
+                                    <i class="bi bi-pencil-square me-1"></i>Ghi chú
+                                </button>
+                            </div>
+
+                            <!-- MODAL GHI CHÚ -->
+                            <div class="modal fade" id="modalGhiChu<%= bh._id %>" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title fw-bold">
+                                                <i class="bi bi-pencil-square text-primary me-2"></i>Ghi chú bảo hành
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <form action="/admin/baohanh/ghichu/<%= bh._id %>" method="POST">
+                                            <div class="modal-body">
+                                                <p class="text-muted mb-2" style="font-size:0.85rem;">
+                                                    <strong>SP:</strong> <%= bh.TenSanPham %> —
+                                                    <strong>KH:</strong> <%= bh.KhachHang ? bh.KhachHang.HoVaTen : '—' %>
+                                                </p>
+                                                <textarea name="GhiChu" class="form-control" rows="4"
+                                                          placeholder="Nhập lịch sử sửa chữa, ghi chú bảo hành..."><%= bh.GhiChu || '' %></textarea>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                                <button type="submit" class="btn btn-primary fw-bold">
+                                                    <i class="bi bi-check-lg me-1"></i>Lưu ghi chú
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <% }); %>
+                    <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

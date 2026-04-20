@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body, html { height: 100%; margin: 0; font-family: 'Inter', sans-serif; background-color: #f3f6f9; }
+
+        /* ===== BADGE LOẠI LOG ===== */
+        .badge-dang-nhap  { background-color: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+        .badge-hoa-don    { background-color: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
+        .badge-tra-gop    { background-color: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
+        .badge-nhap-hang  { background-color: #f3e5f5; color: #6a1b9a; border: 1px solid #ce93d8; }
+        .badge-doi-tra    { background-color: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
+        .badge-khac       { background-color: #eceff1; color: #37474f; border: 1px solid #b0bec5; }
+
+        /* ===== ICON LOG ===== */
+        .log-icon-dang-nhap { color: #2e7d32; }
+        .log-icon-hoa-don   { color: #1565c0; }
+        .log-icon-tra-gop   { color: #e65100; }
+        .log-icon-nhap-hang { color: #6a1b9a; }
+        .log-icon-doi-tra   { color: #c62828; }
+        .log-icon-khac      { color: #37474f; }
+
+        /* ===== BẢNG LOG ===== */
+        .log-row:hover { background-color: #f8f9ff !important; }
+        .stat-card {
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+            transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-3px); }
+
+        .filter-bar {
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid #e9ecef;
+            padding: 16px 20px;
+        }
+
+        .timeline-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+            flex-shrink: 0;
+        }
+        .dot-dang-nhap  { background: #43a047; }
+        .dot-hoa-don    { background: #1e88e5; }
+        .dot-tra-gop    { background: #fb8c00; }
+        .dot-nhap-hang  { background: #8e24aa; }
+        .dot-doi-tra    { background: #e53935; }
+        .dot-khac       { background: #78909c; }
+
+        .table thead th {
+            background-color: #f3f6f9;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            color: #6c7588;
+        }
+        .table tbody td { font-size: 0.9rem; vertical-align: middle; }
+        .time-text { font-size: 0.78rem; color: #9e9e9e; }
+        .nv-chip {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: #f3f6f9; border-radius: 20px;
+            padding: 3px 10px; font-size: 0.82rem; font-weight: 600;
+        }
+        .nv-avatar {
+            width: 24px; height: 24px; border-radius: 50%;
+            background: #3699ff; color: #fff;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 0.7rem; font-weight: 700; flex-shrink: 0;
+        }
+        .empty-state { padding: 60px 0; color: #9e9e9e; }
+        .toast-success {
+            position: fixed; top: 20px; right: 20px; z-index: 9999;
+            background: #d4edda; color: #155724; border: 1px solid #c3e6cb;
+            border-radius: 10px; padding: 14px 20px; font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            animation: slideIn 0.4s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(120%); opacity: 0; }
+            to   { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="d-flex h-100">
+    <%- include('sidebar') %>
+
+    <div class="flex-grow-1 p-4 overflow-auto">
+
+        <!-- TOAST THÔNG BÁO XÓA LOG -->
+        <% if (query && query.xoa === 'ok') { %>
+        <div class="toast-success" id="toastXoa">
+            <i class="bi bi-check-circle-fill me-2"></i> Đã xóa thành công các log cũ hơn 30 ngày!
+        </div>
+        <script>setTimeout(() => { const t = document.getElementById('toastXoa'); if(t) t.remove(); }, 4000);</script>
+        <% } %>
+
+        <!-- TIÊU ĐỀ -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold mb-1" style="color:#1e1e2d;">
+                    <i class="bi bi-journal-text text-primary me-2"></i>Nhật Ký Hệ Thống
+                </h3>
+                <p class="text-muted mb-0" style="font-size:0.9rem;">Theo dõi mọi hoạt động của nhân viên trong khu vực quản trị</p>
+            </div>
+            <!-- Nút xóa log cũ -->
+            <form action="/admin/nhatky/xoa-cu" method="POST"
+                  onsubmit="return confirm('Bạn chắc chắn muốn xóa tất cả log CŨ HƠN 30 ngày không? Hành động này không thể hoàn tác!');">
+                <button type="submit" class="btn btn-outline-danger fw-bold">
+                    <i class="bi bi-trash3-fill me-1"></i> Xóa log cũ &gt; 30 ngày
+                </button>
+            </form>
+        </div>
+
+        <!-- THỐNG KÊ NHANH -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card stat-card p-3 h-100" style="border-left: 5px solid #3699ff !important;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-3 d-flex align-items-center justify-content-center"
+                             style="width:50px;height:50px;background:#e8f0ff;">
+                            <i class="bi bi-journal-text fs-4 text-primary"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold fs-4 lh-1"><%= tongLog.toLocaleString('vi-VN') %></div>
+                            <div class="text-muted" style="font-size:0.82rem;">Tổng bản ghi</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card p-3 h-100" style="border-left: 5px solid #43a047 !important;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-3 d-flex align-items-center justify-content-center"
+                             style="width:50px;height:50px;background:#e8f5e9;">
+                            <i class="bi bi-calendar-check fs-4" style="color:#43a047;"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold fs-4 lh-1"><%= logHomNay.toLocaleString('vi-VN') %></div>
+                            <div class="text-muted" style="font-size:0.82rem;">Hoạt động hôm nay</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card p-3 h-100" style="border-left: 5px solid #1e88e5 !important;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-3 d-flex align-items-center justify-content-center"
+                             style="width:50px;height:50px;background:#e3f2fd;">
+                            <i class="bi bi-receipt-cutoff fs-4" style="color:#1e88e5;"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold fs-4 lh-1">
+                                <%= dsnhatky.filter(l => l.LoaiLog === 'hoa-don').length.toLocaleString('vi-VN') %>
+                            </div>
+                            <div class="text-muted" style="font-size:0.82rem;">Log Hóa đơn (đang lọc)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card p-3 h-100" style="border-left: 5px solid #8e24aa !important;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-3 d-flex align-items-center justify-content-center"
+                             style="width:50px;height:50px;background:#f3e5f5;">
+                            <i class="bi bi-people-fill fs-4" style="color:#8e24aa;"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold fs-4 lh-1"><%= dsnhanvien.length %></div>
+                            <div class="text-muted" style="font-size:0.82rem;">Nhân viên hệ thống</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BỘ LỌC -->
+        <div class="filter-bar mb-4">
+            <form method="GET" action="/admin/nhatky" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold text-muted" style="font-size:0.82rem;">
+                        <i class="bi bi-funnel-fill me-1"></i>LỌC THEO LOẠI HOẠT ĐỘNG
+                    </label>
+                    <select name="loai" id="loai" class="form-select">
+                        <option value="">-- Tất cả loại --</option>
+                        <option value="dang-nhap"  <%= (query && query.loai === 'dang-nhap')  ? 'selected' : '' %>>🟢 Đăng nhập</option>
+                        <option value="hoa-don"    <%= (query && query.loai === 'hoa-don')    ? 'selected' : '' %>>🔵 Hóa đơn</option>
+                        <option value="tra-gop"    <%= (query && query.loai === 'tra-gop')    ? 'selected' : '' %>>🟠 Trả góp</option>
+                        <option value="nhap-hang"  <%= (query && query.loai === 'nhap-hang')  ? 'selected' : '' %>>🟣 Nhập hàng</option>
+                        <option value="doi-tra"    <%= (query && query.loai === 'doi-tra')    ? 'selected' : '' %>>🔴 Đổi trả</option>
+                        <option value="khac"       <%= (query && query.loai === 'khac')       ? 'selected' : '' %>>⚪ Khác</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold text-muted" style="font-size:0.82rem;">
+                        <i class="bi bi-person-badge-fill me-1"></i>LỌC THEO NHÂN VIÊN
+                    </label>
+                    <select name="nhanvien" id="nhanvien" class="form-select">
+                        <option value="">-- Tất cả nhân viên --</option>
+                        <% dsnhanvien.forEach(nv => { %>
+                        <option value="<%= nv._id %>"
+                            <%= (query && query.nhanvien === nv._id.toString()) ? 'selected' : '' %>>
+                            <%= nv.HoVaTen %> (<%= nv.TenDangNhap %>)
+                        </option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary fw-bold flex-grow-1">
+                        <i class="bi bi-search me-1"></i> Lọc
+                    </button>
+                    <a href="/admin/nhatky" class="btn btn-outline-secondary fw-bold">
+                        <i class="bi bi-x-circle"></i> Xóa lọc
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- BẢNG NHẬT KÝ -->
+        <div class="card border-0 rounded-4 shadow-sm overflow-hidden">
+            <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center py-3 px-4">
+                <span class="fw-bold text-dark">
+                    <i class="bi bi-list-ul text-primary me-2"></i>
+                    Danh sách nhật ký
+                    <span class="badge bg-primary ms-2" style="font-weight:600;"><%= dsnhatky.length %></span>
+                </span>
+                <span class="text-muted" style="font-size:0.8rem;">Hiển thị tối đa 500 bản ghi mới nhất</span>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th width="3%">#</th>
+                            <th width="13%">Thời gian</th>
+                            <th width="15%">Nhân viên</th>
+                            <th width="13%">Loại</th>
+                            <th width="18%">Hành động</th>
+                            <th>Chi tiết</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (dsnhatky.length === 0) { %>
+                        <tr>
+                            <td colspan="6">
+                                <div class="empty-state text-center">
+                                    <i class="bi bi-journal-x" style="font-size:3rem;color:#dee2e6;"></i>
+                                    <p class="mt-3 fw-bold text-muted">Chưa có bản ghi nhật ký nào</p>
+                                    <p class="text-muted" style="font-size:0.85rem;">Hệ thống sẽ tự động ghi lại sau khi có hoạt động diễn ra.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        <% } else { %>
+                        <% dsnhatky.forEach((log, i) => {
+                            const loaiMap = {
+                                'dang-nhap': { label: 'Đăng nhập', icon: 'bi-box-arrow-in-right', cls: 'badge-dang-nhap', dot: 'dot-dang-nhap', iconcls: 'log-icon-dang-nhap' },
+                                'hoa-don':   { label: 'Hóa đơn',   icon: 'bi-receipt-cutoff',      cls: 'badge-hoa-don',    dot: 'dot-hoa-don',    iconcls: 'log-icon-hoa-don'   },
+                                'tra-gop':   { label: 'Trả góp',   icon: 'bi-bank2',               cls: 'badge-tra-gop',    dot: 'dot-tra-gop',    iconcls: 'log-icon-tra-gop'   },
+                                'nhap-hang': { label: 'Nhập hàng', icon: 'bi-box-seam-fill',       cls: 'badge-nhap-hang',  dot: 'dot-nhap-hang',  iconcls: 'log-icon-nhap-hang' },
+                                'doi-tra':   { label: 'Đổi/Trả',   icon: 'bi-arrow-repeat',        cls: 'badge-doi-tra',    dot: 'dot-doi-tra',    iconcls: 'log-icon-doi-tra'   },
+                                'khac':      { label: 'Khác',      icon: 'bi-gear-fill',           cls: 'badge-khac',       dot: 'dot-khac',       iconcls: 'log-icon-khac'      }
+                            };
+                            const info = loaiMap[log.LoaiLog] || loaiMap['khac'];
+                            const thoiGian = new Date(log.ThoiGian);
+                            const tenHienThi = log.NhanVien ? log.NhanVien.HoVaTen : log.TenNhanVien;
+                            const charAvatar = tenHienThi ? tenHienThi.charAt(0).toUpperCase() : 'H';
+                        %>
+                        <tr class="log-row">
+                            <td class="text-muted" style="font-size:0.78rem;"><%= i + 1 %></td>
+                            <td>
+                                <div class="fw-semibold" style="font-size:0.85rem;">
+                                    <%= thoiGian.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit', second:'2-digit'}) %>
+                                </div>
+                                <div class="time-text">
+                                    <%= thoiGian.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit', year:'numeric'}) %>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="nv-chip">
+                                    <span class="nv-avatar"><%= charAvatar %></span>
+                                    <span><%= tenHienThi %></span>
+                                </div>
+                                <% if (log.NhanVien && log.NhanVien.QuyenHan === 'admin') { %>
+                                <div class="mt-1"><span class="badge bg-danger" style="font-size:0.65rem;">Admin</span></div>
+                                <% } %>
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill px-3 py-2 fw-semibold <%= info.cls %>" style="font-size:0.78rem;">
+                                    <i class="bi <%= info.icon %> me-1"></i><%= info.label %>
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center fw-semibold" style="font-size:0.88rem;">
+                                    <span class="timeline-dot <%= info.dot %>"></span>
+                                    <%= log.HanhDong %>
+                                </div>
+                            </td>
+                            <td class="text-muted" style="font-size:0.85rem; line-height:1.4;">
+                                <%= log.ChiTiet %>
+                            </td>
+                        </tr>
+                        <% }); %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- LEGEND -->
+        <div class="mt-3 d-flex flex-wrap gap-3 align-items-center" style="font-size:0.8rem; color:#6c7588;">
+            <span class="fw-bold">Chú thích:</span>
+            <span><span class="timeline-dot dot-dang-nhap"></span> Đăng nhập</span>
+            <span><span class="timeline-dot dot-hoa-don"></span> Hóa đơn</span>
+            <span><span class="timeline-dot dot-tra-gop"></span> Trả góp</span>
+            <span><span class="timeline-dot dot-nhap-hang"></span> Nhập hàng</span>
+            <span><span class="timeline-dot dot-doi-tra"></span> Đổi trả</span>
+            <span><span class="timeline-dot dot-khac"></span> Khác</span>
+        </div>
+
+    </div><!-- /flex-grow-1 -->
+</div><!-- /d-flex -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

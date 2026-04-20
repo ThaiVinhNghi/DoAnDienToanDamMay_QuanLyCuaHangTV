@@ -52,24 +52,28 @@
         margin: 4px 15px;
         font-weight: 500;
         transition: all 0.3s ease;
+        background: linear-gradient(135deg, rgba(54,153,255,0.10), rgba(142,36,170,0.07));
+        border: 1px solid rgba(54,153,255,0.15);
     }
 
     .sidebar .nav-link i {
         margin-right: 12px;
         font-size: 1.2rem;
-        color: #494b74;
+        color: #3699ff;
         transition: all 0.3s ease;
     }
 
     .sidebar .nav-link:hover,
     .sidebar .nav-link.active {
-        background-color: #1b1b29;
+        background: linear-gradient(135deg, rgba(54,153,255,0.25), rgba(142,36,170,0.18));
+        border-color: rgba(54,153,255,0.45);
         color: #ffffff;
+        box-shadow: 0 4px 14px rgba(54,153,255,0.18);
     }
 
     .sidebar .nav-link:hover i,
     .sidebar .nav-link.active i {
-        color: #3699ff;
+        color: #ffffff;
     }
 
     /* CARD VÀ BẢNG CHUNG TỰ ĐỘNG LÀM ĐẸP CHO TOÀN BỘ TRANG KHÁC */
@@ -133,6 +137,8 @@
                 hàng</a></li>
         <li class="nav-item"><a href="/admin/doitra" class="nav-link"><i class="bi bi-arrow-repeat"></i> Yêu cầu
                 Đổi/Trả</a></li>
+        <li class="nav-item"><a href="/admin/baohanh" class="nav-link"><i class="bi bi-shield-check"></i> Quản lý Bảo
+                hành</a></li>
 
         <% if (nhanvien && nhanvien.QuyenHan==='admin' ) { %>
             <li class="nav-item mt-3 mb-2 px-4 text-uppercase fw-bold" style="font-size: 0.75rem; color: #494b74;">Quản
@@ -147,6 +153,12 @@
                     cấp</a></li>
             <li class="nav-item"><a href="/admin/nhanvien" class="nav-link"><i class="bi bi-person-badge-fill"></i> Quản
                     lý Nhân viên</a></li>
+            <li class="nav-item mt-1">
+                <a href="/admin/nhatky" class="nav-link">
+                    <i class="bi bi-journal-text"></i>
+                    Nhật Ký Hệ Thống
+                </a>
+            </li>
             <% } %>
     </ul>
 

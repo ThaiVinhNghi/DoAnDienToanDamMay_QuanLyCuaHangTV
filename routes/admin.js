@@ -11,6 +11,23 @@ var TraGop = require('../models/tragop');
 var DoiTra = require('../models/doitra');
 var HangSanXuat = require('../models/hangsanxuat');
 var NhapHang = require('../models/nhaphang'); // ĐÃ THÊM: Import Model Nhập Hàng
+var NhatKy = require('../models/nhatky'); // Import Model Nhật Ký
+var BaoHanh = require('../models/baohanh'); // Import Model Bảo Hành
+
+// ======================== HÀM TIỆN ÍCH GHI NHẬT KÝ ========================
+async function ghiNhatKy(nhanVienId, tenNhanVien, hanhDong, chiTiet, loaiLog) {
+    try {
+        await NhatKy.create({
+            NhanVien: nhanVienId || null,
+            TenNhanVien: tenNhanVien || 'Hệ thống',
+            HanhDong: hanhDong,
+            ChiTiet: chiTiet || '',
+            LoaiLog: loaiLog || 'khac'
+        });
+    } catch (err) {
+        console.log('Lỗi ghi nhật ký:', err.message);
+    }
+}
 
 // 1. MIDDLEWARE: Bức tường bảo vệ tab Admin
 const checkLogin = (req, res, next) => {
@@ -47,6 +64,10 @@ router.post('/dangnhap', async (req, res) => {
         }
 
         req.session.NhanVien = nv;
+
+        // GHI NHẬT KÝ: Đăng nhập
+        await ghiNhatKy(nv._id, nv.HoVaTen, 'Đăng nhập hệ thống', `Nhân viên "${nv.HoVaTen}" (${nv.TenDangNhap}) đã đăng nhập vào hệ thống quản trị.`, 'dang-nhap');
+
         res.redirect('/admin');
     } catch (error) {
         console.log(error);
@@ -106,6 +127,10 @@ router.get('/hoadon/duyet/:id', checkLogin, async (req, res) => {
         hd.NhanVienDuyet = req.session.NhanVien._id;
         await hd.save();
 
+        // Lấy thêm thông tin khách hàng để ghi log
+        const khDuyet = await KhachHang.findById(hd.KhachHang);
+        const tenKH = khDuyet ? khDuyet.HoVaTen : 'Không xác định';
+
         for (let item of hd.ChiTietHoaDon) {
             let sp = await SanPham.findById(item.SanPham);
             if (sp) {
@@ -113,6 +138,31 @@ router.get('/hoadon/duyet/:id', checkLogin, async (req, res) => {
                 if (sp.SoLuongTon < 0) sp.SoLuongTon = 0;
                 await sp.save();
             }
+        }
+
+        // GHI NHẬT KÝ: Duyệt hóa đơn
+        const nv = req.session.NhanVien;
+        await ghiNhatKy(nv._id, nv.HoVaTen, 'Duyệt hóa đơn', `Duyệt hóa đơn #${hd._id} của khách hàng "${tenKH}", tổng tiền ${hd.TongTien.toLocaleString('vi-VN')} VNĐ.`, 'hoa-don');
+
+        // TỰ ĐỘNG SINH PHỪU BẢO HÀNH cho mỗi sản phẩm trong đơn
+        for (let item of hd.ChiTietHoaDon) {
+            const spBH = await SanPham.findById(item.SanPham);
+            const tenSP = spBH ? spBH.TenSP : 'Sản phẩm không xác định';
+            const ngayBatDau = new Date();
+            const ngayKetThuc = new Date(ngayBatDau);
+            ngayKetThuc.setMonth(ngayKetThuc.getMonth() + 24); // Bảo hành 24 tháng
+
+            await BaoHanh.create({
+                HoaDon: hd._id,
+                KhachHang: hd.KhachHang,
+                SanPham: item.SanPham,
+                TenSanPham: tenSP,
+                SoLuong: item.SoLuong,
+                NgayBatDau: ngayBatDau,
+                NgayKetThuc: ngayKetThuc,
+                ThoiHanBaoHanh: 24,
+                TrangThai: 'Còn bảo hành'
+            });
         }
 
         if (hd.HinhThucThanhToan === 'Trả góp') {
@@ -136,6 +186,9 @@ router.get('/hoadon/duyet/:id', checkLogin, async (req, res) => {
                     SoThangDaTra: 0,
                     NgayThanhToanGanNhat: new Date()
                 });
+
+                // GHI NHẬT KÝ: Lập hồ sơ trả góp
+                await ghiNhatKy(nv._id, nv.HoVaTen, 'Lập hồ sơ trả góp', `Lập hồ sơ trả góp cho khách hàng "${tenKH}", ${soThang} tháng, trả mỗi tháng ${tienMoiThang.toLocaleString('vi-VN')} VNĐ.`, 'tra-gop');
             }
         }
         res.redirect('/admin/hoadon');
@@ -148,10 +201,15 @@ router.get('/hoadon/duyet/:id', checkLogin, async (req, res) => {
 // Route xử lý TỪ CHỐI đơn hàng
 router.get('/hoadon/tuchoi/:id', checkLogin, async (req, res) => {
     try {
-        const hoadon = await HoaDon.findById(req.params.id);
+        const hoadon = await HoaDon.findById(req.params.id).populate('KhachHang');
         if (hoadon) {
             hoadon.TrangThai = 'Từ chối';
             await hoadon.save();
+
+            // GHI NHẬT KÝ: Từ chối hóa đơn
+            const nv = req.session.NhanVien;
+            const tenKH = hoadon.KhachHang ? hoadon.KhachHang.HoVaTen : 'Không xác định';
+            await ghiNhatKy(nv._id, nv.HoVaTen, 'Từ chối hóa đơn', `Từ chối hóa đơn #${hoadon._id} của khách hàng "${tenKH}".`, 'hoa-don');
         }
         res.redirect('/admin/hoadon');
     } catch (error) {
@@ -211,6 +269,10 @@ router.post('/tragop/thutien/:id', checkLogin, async (req, res) => {
         }
 
         await tg.save();
+
+        // Ghi nhật ký: Thu tiền
+        const nv = req.session.NhanVien;
+        await ghiNhatKy(nv._id, nv.HoVaTen, 'Thu tiền trả góp', `Thu tiền kỳ ${tg.SoThangDaTra} (Số tiền: ${tg.TienTraMoiThang.toLocaleString('vi-VN')} VNĐ) cho hồ sơ #${tg._id}.`, 'tra-gop');
         res.redirect('/admin/tragop');
     } catch (err) { console.log(err); }
 });
@@ -226,6 +288,10 @@ router.get('/tragop/nhacnho/:id', checkLogin, async (req, res) => {
                 tg.TrangThai = 'Nợ xấu';
             }
             await tg.save();
+            
+            // Ghi nhật ký: Nhắc nhở
+            const nv = req.session.NhanVien;
+            await ghiNhatKy(nv._id, nv.HoVaTen, 'Nhắc nhở trả góp', `Gửi nhắc nhở lần ${tg.SoLanNhacNho} cho hồ sơ #${tg._id}.`, 'tra-gop');
         }
         res.redirect('/admin/tragop');
     } catch (error) {
@@ -251,6 +317,10 @@ router.post('/tragop/tattoan/:id', checkLogin, async (req, res) => {
 
         tragop.SoThangDaTra = tragop.SoThang;
         await tragop.save();
+
+        // Ghi nhật ký: Tất toán
+        const nv = req.session.NhanVien;
+        await ghiNhatKy(nv._id, nv.HoVaTen, 'Tất toán trả góp', `Tất toán hồ sơ trả góp #${tragop._id} (Trạng thái chốt: ${tragop.TrangThai}).`, 'tra-gop');
 
         res.redirect('/admin/tragop');
 
@@ -278,6 +348,7 @@ router.get('/doitra', checkLogin, async (req, res) => {
 router.post('/doitra/duyet/:id', checkLogin, async (req, res) => {
     try {
         let dt = await DoiTra.findById(req.params.id)
+            .populate('KhachHang')
             .populate({ path: 'HoaDon', populate: { path: 'ChiTietHoaDon.SanPham' } })
             .populate('SanPhamMoi.SanPham');
 
@@ -293,6 +364,15 @@ router.post('/doitra/duyet/:id', checkLogin, async (req, res) => {
             }
             hd.TrangThai = 'Đã hoàn trả';
             await hd.save();
+
+            // HỦY BẢO HÀNH CŨ
+            await BaoHanh.updateMany(
+                { HoaDon: hd._id },
+                { 
+                    TrangThai: 'Đã hủy', 
+                    GhiChu: 'Đã hủy do khách hoàn trả sản phẩm.' 
+                }
+            );
 
         } else if (dt.LoaiYeuCau === 'Đổi hàng') {
             for (let item of hd.ChiTietHoaDon) {
@@ -314,10 +394,42 @@ router.post('/doitra/duyet/:id', checkLogin, async (req, res) => {
             hd.TongTien = spMoi.GiaBan * soLuongDoi;
             hd.TrangThai = 'Đã đổi hàng';
             await hd.save();
+
+            // HỦY BẢO HÀNH CŨ
+            await BaoHanh.updateMany(
+                { HoaDon: hd._id, TrangThai: { $ne: 'Đã hủy' } },
+                { 
+                    TrangThai: 'Đã hủy', 
+                    GhiChu: `Đã hủy do đổi sang sản phẩm: ${spDb.TenSP}.` 
+                }
+            );
+
+            // SINH BẢO HÀNH MỚI CHO SẢN PHẨM MỚI
+            const batDauMoi = new Date();
+            const ketThucMoi = new Date(batDauMoi);
+            ketThucMoi.setMonth(ketThucMoi.getMonth() + 24);
+
+            await BaoHanh.create({
+                HoaDon: hd._id,
+                KhachHang: hd.KhachHang,
+                SanPham: spDb._id,
+                TenSanPham: spDb.TenSP,
+                SoLuong: soLuongDoi,
+                NgayBatDau: batDauMoi,
+                NgayKetThuc: ketThucMoi,
+                ThoiHanBaoHanh: 24,
+                TrangThai: 'Còn bảo hành',
+                GhiChu: 'Phiếu bảo hành cấp lại do khách hàng đổi sản phẩm.'
+            });
         }
 
         dt.TrangThai = 'Đã duyệt';
         await dt.save();
+
+        // Ghi nhật ký: Đổi / Trả hàng
+        const nv = req.session.NhanVien;
+        const tenKH = dt.KhachHang ? dt.KhachHang.HoVaTen : 'Không xác định';
+        await ghiNhatKy(nv._id, nv.HoVaTen, 'Duyệt yêu cầu đổi trả', `Duyệt yêu cầu "${dt.LoaiYeuCau}" cho hóa đơn #${hd._id} của khách hàng "${tenKH}".`, 'doi-tra');
 
         res.redirect('/admin/doitra');
     } catch (error) { console.log(error); }
@@ -409,6 +521,11 @@ router.post('/nhaphang/them', checkLogin, async (req, res) => {
             NgayNhap: new Date()
         });
 
+        // GHI NHẬT KÝ: Nhập hàng
+        const nvNhap = req.session.NhanVien;
+        const soSP = chiTiet.length;
+        await ghiNhatKy(nvNhap._id, nvNhap.HoVaTen, 'Lập phiếu nhập hàng', `Nhập ${soSP} dòng sản phẩm, tổng tiền ${tongTienNhap.toLocaleString('vi-VN')} VNĐ.`, 'nhap-hang');
+
         res.redirect('/admin/nhaphang');
     } catch (error) {
         console.log("Lỗi khi lưu phiếu nhập:", error);
@@ -431,6 +548,159 @@ router.get('/hoadon/in/:id', checkLogin, async (req, res) => {
     } catch (error) {
         console.log(error);
         res.send("Lỗi in hóa đơn: " + error.message);
+    }
+});
+
+// ======================== NHẬT KÝ HỆ THỐNG ========================
+
+// GET: Hiển thị trang Nhật Ký
+router.get('/nhatky', checkLogin, async (req, res) => {
+    try {
+        // Chỉ admin mới được xem nhật ký
+        if (req.session.NhanVien.QuyenHan !== 'admin') {
+            return res.redirect('/admin');
+        }
+
+        let dieuKien = {};
+        if (req.query.loai && req.query.loai !== '') {
+            dieuKien.LoaiLog = req.query.loai;
+        }
+        if (req.query.nhanvien && req.query.nhanvien !== '') {
+            dieuKien.NhanVien = req.query.nhanvien;
+        }
+
+        const dsNhatKy = await NhatKy.find(dieuKien)
+            .populate('NhanVien', 'HoVaTen TenDangNhap QuyenHan')
+            .sort({ ThoiGian: -1 })
+            .limit(500);
+
+        const dsNhanVien = await NhanVien.find({}, 'HoVaTen TenDangNhap');
+
+        const tongLog = await NhatKy.countDocuments();
+        const logHomNay = await NhatKy.countDocuments({
+            ThoiGian: { $gte: new Date(new Date().setHours(0, 0, 0, 0)) }
+        });
+
+        res.render('admin/nhatky', {
+            title: 'Nhật Ký Hệ Thống',
+            nhanvien: req.session.NhanVien,
+            dsnhatky: dsNhatKy,
+            dsnhanvien: dsNhanVien,
+            tongLog,
+            logHomNay,
+            query: req.query
+        });
+    } catch (error) {
+        console.log("Lỗi nhật ký:", error);
+        res.send("Lỗi tải nhật ký: " + error.message);
+    }
+});
+
+// POST: Xóa log cũ hơn 30 ngày (chỉ admin)
+router.post('/nhatky/xoa-cu', checkLogin, async (req, res) => {
+    try {
+        if (req.session.NhanVien.QuyenHan !== 'admin') {
+            return res.redirect('/admin');
+        }
+        const ngay30TruocDay = new Date();
+        ngay30TruocDay.setDate(ngay30TruocDay.getDate() - 30);
+
+        const ketQua = await NhatKy.deleteMany({ ThoiGian: { $lt: ngay30TruocDay } });
+
+        // Ghi lại chính hành động xóa log
+        const nv = req.session.NhanVien;
+        await ghiNhatKy(nv._id, nv.HoVaTen, 'Dọn dẹp nhật ký', `Đã xóa ${ketQua.deletedCount} bản ghi log cũ hơn 30 ngày.`, 'khac');
+
+        res.redirect('/admin/nhatky?xoa=ok');
+    } catch (error) {
+        console.log("Lỗi xóa log:", error);
+        res.redirect('/admin/nhatky');
+    }
+});
+
+// ======================== QUẢN LÝ BẢO HÀNH ========================
+
+// GET: Danh sách tất cả phiếu bảo hành
+router.get('/baohanh', checkLogin, async (req, res) => {
+    try {
+        let dieuKien = {};
+        if (req.query.trangthai && req.query.trangthai !== '') {
+            dieuKien.TrangThai = req.query.trangthai;
+        }
+        if (req.query.timkiem && req.query.timkiem.trim() !== '') {
+            dieuKien.TenSanPham = { $regex: req.query.timkiem.trim(), $options: 'i' };
+        }
+
+        let dsBaoHanh = await BaoHanh.find(dieuKien)
+            .populate('KhachHang', 'HoVaTen SoDienThoai DiaChi')
+            .populate('SanPham', 'TenSP HinhAnh')
+            .populate('HoaDon', 'NgayLap TongTien')
+            .sort({ NgayBatDau: -1 });
+
+        // Cập nhật trạng thái tự động
+        const now = new Date();
+        const threshold30 = new Date();
+        threshold30.setDate(threshold30.getDate() + 30);
+
+        for (let bh of dsBaoHanh) {
+            if (bh.TrangThai === 'Đã hủy') continue; // Bỏ qua nếu đã hủy
+
+            let newTT;
+            if (bh.NgayKetThuc <= now) {
+                newTT = 'Hết bảo hành';
+            } else if (bh.NgayKetThuc <= threshold30) {
+                newTT = 'Sắp hết bảo hành';
+            } else {
+                newTT = 'Còn bảo hành';
+            }
+            if (bh.TrangThai !== newTT) {
+                bh.TrangThai = newTT;
+                await bh.save();
+            }
+        }
+
+        // Thống kê nhanh
+        const tongPhieu   = await BaoHanh.countDocuments();
+        const conBH       = await BaoHanh.countDocuments({ TrangThai: 'Còn bảo hành' });
+        const sapHet      = await BaoHanh.countDocuments({ TrangThai: 'Sắp hết bảo hành' });
+        const hetBH       = await BaoHanh.countDocuments({ TrangThai: 'Hết bảo hành' });
+
+        res.render('admin/baohanh', {
+            title: 'Quản lý Bảo Hành',
+            nhanvien: req.session.NhanVien,
+            dsbaohanh: dsBaoHanh,
+            tongPhieu, conBH, sapHet, hetBH,
+            query: req.query
+        });
+    } catch (error) {
+        console.log('Lỗi bảo hành:', error);
+        res.send('Lỗi: ' + error.message);
+    }
+});
+
+// POST: Cập nhật ghi chú phiếu bảo hành
+router.post('/baohanh/ghichu/:id', checkLogin, async (req, res) => {
+    try {
+        await BaoHanh.findByIdAndUpdate(req.params.id, { GhiChu: req.body.GhiChu });
+        res.redirect('/admin/baohanh');
+    } catch (error) {
+        console.log('Lỗi ghi chú bảo hành:', error);
+        res.redirect('/admin/baohanh');
+    }
+});
+
+// GET: Trang in phiếu bảo hành
+router.get('/baohanh/in/:id', checkLogin, async (req, res) => {
+    try {
+        const bh = await BaoHanh.findById(req.params.id)
+            .populate('KhachHang')
+            .populate('SanPham')
+            .populate('HoaDon');
+        if (!bh) return res.send('Không tìm thấy phiếu bảo hành!');
+        res.render('admin/baohanh_in', { title: 'In Phiếu Bảo Hành', baohanh: bh });
+    } catch (error) {
+        console.log('Lỗi in bảo hành:', error);
+        res.send('Lỗi: ' + error.message);
     }
 });
 
