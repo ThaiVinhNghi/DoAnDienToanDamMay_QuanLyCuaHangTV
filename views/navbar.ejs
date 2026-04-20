@@ -34,6 +34,10 @@
                         </div>
                         <div
                             class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right border border-slate-100">
+                            <a href="/thongtin"
+                                class="block px-4 py-2.5 text-slate-700 hover:bg-brand-50 hover:text-brand-600 font-semibold transition-colors">
+                                <i class="bi bi-person-fill mr-2 text-brand-500"></i>Thông tin cá nhân
+                            </a>
                             <a href="/lichsu"
                                 class="block px-4 py-2.5 text-slate-700 hover:bg-brand-50 hover:text-brand-600 font-semibold transition-colors">
                                 <i class="bi bi-receipt mr-2 text-brand-500"></i>Đơn hàng của tôi
@@ -83,10 +87,13 @@
                 <div class="border-t border-brand-500 my-2"></div>
 
                 <% if (typeof khachhang !=='undefined' && khachhang) { %>
+                    <a href="/thongtin" class="text-white hover:text-brand-200 font-semibold px-2"><i
+                            class="bi bi-person-fill mr-2"></i>Thông tin cá nhân</a>
                     <a href="/lichsu" class="text-white hover:text-brand-200 font-semibold px-2"><i
                             class="bi bi-receipt mr-2"></i>Đơn hàng của <%= khachhang.HoVaTen %></a>
                     <a href="/dangxuat" class="text-red-300 hover:text-red-200 font-semibold px-2"><i
                             class="bi bi-box-arrow-right mr-2"></i>Đăng xuất</a>
+
                     <% } else { %>
                         <a href="/dangnhap" class="text-white hover:text-brand-200 font-semibold px-2"><i
                                 class="bi bi-box-arrow-in-right mr-2"></i>Đăng nhập</a>

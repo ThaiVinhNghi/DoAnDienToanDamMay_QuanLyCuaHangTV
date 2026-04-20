@@ -244,7 +244,108 @@ router.get('/sanpham/:id', async (req, res) => {
     }
 });
 
+// ======================== THÔNG TIN CÁ NHÂN KHÁCH HÀNG ========================
+
+// GET: Hiển thị trang thông tin cá nhân
+router.get('/thongtin', (req, res) => {
+    if (!req.session.KhachHang) return res.redirect('/dangnhap');
+    res.render('thongtin', {
+        title: 'Thông tin cá nhân',
+        khachhang: req.session.KhachHang,
+        success: null,
+        error: null
+    });
+});
+
+// POST: Xử lý cập nhật thông tin hoặc đổi mật khẩu
+router.post('/thongtin', async (req, res) => {
+    if (!req.session.KhachHang) return res.redirect('/dangnhap');
+
+    const renderLai = (error, success) => res.render('thongtin', {
+        title: 'Thông tin cá nhân',
+        khachhang: req.session.KhachHang,
+        error,
+        success
+    });
+
+    try {
+        const action = req.body._action;
+
+        // ────── ACTION 1: Cập nhật thông tin ──────
+        if (action === 'capnhat') {
+            const { HoVaTen, SoDienThoai, Email, DiaChi } = req.body;
+
+            if (!HoVaTen || HoVaTen.trim() === '') {
+                return renderLai('Họ và tên không được để trống!', null);
+            }
+            if (!/^\d{9,11}$/.test(SoDienThoai)) {
+                return renderLai('Số điện thoại không hợp lệ (9-11 chữ số)!', null);
+            }
+            if (!DiaChi || DiaChi.trim() === '') {
+                return renderLai('Địa chỉ không được để trống!', null);
+            }
+
+            const capNhat = {
+                HoVaTen: HoVaTen.trim(),
+                SoDienThoai: SoDienThoai.trim(),
+                Email: Email ? Email.trim() : '',
+                DiaChi: DiaChi.trim()
+            };
+
+            const khUpdated = await KhachHang.findByIdAndUpdate(
+                req.session.KhachHang._id,
+                capNhat,
+                { new: true }
+            );
+
+            // Cập nhật lại session để navbar hiển thị tên mới ngay
+            req.session.KhachHang = khUpdated;
+
+            return res.render('thongtin', {
+                title: 'Thông tin cá nhân',
+                khachhang: khUpdated,
+                success: 'Cập nhật thông tin thành công! ✅',
+                error: null
+            });
+        }
+
+        // ────── ACTION 2: Đổi mật khẩu ──────
+        if (action === 'doimatkhau') {
+            const { MatKhauCu, MatKhauMoi, XacNhanMatKhau } = req.body;
+
+            const kh = await KhachHang.findById(req.session.KhachHang._id);
+
+            if (!bcrypt.compareSync(MatKhauCu, kh.MatKhau)) {
+                return renderLai('Mật khẩu hiện tại không chính xác!', null);
+            }
+            if (!MatKhauMoi || MatKhauMoi.length < 6) {
+                return renderLai('Mật khẩu mới phải có ít nhất 6 ký tự!', null);
+            }
+            if (MatKhauMoi !== XacNhanMatKhau) {
+                return renderLai('Mật khẩu xác nhận không khớp!', null);
+            }
+
+            const salt = bcrypt.genSaltSync(10);
+            kh.MatKhau = bcrypt.hashSync(MatKhauMoi, salt);
+            await kh.save();
+
+            return res.render('thongtin', {
+                title: 'Thông tin cá nhân',
+                khachhang: req.session.KhachHang,
+                success: 'Đổi mật khẩu thành công! Hãy dùng mật khẩu mới khi đăng nhập lần sau. 🔒',
+                error: null
+            });
+        }
+
+        res.redirect('/thongtin');
+    } catch (error) {
+        console.log('Lỗi /thongtin POST:', error);
+        return renderLai('Có lỗi xảy ra, vui lòng thử lại!', null);
+    }
+});
+
 // ======================== TÀI KHOẢN KHÁCH HÀNG ========================
+
 router.get('/dangky', (req, res) => {
     if (req.session.KhachHang) return res.redirect('/');
     res.render('dangky', { title: 'Đăng ký Tài khoản', error: null, khachhang: null });
