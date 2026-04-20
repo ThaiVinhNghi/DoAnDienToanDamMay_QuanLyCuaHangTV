@@ -206,7 +206,7 @@
             <div class="col-4 text-center" style="border-right:1px solid #e0e0e0;">
                 <div style="font-size:0.78rem; color:#555; text-transform:uppercase; font-weight:700; margin-bottom:4px;">Ngày bắt đầu</div>
                 <div style="font-size:1.1rem; font-weight:900; color:#1a6bba;">
-                    <%= new Date(baohanh.NgayBatDau).toLocaleDateString('vi-VN') %>
+                    <%= new Date(baohanh.NgayBatDau).toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }) %>
                 </div>
             </div>
             <div class="col-4 text-center" style="border-right:1px solid #e0e0e0;">
@@ -218,7 +218,7 @@
             <div class="col-4 text-center">
                 <div style="font-size:0.78rem; color:#555; text-transform:uppercase; font-weight:700; margin-bottom:4px;">Ngày kết thúc</div>
                 <div style="font-size:1.1rem; font-weight:900; color:#e53935;">
-                    <%= new Date(baohanh.NgayKetThuc).toLocaleDateString('vi-VN') %>
+                    <%= new Date(baohanh.NgayKetThuc).toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }) %>
                 </div>
             </div>
         </div>

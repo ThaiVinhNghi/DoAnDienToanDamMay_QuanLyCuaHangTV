@@ -225,8 +225,8 @@
                             <div class="fw-semibold"><%= bh.TenSanPham %></div>
                             <div class="text-muted" style="font-size:0.75rem;">SL: <%= bh.SoLuong %> chiếc</div>
                         </td>
-                        <td style="font-size:0.82rem;"><%= new Date(bh.NgayBatDau).toLocaleDateString('vi-VN') %></td>
-                        <td style="font-size:0.82rem;"><%= new Date(bh.NgayKetThuc).toLocaleDateString('vi-VN') %></td>
+                        <td style="font-size:0.82rem;"><%= new Date(bh.NgayBatDau).toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }) %></td>
+                        <td style="font-size:0.82rem;"><%= new Date(bh.NgayKetThuc).toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }) %></td>
                         <td>
                             <% if (isHuy) { %>
                                 <div class="day-counter text-secondary" style="font-size:0.95rem;">Đã hủy</div>

@@ -280,10 +280,10 @@
                             <td class="text-muted" style="font-size:0.78rem;"><%= i + 1 %></td>
                             <td>
                                 <div class="fw-semibold" style="font-size:0.85rem;">
-                                    <%= thoiGian.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit', second:'2-digit'}) %>
+                                    <%= thoiGian.toLocaleTimeString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour:'2-digit', minute:'2-digit', second:'2-digit' }) %>
                                 </div>
                                 <div class="time-text">
-                                    <%= thoiGian.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit', year:'numeric'}) %>
+                                    <%= thoiGian.toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', day:'2-digit', month:'2-digit', year:'numeric' }) %>
                                 </div>
                             </td>
                             <td>
