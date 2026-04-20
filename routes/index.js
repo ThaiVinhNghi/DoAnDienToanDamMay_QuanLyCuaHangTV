@@ -10,6 +10,8 @@ var HangSanXuat = require('../models/hangsanxuat');
 var DoiTra = require('../models/doitra');
 var TraGop = require('../models/tragop');
 var TinTuc = require('../models/tintuc');
+var { guiBienLai } = require('../utils/email'); // Import hàm gửi email biên lai
+
 
 
 const passport = require('passport');
@@ -577,19 +579,44 @@ router.post('/thanhtoan', async (req, res) => {
             }
         }
 
-        await HoaDon.create({
-            KhachHang: req.session.KhachHang._id,
+        const khachhang = req.session.KhachHang;
+        // Ghép địa chỉ giao hàng từ 3 dropdown + số nhà/đường (fallback về DiaChi account)
+        let diaChiGiaoHang = req.body.DiaChiGiaoHang || khachhang.DiaChi;
+
+        const hoaDonMoi = await HoaDon.create({
+            KhachHang: khachhang._id,
             TongTien: tongTien,
             ChiTietHoaDon: chiTiet,
             HinhThucThanhToan: hinhThuc,
             SoThangTraGop: soThang,
             TrangThai: 'Chờ duyệt',
-            CCCD: req.body.CCCD,           // <--- THÊM DÒNG NÀY VÀO
-            NgaySinh: req.body.NgaySinh    // <--- THÊM DÒNG NÀY VÀO
+            CCCD: req.body.CCCD,
+            NgaySinh: req.body.NgaySinh,
+            DiaChiGiaoHang: diaChiGiaoHang  // Địa chỉ từ dropdown địa giới hành chính
         });
 
         req.session.GioHang = [];
-        res.send(`<script>alert("Đặt hàng thành công!"); window.location.href="/lichsu";</script>`);
+
+        // ── GỬI EMAIL BIÊN LAI (bất đồng bộ, không block response) ──
+        if (khachhang.Email) {
+            const chiTietEmail = giohang.map(item => ({
+                TenSP: item.TenSP,
+                SoLuong: item.SoLuong,
+                DonGiaBan: item.GiaBan
+            }));
+
+            guiBienLai({
+                toEmail: khachhang.Email,
+                hoVaTen: khachhang.HoVaTen,
+                hoaDonId: hoaDonMoi._id,
+                tongTien: tongTien,
+                diaChiGiaoHang: diaChiGiaoHang,
+                hinhThucThanhToan: hinhThuc,
+                chiTietSanPham: chiTietEmail
+            }).catch(err => console.error('[Email] Gửi biên lai thất bại:', err.message));
+        }
+
+        res.send(`<script>alert("Đặt hàng thành công! Biên lai đã được gửi đến email của bạn."); window.location.href="/lichsu";</script>`);
     } catch (error) { console.log(error); }
 });
 

@@ -1,3 +1,4 @@
+require('dotenv').config(); // Load biến môi trường từ file .env (EMAIL_USER, EMAIL_PASS)
 var express = require('express');
 var app = express();
 var mongoose = require('mongoose');

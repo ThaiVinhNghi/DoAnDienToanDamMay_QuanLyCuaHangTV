@@ -13,6 +13,7 @@ var HangSanXuat = require('../models/hangsanxuat');
 var NhapHang = require('../models/nhaphang'); // ĐÃ THÊM: Import Model Nhập Hàng
 var NhatKy = require('../models/nhatky'); // Import Model Nhật Ký
 var BaoHanh = require('../models/baohanh'); // Import Model Bảo Hành
+var { guiNhacNo } = require('../utils/email'); // Import hàm gửi email nhắc nợ
 
 // ======================== HÀM TIỆN ÍCH GHI NHẬT KÝ ========================
 async function ghiNhatKy(nhanVienId, tenNhanVien, hanhDong, chiTiet, loaiLog) {
@@ -277,10 +278,13 @@ router.post('/tragop/thutien/:id', checkLogin, async (req, res) => {
     } catch (err) { console.log(err); }
 });
 
-// 4. Nhắc nhở nợ
-router.get('/tragop/nhacnho/:id', checkLogin, async (req, res) => {
+// 4. Nhắc nhở nợ + GỬI EMAIL TỰ ĐỘNG
+router.post('/tragop/nhacnho/:id', checkLogin, async (req, res) => {
     try {
-        let tg = await TraGop.findById(req.params.id);
+        let tg = await TraGop.findById(req.params.id)
+            .populate('KhachHang')
+            .populate('HoaDon');
+
         if (tg && tg.TrangThai !== 'Đã tất toán' && tg.TrangThai !== 'Nợ xấu' && tg.TrangThai !== 'Đã thu hồi nợ') {
             tg.SoLanNhacNho = (tg.SoLanNhacNho || 0) + 1;
 
@@ -288,10 +292,23 @@ router.get('/tragop/nhacnho/:id', checkLogin, async (req, res) => {
                 tg.TrangThai = 'Nợ xấu';
             }
             await tg.save();
-            
+
             // Ghi nhật ký: Nhắc nhở
             const nv = req.session.NhanVien;
-            await ghiNhatKy(nv._id, nv.HoVaTen, 'Nhắc nhở trả góp', `Gửi nhắc nhở lần ${tg.SoLanNhacNho} cho hồ sơ #${tg._id}.`, 'tra-gop');
+            await ghiNhatKy(nv._id, nv.HoVaTen, 'Nhắc nhở trả góp (có Email)', `Gửi nhắc nhở lần ${tg.SoLanNhacNho} cho hồ sơ #${tg._id} (KH: ${tg.KhachHang ? tg.KhachHang.HoVaTen : 'N/A'}).`, 'tra-gop');
+
+            // ── GỬI EMAIL NHẮC NỢ ──
+            if (tg.KhachHang && tg.KhachHang.Email) {
+                guiNhacNo({
+                    toEmail: tg.KhachHang.Email,
+                    hoVaTen: tg.KhachHang.HoVaTen,
+                    soLanNhacNho: tg.SoLanNhacNho,
+                    tienTraMoiThang: tg.TienTraMoiThang,
+                    soThang: tg.SoThang,
+                    soThangDaTra: tg.SoThangDaTra,
+                    hoaDonId: tg.HoaDon ? tg.HoaDon._id : tg._id
+                }).catch(err => console.error('[Email] Gửi nhắc nợ thất bại:', err.message));
+            }
         }
         res.redirect('/admin/tragop');
     } catch (error) {
