@@ -390,8 +390,9 @@ router.post('/doitra/duyet/:id', checkLogin, async (req, res) => {
             if (spDb.SoLuongTon < 0) spDb.SoLuongTon = 0;
             await spDb.save();
 
-            hd.ChiTietHoaDon = [{ SanPham: spMoi._id, SoLuong: soLuongDoi, DonGiaBan: spMoi.GiaBan }];
-            hd.TongTien = spMoi.GiaBan * soLuongDoi;
+            // KHÔNG GHI ĐÈ ChiTietHoaDon ĐỂ GIỮ NGUYÊN LỊCH SỬ ĐƠN CŨ
+            // hd.ChiTietHoaDon = [{ SanPham: spMoi._id, SoLuong: soLuongDoi, DonGiaBan: spMoi.GiaBan }];
+            // hd.TongTien = spMoi.GiaBan * soLuongDoi;
             hd.TrangThai = 'Đã đổi hàng';
             await hd.save();
 

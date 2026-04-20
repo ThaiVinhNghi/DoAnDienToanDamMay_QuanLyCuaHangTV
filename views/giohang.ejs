@@ -144,14 +144,21 @@
                                 <label class="flex items-center p-4 border border-slate-200 rounded-2xl mb-3 cursor-pointer hover:border-brand-500 transition-colors bg-slate-50">
                                     <input type="radio" name="HinhThucThanhToan" value="Trả hết" checked
                                         class="w-5 h-5 text-brand-600 focus:ring-brand-500 border-slate-300"
-                                        onchange="document.getElementById('khuVucTraGop').style.display='none'; document.getElementById('CCCD').required=false; document.getElementById('NgaySinh').required=false;">
-                                    <span class="ml-3 font-bold text-slate-800"><i class="bi bi-cash-coin text-emerald-500 mr-2 text-lg"></i>Thanh toán khi nhận hàng</span>
+                                        onchange="document.getElementById('khuVucTraGop').style.display='none'; document.getElementById('khuVucChuyenKhoan').style.display='none'; document.getElementById('CCCD').required=false; document.getElementById('NgaySinh').required=false;">
+                                    <span class="ml-3 font-bold text-slate-800"><i class="bi bi-cash-coin text-emerald-500 mr-2 text-lg"></i>Thanh toán khi nhận hàng (COD)</span>
+                                </label>
+
+                                <label class="flex items-center p-4 border border-slate-200 rounded-2xl mb-3 cursor-pointer hover:border-brand-500 transition-colors bg-slate-50">
+                                    <input type="radio" name="HinhThucThanhToan" value="Chuyển khoản"
+                                        class="w-5 h-5 text-brand-600 focus:ring-brand-500 border-slate-300"
+                                        onchange="document.getElementById('khuVucTraGop').style.display='none'; document.getElementById('khuVucChuyenKhoan').style.display='block'; document.getElementById('CCCD').required=false; document.getElementById('NgaySinh').required=false;">
+                                    <span class="ml-3 font-bold text-slate-800"><i class="bi bi-qr-code-scan text-blue-500 mr-2 text-lg"></i>Thanh toán Chuyển khoản (Quét QR)</span>
                                 </label>
 
                                 <label class="flex items-center p-4 border border-slate-200 rounded-2xl mb-2 cursor-pointer hover:border-brand-500 transition-colors bg-slate-50 <%= typeof isNoXau !== 'undefined' && isNoXau ? 'opacity-50' : '' %>">
                                     <input type="radio" name="HinhThucThanhToan" value="Trả góp"
                                         class="w-5 h-5 text-brand-600 focus:ring-brand-500 border-slate-300"
-                                        onchange="document.getElementById('khuVucTraGop').style.display='block'; document.getElementById('CCCD').required=true; document.getElementById('NgaySinh').required=true;"
+                                        onchange="document.getElementById('khuVucTraGop').style.display='block'; document.getElementById('khuVucChuyenKhoan').style.display='none'; document.getElementById('CCCD').required=true; document.getElementById('NgaySinh').required=true;"
                                         <%=typeof isNoXau !=='undefined' && isNoXau ? 'disabled' : '' %>>
                                     <span class="ml-3 font-bold text-slate-800"><i class="bi bi-credit-card text-brand-500 mr-2 text-lg"></i>Mua trả góp qua thẻ/CCCD</span>
                                 </label>
@@ -162,7 +169,17 @@
                                     </div>
                                 <% } %>
 
-                                <div id="khuVucTraGop" class="mt-4 p-5 bg-white border border-brand-100 rounded-2xl shadow-inner mb-6 hidden">
+                                <div id="khuVucChuyenKhoan" class="mt-4 p-5 bg-white border border-brand-100 rounded-2xl shadow-inner mb-6 hidden text-center">
+                                    <p class="font-bold text-slate-700 mb-4">Quét mã QR dưới đây để thanh toán:</p>
+                                    <img src="/images/qr_chuyenkhoan.jpg" alt="Mã QR Chuyển khoản" class="mx-auto border border-slate-200 shadow-sm rounded-xl max-w-[220px] mb-4">
+                                    <p class="text-sm text-slate-500">Nội dung chuyển khoản (bắt buộc):</p>
+                                    <div class="bg-blue-50 text-blue-700 font-extrabold text-lg py-2 px-4 rounded-lg inline-block my-2 border border-blue-100">
+                                        MUA TIVI <%= khachhang.SoDienThoai %>
+                                    </div>
+                                    <p class="text-xs italic text-red-500 mt-2"><i class="bi bi-info-circle mr-1"></i>Đơn hàng sẽ được nhân viên duyệt sau khi cửa hàng nhận được tiền.</p>
+                                </div>
+
+                                <div class="mt-4 p-5 bg-white border border-brand-100 rounded-2xl shadow-inner mb-6 hidden" id="khuVucTraGop">
                                     
                                     <div class="mb-4">
                                         <label class="block text-sm font-bold text-slate-700 mb-2">Số CCCD (12 số):</label>

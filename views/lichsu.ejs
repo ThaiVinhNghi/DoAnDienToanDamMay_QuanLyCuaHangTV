@@ -26,17 +26,29 @@
             <% if(hoadon && hoadon.length> 0) { %>
                 <div class="flex flex-col gap-8">
                     <% hoadon.forEach(hd=> { %>
-                        <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-
-                            <div
-                                class="bg-slate-50 px-6 py-4 flex justify-between items-center border-b border-slate-100">
-                                <span class="font-bold text-slate-600 text-lg">Mã Đơn: <span class="text-slate-900">#<%=
-                                            hd._id.toString().slice(-6).toUpperCase() %></span><                                 <% if (hd.TrangThai==='Từ chối' || hd.TrangThai==='Đã hủy') { %>
-                                    <span
-                                        class="bg-red-100 text-red-700 font-bold px-3 py-1.5 rounded-lg text-sm flex items-center">
+                        <div class="bg-white rounded-[2rem] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100 overflow-hidden flex flex-col relative group">
+                            <!-- Hiệu ứng dải màu -->
+                            <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-brand-400 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            
+                            <div class="bg-gradient-to-br from-slate-50 to-white px-8 py-5 flex flex-col lg:flex-row justify-between items-start lg:items-center border-b border-slate-100 gap-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="bg-brand-100 text-brand-600 p-2.5 rounded-xl">
+                                        <i class="bi bi-receipt-cutoff text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-slate-400 text-xs font-bold uppercase tracking-wider block mb-0.5">Mã Giao Dịch</span>
+                                        <span class="font-black text-slate-800 text-lg tracking-tight">#<%= hd._id.toString().slice(-6).toUpperCase() %></span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap items-center gap-2">                                 <% if (hd.TrangThai==='Chờ duyệt') { %>
+                                    <span class="bg-amber-100 text-amber-700 font-bold px-3 py-1.5 rounded-lg text-sm flex items-center">
+                                        <i class="bi bi-hourglass-split mr-1.5 animate-[spin_3s_linear_infinite]"></i> Đang chờ duyệt
+                                    </span>
+                                <% } else if (hd.TrangThai==='Từ chối' || hd.TrangThai==='Đã hủy') { %>
+                                    <span class="bg-red-100 text-red-700 font-bold px-3 py-1.5 rounded-lg text-sm flex items-center">
                                         <i class="bi bi-x-circle-fill mr-1.5"></i> Đã hủy / Từ chối
                                     </span>
-                                    <% } else if (hd.HinhThucThanhToan === 'Trả góp' && hd.TraGopInfo && hd.TraGopInfo.TrangThai !== 'Đã tất toán') { %>
+                                <% } else if (hd.HinhThucThanhToan === 'Trả góp' && hd.TraGopInfo && hd.TraGopInfo.TrangThai !== 'Đã tất toán') { %>
                                         <%
                                             let tgThang = hd.TraGopInfo.SoThang || 0;
                                             let tgDaTra = hd.TraGopInfo.SoThangDaTra || 0;
@@ -77,67 +89,71 @@
                                                                 toán
                                                             </span>
                                                             <% } %>
+                                </div>
                             </div>
 
                             <div class="divide-y divide-slate-100">
                                 <% hd.ChiTietHoaDon.forEach(item=> { %>
                                     <% if (item.SanPham) { %>
-                                        <div
-                                            class="p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                                            <div class="flex items-center gap-4">
-                                                <% let img=item.SanPham.HinhAnh.startsWith('http') ?
-                                                    item.SanPham.HinhAnh : '/images/' + item.SanPham.HinhAnh; %>
-                                                    <img src="<%= img %>" alt="<%= item.SanPham.TenSP %>"
-                                                        class="w-24 h-24 object-contain bg-slate-50 rounded-2xl border border-slate-100 p-2">
-                                                    <div>
-                                                        <h5 class="font-extrabold text-slate-900 text-lg mb-1">
-                                                            <%= item.SanPham.TenSP %>
-                                                        </h5>
-                                                        <div class="flex items-center">
-                                                            <span class="text-red-500 font-bold">
-                                                                <%= item.DonGiaBan ?
-                                                                    item.DonGiaBan.toLocaleString('vi-VN') :
-                                                                    item.SanPham.GiaBan.toLocaleString('vi-VN') %> đ
-                                                            </span>
-                                                            <span class="text-slate-500 ml-2 font-medium">x <%=
-                                                                    item.SoLuong %></span>
-                                                        </div>
+                                        <div class="px-8 py-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 hover:bg-slate-50/50 transition-colors">
+                                            <div class="flex items-center gap-5 flex-1 relative w-full">
+                                                <% let img=item.SanPham.HinhAnh.startsWith('http') ? item.SanPham.HinhAnh : '/images/' + item.SanPham.HinhAnh; %>
+                                                <div class="relative flex-shrink-0">
+                                                    <img src="<%= img %>" alt="<%= item.SanPham.TenSP %>" class="w-28 h-28 object-contain bg-white rounded-2xl border border-slate-200 p-3 shadow-sm hover:shadow-md transition-shadow">
+                                                    <span class="absolute -top-3 -right-3 bg-slate-800 text-white text-xs font-bold w-8 h-8 flex items-center justify-center rounded-full shadow-lg border-2 border-white"><%= item.SoLuong %></span>
+                                                </div>
+                                                <div class="flex-1">
+                                                    <h5 class="font-extrabold text-slate-800 text-xl font-sans tracking-tight mb-2 line-clamp-2"><%= item.SanPham.TenSP %></h5>
+                                                    <div class="flex items-baseline gap-2">
+                                                        <span class="text-brand-600 font-extrabold text-xl"><%= item.DonGiaBan ? item.DonGiaBan.toLocaleString('vi-VN') : item.SanPham.GiaBan.toLocaleString('vi-VN') %> <span class="text-sm underline">đ</span></span>
+                                                    </div>
+
+                                                        <% if (hd.YeuCauDoiTra && hd.YeuCauDoiTra.LoaiYeuCau === 'Đổi hàng' && (hd.YeuCauDoiTra.TrangThai === 'Đã xử lý' || hd.YeuCauDoiTra.TrangThai === 'Đã duyệt')) { %>
+                                                            <div class="mt-2.5 text-sm text-brand-700 bg-brand-50 border border-brand-100 p-2 rounded-lg font-bold flex items-center w-max">
+                                                                <i class="bi bi-arrow-repeat mr-2"></i>
+                                                                Đã đổi qua: <%= hd.YeuCauDoiTra.SanPhamMoi && hd.YeuCauDoiTra.SanPhamMoi.length > 0 && hd.YeuCauDoiTra.SanPhamMoi[0].SanPham ? hd.YeuCauDoiTra.SanPhamMoi[0].SanPham.TenSP : 'Sản phẩm khác' %>
+                                                            </div>
+                                                        <% } %>
                                                     </div>
                                             </div>
 
                                             <% if (hd.YeuCauDoiTra && (hd.YeuCauDoiTra.TrangThai==='Đã xử lý' ||
-                                                hd.YeuCauDoiTra.TrangThai==='Đã duyệt' ) &&
-                                                hd.YeuCauDoiTra.LoaiYeuCau==='Trả hàng' ) { %>
-                                                <button
-                                                    class="bg-slate-100 text-slate-400 font-bold py-2.5 px-6 rounded-full border border-slate-200 flex items-center cursor-not-allowed">
-                                                    <i class="bi bi-star-fill mr-2 text-slate-300"></i> Đã trả hàng
-                                                </button>
-                                                <% } else { %>
-                                                    <a href="/sanpham/<%= item.SanPham._id %>"
-                                                        class="bg-amber-50 hover:bg-amber-100 text-amber-600 font-bold py-2.5 px-6 rounded-full border border-amber-200 transition-colors flex items-center whitespace-nowrap">
-                                                        <i class="bi bi-star-fill mr-2"></i> Xem / Đánh giá
-                                                    </a>
-                                                    <% } %>
+                                                hd.YeuCauDoiTra.TrangThai==='Đã duyệt' )) { %>
+                                                <% if (hd.YeuCauDoiTra.LoaiYeuCau==='Trả hàng' ) { %>
+                                                    <button class="bg-slate-100 text-slate-400 font-bold py-2.5 px-6 rounded-full border border-slate-200 flex items-center cursor-not-allowed hidden md:flex">
+                                                        <i class="bi bi-star-fill mr-2 text-slate-300"></i> Đã trả hàng
+                                                    </button>
+                                                <% } else if (hd.YeuCauDoiTra.LoaiYeuCau==='Đổi hàng' ) { %>
+                                                    <button class="bg-slate-100 text-slate-400 font-bold py-2.5 px-6 rounded-full border border-slate-200 flex items-center cursor-not-allowed hidden md:flex">
+                                                        <i class="bi bi-arrow-repeat mr-2 text-slate-300"></i> Đã đổi hàng
+                                                    </button>
+                                                <% } %>
+                                            <% } else { %>
+                                                <a href="/sanpham/<%= item.SanPham._id %>"
+                                                    class="bg-amber-50 hover:bg-amber-100 text-amber-600 font-bold py-2.5 px-6 rounded-full border border-amber-200 transition-colors flex items-center whitespace-nowrap hidden md:flex">
+                                                    <i class="bi bi-star-fill mr-2"></i> Xem / Đánh giá
+                                                </a>
+                                            <% } %>
                                         </div>
                                         <% } %>
                                             <% }) %>
                             </div>
 
-                            <div
-                                class="bg-slate-50 px-6 py-5 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
-                                <div>
-                                    <span class="text-slate-500 font-medium">Tổng tiền:</span>
-                                    <span class="text-red-500 text-2xl font-extrabold ml-2">
-                                        <%= hd.TongTien.toLocaleString('vi-VN') %> đ
-                                    </span>
+                            <div class="bg-white px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-6 border-t-[1.5px] border-dashed border-slate-200">
+                                <div class="flex flex-col items-center md:items-start">
+                                    <span class="text-slate-400 font-bold uppercase tracking-wider text-xs mb-1">Tổng cộng</span>
+                                    <span class="text-red-500 text-3xl font-black tracking-tight"><%= hd.TongTien.toLocaleString('vi-VN') %> <span class="text-xl underline font-bold">đ</span></span>
                                 </div>
 
-                                <% if (hd.TrangThai==='Từ chối' || hd.TrangThai==='Đã hủy') { %>
-                                    <div
-                                        class="bg-slate-200 text-slate-500 font-bold py-3 px-6 rounded-full flex items-center cursor-not-allowed">
+                                <% if (hd.TrangThai==='Chờ duyệt') { %>
+                                    <div class="bg-amber-50 text-amber-600 font-bold py-3 px-6 rounded-full border border-amber-200 flex items-center cursor-not-allowed">
+                                        <i class="bi bi-hourglass-split mr-2"></i> Đang chờ cửa hàng xác nhận
+                                    </div>
+                                <% } else if (hd.TrangThai==='Từ chối' || hd.TrangThai==='Đã hủy') { %>
+                                    <div class="bg-slate-200 text-slate-500 font-bold py-3 px-6 rounded-full flex items-center cursor-not-allowed">
                                         <i class="bi bi-slash-circle mr-2"></i> Đơn hàng đã hủy
                                     </div>
-                                    <% } else if (hd.HinhThucThanhToan === 'Trả góp' && hd.TraGopInfo && hd.TraGopInfo.TrangThai !== 'Đã tất toán') { %>
+                                <% } else if (hd.HinhThucThanhToan === 'Trả góp' && hd.TraGopInfo && hd.TraGopInfo.TrangThai !== 'Đã tất toán') { %>
                                         <!-- Đơn trả góp ĐANG TRẢ: khóa đổi/trả -->
                                         <div class="bg-blue-50 text-blue-600 font-bold py-3 px-6 rounded-full border border-blue-200 flex items-center cursor-not-allowed"
                                             title="Hoàn thành trả góp mới được Đổi/Trả">
@@ -164,7 +180,7 @@
                             </div>
                         </div>
 
-                        <% if (hd.TrangThai !=='Từ chối' && hd.TrangThai !=='Đã hủy' && (!hd.YeuCauDoiTra) && (!hd.daDanhGiaSanPham) && !(hd.HinhThucThanhToan === 'Trả góp' && hd.TraGopInfo && hd.TraGopInfo.TrangThai !== 'Đã tất toán')) { %>
+                        <% if (hd.TrangThai !=='Chờ duyệt' && hd.TrangThai !=='Từ chối' && hd.TrangThai !=='Đã hủy' && (!hd.YeuCauDoiTra) && (!hd.daDanhGiaSanPham) && !(hd.HinhThucThanhToan === 'Trả góp' && hd.TraGopInfo && hd.TraGopInfo.TrangThai !== 'Đã tất toán')) { %>
                             <div id="modalDoiTra<%= hd._id %>"
                                 class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden transition-opacity">
                                 <div

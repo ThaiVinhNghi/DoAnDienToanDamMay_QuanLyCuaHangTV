@@ -366,15 +366,14 @@ router.post('/datlaimatkhau', async (req, res) => {
 router.get('/lichsu', async (req, res) => {
     if (!req.session.KhachHang) return res.redirect('/dangnhap');
     try {
-        // FIX #5: Bỏ lọc HinhThucThanhToan - hiển thị cả đơn trả góp
+        // Bỏ lọc HinhThucThanhToan và trạng thái Chờ duyệt để khách thấy toàn bộ đơn hàng
         const hoadon = await HoaDon.find({
-            KhachHang: req.session.KhachHang._id,
-            TrangThai: { $ne: 'Chờ duyệt' }
+            KhachHang: req.session.KhachHang._id
         }).populate('ChiTietHoaDon.SanPham').lean();
 
         for (let hd of hoadon) {
             // 1. LẤY CHI TIẾT YÊU CẦU ĐỔI TRẢ (᫪U CÓ)
-            let checkYeuCau = await DoiTra.findOne({ HoaDon: hd._id }).lean();
+            let checkYeuCau = await DoiTra.findOne({ HoaDon: hd._id }).populate('SanPhamMoi.SanPham').lean();
             hd.YeuCauDoiTra = checkYeuCau || null;
 
             // 2. KIỂM TRA ĐÃ ĐÁNH GIÁ
@@ -444,7 +443,7 @@ router.post('/danhgia/:id', async (req, res) => {
             });
             await sp.save();
         }
-        res.redirect('/sanpham/' + req.params.id);
+        res.send(`<script>alert("Cảm ơn bạn đã đánh giá sản phẩm!"); window.location.href="/lichsu";</script>`);
     } catch (error) { console.log(error); }
 });
 
@@ -590,7 +589,7 @@ router.post('/thanhtoan', async (req, res) => {
         });
 
         req.session.GioHang = [];
-        res.send(`<script>alert("Đặt hàng thành công!"); window.location.href="/";</script>`);
+        res.send(`<script>alert("Đặt hàng thành công!"); window.location.href="/lichsu";</script>`);
     } catch (error) { console.log(error); }
 });
 
