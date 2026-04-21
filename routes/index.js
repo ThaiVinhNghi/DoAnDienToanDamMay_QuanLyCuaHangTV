@@ -588,14 +588,40 @@ router.get('/giohang', async (req, res) => {
     let tongTien = giohang.reduce((sum, item) => sum + item.ThanhTien, 0);
 
     let isNoXau = false;
+    let diaChiCu = []; // Danh sách địa chỉ giao hàng cũ (không trùng)
+
     if (req.session.KhachHang) {
         const check = await TraGop.findOne({ KhachHang: req.session.KhachHang._id, TrangThai: 'Nợ xấu' });
         if (check) isNoXau = true;
+
+        // Lấy tối đa 3 địa chỉ giao hàng gần nhất (không trùng)
+        try {
+            const donCu = await HoaDon.find({
+                KhachHang: req.session.KhachHang._id,
+                DiaChiGiaoHang: { $exists: true, $ne: null, $ne: '' }
+            })
+            .sort({ NgayLap: -1 }) // Mới nhất trước
+            .select('DiaChiGiaoHang')
+            .lean();
+
+            const seen = new Set();
+            for (const don of donCu) {
+                const dc = (don.DiaChiGiaoHang || '').trim();
+                if (dc && !seen.has(dc)) {
+                    seen.add(dc);
+                    diaChiCu.push(dc);
+                    if (diaChiCu.length >= 3) break; // Tối đa 3 địa chỉ
+                }
+            }
+        } catch (e) {
+            console.error('Lỗi lấy địa chỉ cũ:', e);
+        }
     }
 
     res.render('giohang', {
         title: 'Giỏ hàng của bạn', khachhang: req.session.KhachHang,
-        giohang: giohang, tongTien: tongTien, isNoXau: isNoXau
+        giohang: giohang, tongTien: tongTien, isNoXau: isNoXau,
+        diaChiCu: diaChiCu
     });
 });
 
