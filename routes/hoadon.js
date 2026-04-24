@@ -8,12 +8,12 @@ router.get('/', async (req, res) => {
     try {
         // Lấy danh sách hóa đơn, populate để lấy tên Khách hàng và tên Nhân viên duyệt
         var hd = await HoaDon.find()
-                             .populate('KhachHang')
-                             .populate('NhanVienDuyet')
-                             .sort({ NgayLap: -1 }); // Sắp xếp đơn mới nhất lên đầu
+            .populate('KhachHang')
+            .populate('NhanVienDuyet')
+            .sort({ NgayLap: -1 }); // Sắp xếp đơn mới nhất lên đầu
 
-        res.render('admin/hoadon', { 
-            title: 'Quản lý Hóa đơn', 
+        res.render('admin/hoadon', {
+            title: 'Quản lý Hóa đơn',
             hoadon: hd,
             nhanvien: req.session.NhanVien
         });
@@ -25,22 +25,21 @@ router.get('/chitiet/:id', async (req, res) => {
     try {
         // Populate sâu vào mảng ChiTietHoaDon để lấy thông tin Sản phẩm (Tivi)
         var hd = await HoaDon.findById(req.params.id)
-                             .populate('KhachHang')
-                             .populate('NhanVienDuyet')
-                             .populate('ChiTietHoaDon.SanPham');
+            .populate('KhachHang')
+            .populate('NhanVienDuyet')
+            .populate('ChiTietHoaDon.SanPham');
 
-        res.render('admin/hoadon_chitiet', { 
-            title: 'Chi tiết Hóa đơn', 
+        res.render('admin/hoadon_chitiet', {
+            title: 'Chi tiết Hóa đơn',
             hoadon: hd,
             nhanvien: req.session.NhanVien
         });
     } catch (error) { console.log(error); }
 });
 
-// FIX #2: Xóa route /duyet/:id tại đây — logic duyệt đầy đủ (trừ kho + tạo trả góp)
-// đã có ở routes/admin.js tại GET /admin/hoadon/duyet/:id, dùng route đó.
 
-// FIX #3: Hủy Hóa đơn — cộng lại kho nếu đơn đã duyệt trước đó
+
+
 router.get('/huy/:id', async (req, res) => {
     try {
         const hd = await HoaDon.findById(req.params.id);
@@ -60,7 +59,7 @@ router.get('/huy/:id', async (req, res) => {
         await hd.save();
 
         res.redirect('/admin/hoadon');
-    } catch (error) { 
+    } catch (error) {
         console.log(error);
         res.send("Lỗi hủy hóa đơn: " + error.message);
     }

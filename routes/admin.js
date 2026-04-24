@@ -83,8 +83,24 @@ router.get('/', checkLogin, async (req, res) => {
         const soKhachHang = await KhachHang.countDocuments();
         const soHoaDon = await HoaDon.countDocuments({ TrangThai: 'Chờ duyệt' });
 
-        const danhSachHoaDon = await HoaDon.find({ TrangThai: 'Đã duyệt' });
+        // Doanh thu = tất cả đơn đã duyệt + đơn đã đổi hàng (TongTien đã được cập nhật về giá SP mới)
+        // KHÔNG tính đơn 'Đã hoàn trả' (khách trả hàng toàn bộ)
+        const danhSachHoaDon = await HoaDon.find({
+            TrangThai: { $in: ['Đã duyệt', 'Đã đổi hàng'] }
+        });
         let tongDoanhThu = danhSachHoaDon.reduce((sum, hd) => sum + hd.TongTien, 0);
+
+        // Tiền hoàn trả hàng hoàn toàn
+        const danhSachHoanTra = await HoaDon.find({ TrangThai: 'Đã hoàn trả' });
+        const tongHoanTraHang = danhSachHoanTra.reduce((sum, hd) => sum + hd.TongTien, 0);
+
+        // Tiền hoàn lại khi đổi sang SP rẻ hơn (chênh lệch giá)
+        const tongHoanLaiDoiHang = danhSachHoaDon
+            .filter(hd => hd.TrangThai === 'Đã đổi hàng')
+            .reduce((sum, hd) => sum + (hd.SoTienHoanLai || 0), 0);
+
+        // Tổng tiền đã hoàn cho khách (gộp cả 2 loại để hiển thị trên dashboard)
+        const tongHoanTra = tongHoanTraHang + tongHoanLaiDoiHang;
 
         // --- CÁC TRUY VẤN MỚI CHO DASHBOARD TỰ ĐỘNG ---
 
@@ -98,13 +114,13 @@ router.get('/', checkLogin, async (req, res) => {
         const hdChoDuyet = await HoaDon.find({ TrangThai: 'Chờ duyệt' }).populate('KhachHang').sort({ NgayLap: -1 }).limit(5);
 
         // 4. Sản phẩm bán chạy 
-        // (Lưu ý: Mình đang sort tạm theo số lượng tồn ít nhất. Nếu DB bạn có cột 'SoLuongDaBan' thì đổi thành .sort({ SoLuongDaBan: -1 }))
+
         const spBanChay = await SanPham.find({}).sort({ SoLuongTon: 1 }).limit(5);
 
         res.render('admin/index', {
             title: 'Bảng điều khiển Admin',
             nhanvien: req.session.NhanVien,
-            soSanPham, soKhachHang, soHoaDon, tongDoanhThu,
+            soSanPham, soKhachHang, soHoaDon, tongDoanhThu, tongHoanTra, doanhThuThuc,
             spHetHang, ycKhachHang, hdChoDuyet, spBanChay
         });
     } catch (error) {
@@ -385,9 +401,9 @@ router.post('/doitra/duyet/:id', checkLogin, async (req, res) => {
             // HỦY BẢO HÀNH CŨ
             await BaoHanh.updateMany(
                 { HoaDon: hd._id },
-                { 
-                    TrangThai: 'Đã hủy', 
-                    GhiChu: 'Đã hủy do khách hoàn trả sản phẩm.' 
+                {
+                    TrangThai: 'Đã hủy',
+                    GhiChu: 'Đã hủy do khách hoàn trả sản phẩm.'
                 }
             );
 
@@ -407,18 +423,32 @@ router.post('/doitra/duyet/:id', checkLogin, async (req, res) => {
             if (spDb.SoLuongTon < 0) spDb.SoLuongTon = 0;
             await spDb.save();
 
-            // KHÔNG GHI ĐÈ ChiTietHoaDon ĐỂ GIỮ NGUYÊN LỊCH SỬ ĐƠN CŨ
-            // hd.ChiTietHoaDon = [{ SanPham: spMoi._id, SoLuong: soLuongDoi, DonGiaBan: spMoi.GiaBan }];
-            // hd.TongTien = spMoi.GiaBan * soLuongDoi;
+            // Tính giá trị mặt hàng mới và chênh lệch
+            const tongTienMoi = spDb.GiaBan * soLuongDoi;
+            const tongTienCu = hd.TongTien;
+            const chenhLech = tongTienCu - tongTienMoi;
+
+            // Cập nhật TongTien về giá thực tế của SP mới
+            hd.TongTien = tongTienMoi;
+
+            // Nếu SP mới rẻ hơn → ghi nhận tiền hoàn lại
+            if (chenhLech > 0) {
+                hd.SoTienHoanLai = chenhLech;
+            } else {
+                // SP mới đắt hơn → khách bù thêm (hoặc bằng nhau)
+                hd.SoTienHoanLai = 0;
+            }
+
             hd.TrangThai = 'Đã đổi hàng';
             await hd.save();
+
 
             // HỦY BẢO HÀNH CŨ
             await BaoHanh.updateMany(
                 { HoaDon: hd._id, TrangThai: { $ne: 'Đã hủy' } },
-                { 
-                    TrangThai: 'Đã hủy', 
-                    GhiChu: `Đã hủy do đổi sang sản phẩm: ${spDb.TenSP}.` 
+                {
+                    TrangThai: 'Đã hủy',
+                    GhiChu: `Đã hủy do đổi sang sản phẩm: ${spDb.TenSP}.`
                 }
             );
 
@@ -461,7 +491,7 @@ router.get('/nhaphang', checkLogin, async (req, res) => {
         // Lấy danh sách, populate HangSanXuat (hoặc NhaCungCap) và NhanVien
         const dsNhapHang = await NhapHang.find()
             .populate('HangSanXuat')
-            .populate('NhaCungCap') // Đề phòng DB dùng field cũ
+            .populate('NhaCungCap')
             .populate('NhanVien')
             .sort({ NgayNhap: -1 });
 
@@ -678,10 +708,10 @@ router.get('/baohanh', checkLogin, async (req, res) => {
         }
 
         // Thống kê nhanh
-        const tongPhieu   = await BaoHanh.countDocuments();
-        const conBH       = await BaoHanh.countDocuments({ TrangThai: 'Còn bảo hành' });
-        const sapHet      = await BaoHanh.countDocuments({ TrangThai: 'Sắp hết bảo hành' });
-        const hetBH       = await BaoHanh.countDocuments({ TrangThai: 'Hết bảo hành' });
+        const tongPhieu = await BaoHanh.countDocuments();
+        const conBH = await BaoHanh.countDocuments({ TrangThai: 'Còn bảo hành' });
+        const sapHet = await BaoHanh.countDocuments({ TrangThai: 'Sắp hết bảo hành' });
+        const hetBH = await BaoHanh.countDocuments({ TrangThai: 'Hết bảo hành' });
 
         res.render('admin/baohanh', {
             title: 'Quản lý Bảo Hành',

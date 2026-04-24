@@ -78,14 +78,14 @@ body {
 
 .btn-filter {
     border-radius: 30px !important;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    background: linear-gradient(135deg, #b91c1c, #991b1b);
     border: none;
     font-weight: 600;
     transition: all 0.3s ease;
 }
 
 .btn-filter:hover {
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 8px 20px rgba(185, 28, 28, 0.3);
     transform: translateY(-2px);
 }
 
@@ -103,8 +103,8 @@ body {
 .product-card:hover,
 .card-tv:hover {
     transform: translateY(-8px) !important;
-    box-shadow: 0 20px 40px rgba(37, 99, 235, 0.1) !important;
-    border-color: #e0e7ff !important;
+    box-shadow: 0 20px 40px rgba(153, 27, 27, 0.1) !important;
+    border-color: #fecaca !important;
 }
 
 .product-img-wrap {
@@ -154,7 +154,7 @@ body {
 }
 
 .product-card:hover .product-title {
-    color: #2563eb;
+    color: #b91c1c;
 }
 
 .price-old {
@@ -180,10 +180,10 @@ body {
 }
 
 .btn-buy:hover {
-    background-color: #2563eb;
+    background-color: #b91c1c;
     color: #fff;
-    border-color: #2563eb;
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+    border-color: #b91c1c;
+    box-shadow: 0 8px 20px rgba(185, 28, 28, 0.25);
 }
 
 .btn-buy-sale {
@@ -250,12 +250,12 @@ body {
     right: 30px;
     width: 60px;
     height: 60px;
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    background: linear-gradient(135deg, #b91c1c, #7f1d1d);
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+    box-shadow: 0 8px 25px rgba(185, 28, 28, 0.4);
     z-index: 9999;
     animation: pulse-zalo 2s infinite;
     transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -272,15 +272,15 @@ body {
 
 @keyframes pulse-zalo {
     0% {
-        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.6);
+        box-shadow: 0 0 0 0 rgba(185, 28, 28, 0.6);
     }
 
     70% {
-        box-shadow: 0 0 0 20px rgba(37, 99, 235, 0);
+        box-shadow: 0 0 0 20px rgba(185, 28, 28, 0);
     }
 
     100% {
-        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+        box-shadow: 0 0 0 0 rgba(185, 28, 28, 0);
     }
 }
 
@@ -326,6 +326,6 @@ body {
 
 .form-control:focus,
 .form-select:focus {
-    border-color: #3b82f6 !important;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1) !important;
+    border-color: #b91c1c !important;
+    box-shadow: 0 0 0 4px rgba(185, 28, 28, 0.1) !important;
 }

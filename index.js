@@ -1,10 +1,10 @@
-require('dotenv').config(); // Load biến môi trường từ file .env (EMAIL_USER, EMAIL_PASS)
+require('dotenv').config();
 var express = require('express');
 var app = express();
 var mongoose = require('mongoose');
 var session = require('express-session');
 
-// Kết nối MongoDB Atlas (Thay <db_user>, <db_password> và URL cluster của bạn vào đây)
+
 
 var uri = 'mongodb://admin:admin123@ac-mehl2fb-shard-00-00.ci790jr.mongodb.net:27017,ac-mehl2fb-shard-00-01.ci790jr.mongodb.net:27017,ac-mehl2fb-shard-00-02.ci790jr.mongodb.net:27017/qltivistore?ssl=true&replicaSet=atlas-14ilul-shard-0&authSource=admin&appName=qltivistore';
 mongoose.connect(uri)
@@ -19,33 +19,32 @@ app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Thiết lập thư mục public chứa file tĩnh (css, js, hình ảnh sản phẩm)
-// Đừng quên tạo thư mục 'public' ở thư mục gốc nhé
+
 app.use(express.static('public'));
 
 
 
 // Cấu hình Session (Bắt buộc phải nằm trước các Router)
 app.use(session({
-  secret: 'cuahangtivi_secret_key_2026', // Khóa bảo mật tự chọn
+  secret: 'cuahangtivi_secret_key_2026',
   resave: false,
   saveUninitialized: true,
-  cookie: { maxAge: 1000 * 60 * 60 * 24 } // Session sống 1 ngày (tính bằng mili giây)
+  cookie: { maxAge: 1000 * 60 * 60 * 24 }
 }));
 var indexRouter = require('./routes/index');
 var adminRouter = require('./routes/admin'); // Router cho Admin
 var loaiSanPhamRouter = require('./routes/loaisanpham');
 var hangSanXuatRouter = require('./routes/hangsanxuat');
-var sanPhamRouter = require('./routes/sanpham'); // Thêm dòng này
-var hoaDonRouter = require('./routes/hoadon'); // Thêm dòng này
-var nhapHangRouter = require('./routes/nhaphang'); // Thêm dòng này
+var sanPhamRouter = require('./routes/sanpham');
+var hoaDonRouter = require('./routes/hoadon');
+var nhapHangRouter = require('./routes/nhaphang');
 var nhaCungCapRouter = require('./routes/nhacungcap');
 var nhanVienRouter = require('./routes/nhanvien');
 var khachHangRouter = require('./routes/khachhang');
 var tintucRouter = require('./routes/tintuc');
 
 
-// Bức tường bảo vệ chung cho tất cả tab Admin (Ngoại trừ trang đăng nhập)
+// Bức tường bảo vệ chung cho tất cả tab Admin 
 const checkLogin = (req, res, next) => {
   if (req.session && req.session.NhanVien) {
     next();
@@ -58,17 +57,17 @@ const checkLogin = (req, res, next) => {
 
 app.use('/admin', adminRouter);
 app.use('/', indexRouter);
-app.use('/admin/loaisanpham', checkLogin, loaiSanPhamRouter); // Gắn bảo vệ vào đây
+app.use('/admin/loaisanpham', checkLogin, loaiSanPhamRouter);
 app.use('/admin/hangsanxuat', checkLogin, hangSanXuatRouter);
-app.use('/admin/sanpham', checkLogin, sanPhamRouter); // Gắn bảo vệ vào đây
-app.use('/admin/hoadon', checkLogin, hoaDonRouter); // Gắn bảo vệ vào đây
-app.use('/admin/nhaphang', checkLogin, nhapHangRouter); // Gắn bảo vệ vào đây
+app.use('/admin/sanpham', checkLogin, sanPhamRouter);
+app.use('/admin/hoadon', checkLogin, hoaDonRouter);
+app.use('/admin/nhaphang', checkLogin, nhapHangRouter);
 app.use('/admin/nhacungcap', checkLogin, nhaCungCapRouter);
 app.use('/admin/nhanvien', checkLogin, nhanVienRouter);
 app.use('/admin/khachhang', checkLogin, khachHangRouter);
 app.use('/admin/tintuc', checkLogin, tintucRouter);
 
-// Khởi tạo Passport (Dán ngay dưới app.use(session(...)))
+// Khởi tạo Passport 
 const passport = require('passport');
 app.use(passport.initialize());
 app.use(passport.session());

@@ -1,0 +1,8 @@
+Thông tin đăng nhập 
+Đăng nhập khách hàng : bo 
+Mật khẩu : 1
+Đăng nhập admin  (ở trang chủ website bấm phím tắt Ctrl + Shift + B)
+Tài khoản admin : Bo 
+Mật khẩu : 1
+
+Link render : https://doandientoandammay-quanlycuahangtv.onrender.com

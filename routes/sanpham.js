@@ -8,10 +8,10 @@ var HangSanXuat = require('../models/hangsanxuat');
 // Cấu hình Multer để upload hình ảnh
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'public/images/'); // Lưu vào thư mục public/images
+        cb(null, 'public/images/');
     },
     filename: function (req, file, cb) {
-        // Đổi tên file để không bị trùng (Thêm mốc thời gian vào trước tên file gốc)
+
         cb(null, Date.now() + '-' + file.originalname);
     }
 });
@@ -22,8 +22,8 @@ router.get('/', async (req, res) => {
     try {
         // Lấy danh sách Tivi, dùng populate để móc dữ liệu tên Hãng và Loại
         var sp = await SanPham.find().populate('LoaiSanPham').populate('HangSanXuat');
-        res.render('admin/sanpham', { 
-            title: 'Quản lý Sản phẩm', 
+        res.render('admin/sanpham', {
+            title: 'Quản lý Sản phẩm',
             sanpham: sp,
             nhanvien: req.session.NhanVien
         });
@@ -36,8 +36,8 @@ router.get('/them', async (req, res) => {
         // Phải lấy danh sách Loại và Hãng để đổ vào thẻ <select>
         var lsp = await LoaiSanPham.find();
         var hsx = await HangSanXuat.find();
-        
-        res.render('admin/sanpham_them', { 
+
+        res.render('admin/sanpham_them', {
             title: 'Thêm Sản phẩm',
             loaisanpham: lsp,
             hangsanxuat: hsx,
@@ -46,13 +46,13 @@ router.get('/them', async (req, res) => {
     } catch (error) { console.log(error); }
 });
 
-// POST: Xử lý Thêm vào DB (Lưu ý chữ 'HinhAnh' trong upload.single phải trùng tên input file HTML)
+// POST: Xử lý Thêm vào DB 
 router.post('/them', upload.single('HinhAnh'), async (req, res) => {
     try {
         var data = {
             TenSP: req.body.TenSP,
             GiaBan: req.body.GiaBan,
-            GiaGoc: req.body.GiaGoc || 0, // FIX #4: Lưu giá gốc
+            GiaGoc: req.body.GiaGoc || 0,
             SoLuongTon: req.body.SoLuongTon,
             MoTa: req.body.MoTa,
             LoaiSanPham: req.body.LoaiSanPham,
@@ -71,8 +71,8 @@ router.get('/sua/:id', async (req, res) => {
         var sp = await SanPham.findById(req.params.id);
         var lsp = await LoaiSanPham.find();
         var hsx = await HangSanXuat.find();
-        
-        res.render('admin/sanpham_sua', { 
+
+        res.render('admin/sanpham_sua', {
             title: 'Sửa Sản phẩm',
             sanpham: sp, // Truyền dữ liệu tivi hiện tại ra form
             loaisanpham: lsp,
@@ -88,7 +88,7 @@ router.post('/sua/:id', upload.single('HinhAnh'), async (req, res) => {
         var data = {
             TenSP: req.body.TenSP,
             GiaBan: req.body.GiaBan,
-            GiaGoc: req.body.GiaGoc || 0, // FIX #4: Cập nhật giá gốc
+            GiaGoc: req.body.GiaGoc || 0,
             SoLuongTon: req.body.SoLuongTon,
             MoTa: req.body.MoTa,
             LoaiSanPham: req.body.LoaiSanPham,

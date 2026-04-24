@@ -19,8 +19,8 @@ const FacebookStrategy = require('passport-facebook').Strategy;
 
 // 1. Cấu hình Chiến lược Đăng nhập Facebook
 passport.use(new FacebookStrategy({
-    clientID: '26573543515632775',       // Sẽ lấy ở Bước 3
-    clientSecret: 'cbacc4d544f065d90fb668388358ea63', // Sẽ lấy ở Bước 3
+    clientID: '26573543515632775',
+    clientSecret: 'cbacc4d544f065d90fb668388358ea63',
     callbackURL: "https://doandientoandammay-quanlycuahangtv.onrender.com/auth/facebook/callback",
 
     profileFields: ['id', 'displayName', 'emails']
@@ -68,7 +68,7 @@ router.get('/auth/facebook/callback',
     function (req, res) {
         // Thành công! Lưu thông tin khách vào Session giống hệt cách bạn đang làm
         req.session.KhachHang = req.user;
-        res.redirect('/'); // Đá về trang chủ
+        res.redirect('/'); //  về trang chủ
     }
 );
 
@@ -92,8 +92,8 @@ router.get('/', async (req, res) => {
         const dsHang = await HangSanXuat.find();
         const spTatCa = await SanPham.find(dieuKienLoc).populate('HangSanXuat');
 
-        // Flash Sale: ưu tiên SP có GiaGoc > GiaBan (giảm giá thật)
-        // Nếu chưa có SP nào được set GiaGoc → fallback: lấy 4 SP rẻ nhất còn hàng
+        // Flash Sale: ưu tiên SP có GiaGoc > GiaBan 
+
         let spGiamGia = await SanPham.find({ GiaGoc: { $gt: 0 }, $expr: { $gt: ['$GiaGoc', '$GiaBan'] } })
             .sort({ GiaBan: 1 }).limit(4).populate('HangSanXuat');
 
@@ -111,7 +111,7 @@ router.get('/', async (req, res) => {
             title: 'Cửa hàng Tivi TVN',
             sanpham: spTatCa,
             spgiamgia: spGiamGia,
-            isFlashSaleReal: isFlashSaleReal, // true = có GiaGoc thật, false = fallback
+            isFlashSaleReal: isFlashSaleReal,
             hangsanxuat: dsHang,
             tintuc: tinTucMoi,
             khachhang: req.session.KhachHang,
@@ -236,7 +236,7 @@ router.get('/sanpham/:id', async (req, res) => {
             query: req.query,
             daMuaHang: daMuaHang,
             daDanhGia: daDanhGia,
-            dangDoiTra: dangDoiTra // ĐẨY BIẾN NÀY RA GIAO DIỆN CHITIET.EJS
+            dangDoiTra: dangDoiTra
         });
     } catch (error) {
         console.log("Lỗi ở trang chi tiết:", error);
@@ -475,7 +475,7 @@ router.get('/lichsu', async (req, res) => {
         }).populate('ChiTietHoaDon.SanPham').lean();
 
         for (let hd of hoadon) {
-            // 1. LẤY CHI TIẾT YÊU CẦU ĐỔI TRẢ (᫪U CÓ)
+            // 1. LẤY CHI TIẾT YÊU CẦU ĐỔI TRẢ 
             let checkYeuCau = await DoiTra.findOne({ HoaDon: hd._id }).populate('SanPhamMoi.SanPham').lean();
             hd.YeuCauDoiTra = checkYeuCau || null;
 
@@ -492,7 +492,7 @@ router.get('/lichsu', async (req, res) => {
                 }
             }
 
-            // 3. FIX #5: LẤY THÔNG TIN TRẢ GÓP cho các đơn hàng trả góp
+            // 3. LẤY THÔNG TIN TRẢ GÓP cho các đơn hàng trả góp
             if (hd.HinhThucThanhToan === 'Trả góp') {
                 const tgInfo = await TraGop.findOne({ HoaDon: hd._id }).lean();
                 hd.TraGopInfo = tgInfo;
@@ -588,21 +588,21 @@ router.get('/giohang', async (req, res) => {
     let tongTien = giohang.reduce((sum, item) => sum + item.ThanhTien, 0);
 
     let isNoXau = false;
-    let diaChiCu = []; // Danh sách địa chỉ giao hàng cũ (không trùng)
+    let diaChiCu = []; // Danh sách địa chỉ giao hàng cũ 
 
     if (req.session.KhachHang) {
         const check = await TraGop.findOne({ KhachHang: req.session.KhachHang._id, TrangThai: 'Nợ xấu' });
         if (check) isNoXau = true;
 
-        // Lấy tối đa 3 địa chỉ giao hàng gần nhất (không trùng)
+        // Lấy tối đa 3 địa chỉ giao hàng gần nhất 
         try {
             const donCu = await HoaDon.find({
                 KhachHang: req.session.KhachHang._id,
                 DiaChiGiaoHang: { $exists: true, $ne: null, $ne: '' }
             })
-            .sort({ NgayLap: -1 }) // Mới nhất trước
-            .select('DiaChiGiaoHang')
-            .lean();
+                .sort({ NgayLap: -1 }) // Mới nhất trước
+                .select('DiaChiGiaoHang')
+                .lean();
 
             const seen = new Set();
             for (const don of donCu) {
@@ -684,7 +684,7 @@ router.post('/thanhtoan', async (req, res) => {
     let soThang = (hinhThuc === 'Trả góp') ? parseInt(req.body.SoThangTraGop) : 0;
 
     try {
-        // FIX #9: Kiểm tra tồn kho trước khi đặt hàng
+        //  Kiểm tra tồn kho trước khi đặt hàng
         for (let item of giohang) {
             const sp = await SanPham.findById(item.SanPhamId);
             if (!sp || sp.SoLuongTon < item.SoLuong) {

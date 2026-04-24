@@ -10,6 +10,7 @@ var hoaDonSchema = new mongoose.Schema({
     DiaChiGiaoHang: { type: String }, // Địa chỉ giao hàng từ dropdown địa giới hành chính
     SoLanNhacNho: { type: Number, default: 0 },
     TongTien: { type: Number, required: true },
+    SoTienHoanLai: { type: Number, default: 0 }, // Tiền hoàn lại khi đổi sang SP rẻ hơn
     TrangThai: { type: String, default: 'Chờ duyệt' }, // Chờ duyệt, Đã duyệt, Đang giao, Đã thanh toán, Đã hủy
     ChiTietHoaDon: [{
         SanPham: { type: mongoose.Schema.Types.ObjectId, ref: 'SanPham', required: true },
